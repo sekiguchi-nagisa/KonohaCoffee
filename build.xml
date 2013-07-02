@@ -86,7 +86,7 @@
 		<delete file="KonohaJVMCodeGen.jar" />
 		<delete file="KonohaLLVMCodeGen.jar" />
 		<delete file="MiniKonoha.Peg.jar" />
-		<delete file="Konoha.CGrammar" />
+		<delete file="Konoha.CGrammar.jar" />
 		<delete file="konoha-test.jar" />
 	</target>
 	<!-- ================================== -->
