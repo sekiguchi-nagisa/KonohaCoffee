@@ -424,8 +424,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, TypedNode BaseNode, KonohaType TypeInfo) {
 		KonohaArray NodeList = UNode.NodeList;
-		int ParamSize = NodeList.size() - 2;
-		KonohaToken KeyToken = (KonohaToken)UNode.NodeList.get(1);//UNode.KeyToken;
+		int ParamSize = NodeList.size() - 1;
+		KonohaToken KeyToken = UNode.KeyToken;
 		KonohaMethod Method = null;
 		Method = Gamma.GammaNameSpace.LookupMethod(KeyToken.ParsedText, ParamSize);
 		if(Method == null) {
@@ -442,9 +442,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeMethodEachParam(TypeEnv Gamma, KonohaType BaseType, ApplyNode WorkingNode, KonohaArray NodeList) {
 		KonohaMethod Method = WorkingNode.Method;
-		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 2; ParamIdx++) {
+		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 1; ParamIdx++) {
 			KonohaType ParamType = Method.GetParamType(BaseType, ParamIdx);
-			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 2);
+			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 1);
 			TypedNode ParamNode;
 			if(UntypedParamNode != null) {
 				ParamNode = TypeEnv.TypeCheck(Gamma, UntypedParamNode, ParamType, DefaultTypeCheckPolicy);
@@ -815,5 +815,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
 
 		new KonohaInt().MakeDefinition(NameSpace);
+		new KonohaString().MakeDefinition(NameSpace);
+		new KonohaSystem().MakeDefinition(NameSpace);
 	}
 }
