@@ -40,7 +40,6 @@ public class KonohaProcess {
 		//System.out.println("return: " + kProc.getRet());
 		System.out.print(kProc.getStdout());
 		System.err.print(kProc.getStderr());
-		
 	}
 	
 	public KonohaProcess(String command) {

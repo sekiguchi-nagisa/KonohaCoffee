@@ -14,9 +14,9 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		KonohaType BaseClass = ns.LookupHostLangType(KonohaProcess.class);
 
 		// define Constructor
-		String MN_newKonohaProcess = "New";
+		String MN_constructor = "New";
 		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
-		BaseClass.DefineMethod(0, MN_newKonohaProcess, Process_String_Param, this, MN_newKonohaProcess); //FIXME
+		BaseClass.DefineMethod(0, MN_constructor, Process_String_Param, this, MN_constructor); //FIXME
 
 		// define SetArgument()
 		String MN_SetArgument = "SetArgument";
