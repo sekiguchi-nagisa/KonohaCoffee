@@ -30,7 +30,6 @@ public class KonohaProcess {
 	private String errorMessage;
 	private final String logdirPath = "/tmp/strace-log";
 	public String logFilePath;
-	private final String log4jConfig = "log4j.properties";
 
 
 	public static void main(String[] args) {
@@ -41,6 +40,7 @@ public class KonohaProcess {
 		//System.out.println("return: " + kProc.getRet());
 		System.out.print(kProc.getStdout());
 		System.err.print(kProc.getStderr());
+		
 	}
 	
 	public KonohaProcess(String command) {
@@ -332,7 +332,7 @@ class StreamSetter extends Thread {
 	}
 }
 
-class KonohaProcessMonitor extends Thread {
+class KonohaProcessMonitor {
 	private ArrayList<KonohaProcess> procList;
 	
 	public KonohaProcessMonitor() {
@@ -343,7 +343,7 @@ class KonohaProcessMonitor extends Thread {
 		this.procList.add(kproc);
 	}
 	
-	private void diagnose(KonohaProcess kproc) {	//FIXME
+	private void diagnoseAt(KonohaProcess kproc) {	//FIXME
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(kproc.logFilePath));
 			
@@ -370,6 +370,19 @@ class KonohaProcessMonitor extends Thread {
 		}
 	}
 	
+	public void diagnose() {
+		int size = procList.size();
+		for(int i = 0; i < size; i++) {
+			KonohaProcess targetProc = procList.get(i);
+			try {
+				targetProc.getRet();
+			}
+			catch (IllegalThreadStateException e) {
+				diagnoseAt(targetProc);
+			}
+		}
+	}
+	
 	public void throwException() throws Exception {
 		int size = procList.size();
 		for(int i = 0; i < size; i++) {
@@ -381,20 +394,6 @@ class KonohaProcessMonitor extends Thread {
 				if(targetProc.getRet() != 0) {
 					throw new Exception(targetProc.getError());
 				}
-			}
-		}
-	}
-	
-	@Override
-	public void run() {
-		int size = procList.size();
-		for(int i = 0; i < size; i++) {
-			KonohaProcess targetProc = procList.get(i);
-			try {
-				targetProc.getRet();
-			}
-			catch (IllegalThreadStateException e) {
-				diagnose(targetProc);
 			}
 		}
 	}
