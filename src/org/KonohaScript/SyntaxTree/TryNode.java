@@ -22,7 +22,7 @@ public class TryNode extends TypedNode {
 		this.TargetException = new KonohaArray();
 	}
 	
-	public void addCatchBlock(TypedNode TargetException, TypedNode CatchBlock) {
+	public void addCatchBlock(TypedNode TargetException, TypedNode CatchBlock) { //FIXME
 		this.TargetException.add(TargetException);
 		this.CatchBlock.add(CatchBlock);
 	}

@@ -158,7 +158,7 @@ public class JVMCodeGenTest extends KTestCase {
 		
 		KonohaMethod intDiv = new KonohaMethod(0, IntTy, "/", Param2, null);
 		
-		// try-finally
+		// try-finally block
 		TryNode tryBlock = new TryNode(VoidTy, 
 				new ApplyNode(IntTy, null, intDiv, new ConstNode(IntTy, null, 10), new ConstNode(IntTy, null, 0)), 
 				new ReturnNode(IntTy, new ConstNode(IntTy, null, 5)));
@@ -247,10 +247,9 @@ public class JVMCodeGenTest extends KTestCase {
 		}
 	}
 	
-	public static void main(String[] args) {
-		JVMCodeGenTest jvmTest = new JVMCodeGenTest();
-		jvmTest.Init();
-		jvmTest.Test();
-	}
-
+//	public static void main(String[] args) {
+//		JVMCodeGenTest jvmTest = new JVMCodeGenTest();
+//		jvmTest.Init();
+//		jvmTest.Test();
+//	}
 }
