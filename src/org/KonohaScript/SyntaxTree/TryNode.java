@@ -21,6 +21,11 @@ public class TryNode extends TypedNode {
 		this.CatchBlock = new KonohaArray();
 		this.TargetException = new KonohaArray();
 	}
+	
+	public void addCatchBlock(TypedNode TargetException, TypedNode CatchBlock) {
+		this.TargetException.add(TargetException);
+		this.CatchBlock.add(CatchBlock);
+	}
 
 	@Override
 	public boolean Evaluate(NodeVisitor Visitor) {

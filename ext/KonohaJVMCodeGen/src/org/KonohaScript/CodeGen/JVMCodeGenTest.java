@@ -14,6 +14,7 @@ import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
+import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 import org.KonohaScript.Tester.KTestCase;
 
@@ -138,6 +139,38 @@ public class JVMCodeGenTest extends KTestCase {
 		Builder.Prepare(Fibo, Params);
 		Builder.Compile(Block2);
 	}
+	
+	public static void testTry(JVMCodeGenerator Builder) {
+		KonohaType[] ParamData1 = new KonohaType[1];
+		String[] ArgData1 = new String[0];
+		ParamData1[0] = IntTy;
+		KonohaParam Param1 = new KonohaParam(1, ParamData1, ArgData1);
+		KonohaMethod func1 = new KonohaMethod(0, VoidTy, "testTry", Param1, null);
+		Builder.Prepare(func1);
+		
+		// binary op definition
+		String[] ArgData2 = new String[1];
+		ArgData2[0] = "x";
+		KonohaType[] ParamData2 = new KonohaType[2];
+		ParamData2[0] = IntTy;
+		ParamData2[1] = IntTy;
+		KonohaParam Param2 = new KonohaParam(2, ParamData2, ArgData2);
+		
+		KonohaMethod intDiv = new KonohaMethod(0, IntTy, "/", Param2, null);
+		
+		// try-finally
+		TryNode tryBlock = new TryNode(VoidTy, 
+				new ApplyNode(IntTy, null, intDiv, new ConstNode(IntTy, null, 10), new ConstNode(IntTy, null, 0)), 
+				new ReturnNode(IntTy, new ConstNode(IntTy, null, 5)));
+		
+		// add catch block
+		TypedNode exceptionBlock = new ConstNode(StringTy, null, "Exception");
+		TypedNode catchBlock = new ReturnNode(IntTy, new ConstNode(IntTy, null, 10));
+		tryBlock.addCatchBlock(exceptionBlock, catchBlock);
+		TryNode Block = tryBlock;
+		
+		Builder.Compile(Block);
+	}
 
 	JVMCodeGenerator	Builder;
 
@@ -160,6 +193,7 @@ public class JVMCodeGenTest extends KTestCase {
 		testAddOne(this.Builder);
 		testIf(this.Builder);
 		testFibo(this.Builder);
+		testTry(this.Builder);
 
 		try {
 			this.Builder.OutputClassFile("Script", "./bin/org/KonohaScript/CodeGen/");
@@ -180,6 +214,10 @@ public class JVMCodeGenTest extends KTestCase {
 			Object ret4 = c.getMethod("testFibo", int.class).invoke(null, 10);
 			System.out.println(ret4);
 			this.AssertEqual(((Integer) ret4).intValue(), 55);
+			
+			Object ret5 = c.getMethod("testTry").invoke(null);
+			System.out.println(ret5);
+			this.AssertEqual(((Integer) ret5).intValue(), 10);
 		}
 		catch (IOException e) {
 		}
@@ -207,6 +245,12 @@ public class JVMCodeGenTest extends KTestCase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public static void main(String[] args) {
+		JVMCodeGenTest jvmTest = new JVMCodeGenTest();
+		jvmTest.Init();
+		jvmTest.Test();
 	}
 
 }
