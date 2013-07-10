@@ -425,7 +425,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	private TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, TypedNode BaseNode, KonohaType TypeInfo) {
 		KonohaArray NodeList = UNode.NodeList;
 		int ParamSize = NodeList.size() - 2;
-		KonohaToken KeyToken = (KonohaToken)UNode.NodeList.get(1);//UNode.KeyToken;
+		KonohaToken KeyToken = UNode.KeyToken;
 		KonohaMethod Method = null;
 		Method = Gamma.GammaNameSpace.LookupMethod(KeyToken.ParsedText, ParamSize);
 		if(Method == null) {

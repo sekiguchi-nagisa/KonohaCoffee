@@ -615,13 +615,36 @@ public class JVMCodeGenerator extends CodeGenerator implements Opcodes, KonohaBu
 
 	@Override
 	public boolean VisitTry(TryNode Node) {
-		// TODO Auto-generated method stub
+		int catchSize = Node.CatchBlock.size();
+		MethodVisitor mv = this.builder.methodVisitor;
+		Label beginTryLabel = new Label();
+		Label endTryLabel = new Label();
+		Label finallyLabel = new Label();
+		Label catchLabel[] = new Label[catchSize];
+		
+		// prepare
+		for(int i = 0; i < catchSize; i++) {	//TODO: add exception class name
+			catchLabel[i] = new Label();
+			mv.visitTryCatchBlock(beginTryLabel, endTryLabel, catchLabel[i], null);
+		}
+		
+		// try block
+		mv.visitLabel(beginTryLabel);
 		this.VisitList(Node.TryBlock);
-		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+		mv.visitLabel(endTryLabel);
+		mv.visitJumpInsn(GOTO, finallyLabel);
+		
+		// catch block
+		for(int i = 0; i < catchSize; i++) {	//TODO: add exception class name
 			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
 			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
+			mv.visitLabel(catchLabel[i]);
 			this.VisitList(Block);
+			mv.visitJumpInsn(GOTO, finallyLabel);
 		}
+		
+		// finally block
+		mv.visitLabel(finallyLabel);
 		this.VisitList(Node.FinallyBlock);
 
 		return true;
