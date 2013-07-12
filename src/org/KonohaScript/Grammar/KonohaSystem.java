@@ -8,7 +8,6 @@ public class KonohaSystem extends KonohaDef implements KonohaConst {
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {
 		KonohaType BaseClass = ns.LookupHostLangType(KonohaSystem.class);
-
 		KonohaParam param = KonohaParam.ParseOf(ns, "void int x");
 		BaseClass.DefineMethod(ConstMethod|StaticMethod, "p", param, this, "p");
 	}

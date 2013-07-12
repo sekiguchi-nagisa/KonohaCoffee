@@ -12,8 +12,6 @@ public class KonohaString extends KonohaDef implements KonohaConst {
 	public void MakeDefinition(KonohaNameSpace ns) {
 		KonohaType BaseClass = ns.LookupHostLangType(String.class);
 		KonohaParam BinaryParam = KonohaParam.ParseOf(ns, "String String x");
-
-		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "+", BinaryParam, this, "StringAddString");
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "+", BinaryParam, this, "StringAddString");
 
 		KonohaParam RelationParam = KonohaParam.ParseOf(ns, "boolean String x");
@@ -23,8 +21,8 @@ public class KonohaString extends KonohaDef implements KonohaConst {
 		KonohaParam indexOfParam = KonohaParam.ParseOf(ns, "int String x");
 		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "indexOf", indexOfParam, this, "StringIndexOf");
 
-		KonohaParam lengthParam = KonohaParam.ParseOf(ns, "int");
-		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "length", lengthParam, this, "StringLength");
+		KonohaParam getSizeParam = KonohaParam.ParseOf(ns, "int");
+		BaseClass.DefineMethod(ImmutableMethod | ConstMethod, "getSize", getSizeParam, this, "StringGetSize");
 	}
 
 	public static String StringAddString(String x, String y) {
@@ -43,7 +41,7 @@ public class KonohaString extends KonohaDef implements KonohaConst {
 		return self.indexOf(str);
 	}
 
-	public static int StringLength(String self) {
+	public static int StringGetSize(String self) {
 		return self.length();
 	}
 }

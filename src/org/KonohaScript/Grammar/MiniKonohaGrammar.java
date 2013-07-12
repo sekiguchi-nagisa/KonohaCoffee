@@ -817,5 +817,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		new KonohaInt().MakeDefinition(NameSpace);
 		new KonohaString().MakeDefinition(NameSpace);
 		new KonohaSystem().MakeDefinition(NameSpace);
+		new KonohaArrayLib().MakeDefinition(NameSpace);
 	}
 }
