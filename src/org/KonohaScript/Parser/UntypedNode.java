@@ -289,7 +289,7 @@ public class UntypedNode implements KonohaConst {
 		if((ParseOption & SkipIndent) == SkipIndent) {
 			while(BeginIdx < EndIdx) {
 				KonohaToken Token = TokenList.get(BeginIdx);
-				if(Token.ResolvedObject != KonohaSyntax.IndentSyntax) {
+				if(Token.ResolvedSyntax != KonohaSyntax.IndentSyntax) {
 					break;
 				}
 				BeginIdx++;
@@ -336,12 +336,12 @@ public class UntypedNode implements KonohaConst {
 		if(BeginIdx == -1) {
 			return -1;
 		}
-		BeginIdx = UntypedNode.SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
+		BeginIdx = UntypedNode.SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption | SkipIndent);
 		if(BeginIdx < EndIdx) {
 			KonohaToken Token = TokenList.get(BeginIdx);
-			if(Token.ResolvedSyntax.equals("{}")) {
+			if(Token.ResolvedSyntax.equals(this.NodeNameSpace.GetSyntax("{}"))) {
 				this.SetAtNode(Index, UntypedNode.ParseGroup(this.NodeNameSpace, Token, AllowEmpty | CreateNullNode));
-				return UntypedNode.SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption);
+				return UntypedNode.SkipIndent(TokenList, BeginIdx + 1, EndIdx, ParseOption | SkipIndent);
 			}
 			return this.MatchExpression(Index, TokenList, BeginIdx, EndIdx, null, ParseOption);
 		}
@@ -352,7 +352,7 @@ public class UntypedNode implements KonohaConst {
 		if(BeginIdx == -1) {
 			return -1;
 		}
-		BeginIdx = UntypedNode.SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
+		BeginIdx = UntypedNode.SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption | SkipIndent);
 		if(BeginIdx < EndIdx) {
 			KonohaToken Token = TokenList.get(BeginIdx);
 			if(Token.EqualsText(Symbol)) {
