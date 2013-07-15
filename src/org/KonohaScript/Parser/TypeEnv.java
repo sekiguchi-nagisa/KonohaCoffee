@@ -116,11 +116,10 @@ public class TypeEnv implements KonohaConst {
 		while(UNode != null) {
 			KonohaType CurrentTypeInfo = (UNode.NextNode != null) ? Gamma.VoidType : TypeInfo;
 			TypedNode CurrentTypedNode = TypeCheckEachNode(Gamma, UNode, CurrentTypeInfo, TypeCheckPolicy);
-			if(TPrevNode == null) {
-				TPrevNode = CurrentTypedNode;
-			} else {
+			if(TPrevNode != null) {
 				TPrevNode.LinkNode(CurrentTypedNode);
 			}
+			TPrevNode = CurrentTypedNode;
 			if(CurrentTypedNode.IsError()) {
 				break;
 			}
