@@ -75,6 +75,9 @@ public class KonohaShell {
 
 	String[] ProcessOptions(String[] origArgs) {
 		KonohaArray Args = new KonohaArray();
+		KonohaArray ImportedArgs = new KonohaArray();
+		
+		this.IsInteractiveMode = true;
 		for(int i = 0; i < origArgs.length; i++) {
 			String arg = origArgs[i];
 			if(arg.equals("-h")) {
@@ -86,15 +89,31 @@ public class KonohaShell {
 			} else if(arg.startsWith("-arch=")) {
 				String BuilderName = arg.substring("-arch=".length());
 				this.ShellContext.DefaultNameSpace.LoadBuilder(BuilderName);
+			} else if(arg.startsWith("-I")) {
+				String importFileName = arg.substring("-I".length());
+				if(importFileName.startsWith("~")) {
+					String fullFilePath = 
+							System.getProperty("user.home") + importFileName.substring("~".length());
+					ImportedArgs.add(fullFilePath);
+				} else {
+					ImportedArgs.add(importFileName);
+				}
 			} else {
+				this.IsInteractiveMode = false;
 				Args.add(arg);
 			}
 		}
-
-		this.IsInteractiveMode = true;
-		String[] newArgs = new String[Args.size()];
-		for(int i = 0; i < Args.size(); i++) {
-			newArgs[i] = (String) Args.get(i);
+		
+		int argsSize = Args.size();
+		int imprtedArgsSize = ImportedArgs.size();
+		
+		String[] newArgs = new String[argsSize + imprtedArgsSize];
+		for(int i = 0; i < imprtedArgsSize; i++) {
+			newArgs[i] = (String) ImportedArgs.get(i);
+		}
+		
+		for(int i = 0; i < argsSize; i++) {
+			newArgs[i + imprtedArgsSize] = (String) Args.get(i);
 		}
 		return newArgs;
 	}
