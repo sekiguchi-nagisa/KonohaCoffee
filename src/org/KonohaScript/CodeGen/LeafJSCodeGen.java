@@ -6,6 +6,7 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
@@ -210,7 +211,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean VisitConst(ConstNode Node) {
-		this.push(Node.ConstValue.toString());
+		if(Node.TypeInfo.ShortClassName.equals(KonohaNameSpace.GlobalConstName)){
+			this.push(GlobalObjectName);
+		}else{
+			this.push(Node.ConstValue.toString());
+		}
 		return true;
 	}
 
@@ -295,7 +300,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		Node.RightNode.Evaluate(this);
 		String Right = this.pop();
 		String Left = this.pop();
-		this.push((this.UseLetKeyword ? "let " : "var ") + Left + " = " + Right);
+		this.push(Left + " = " + Right);
 		return true;
 	}
 
@@ -306,7 +311,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 		String Block = this.pop();
 		String Right = this.pop();
-		this.push(Node.VarToken.ParsedText + " = " + Right + Block);
+		this.push((this.UseLetKeyword ? "let " : "var ") + Node.VarToken.ParsedText + " = " + Right + Block);
 		return true;
 	}
 

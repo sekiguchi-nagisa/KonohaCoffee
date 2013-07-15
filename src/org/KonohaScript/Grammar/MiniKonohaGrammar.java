@@ -364,12 +364,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int MemberIdx = BeginIdx + 1;
 		boolean isGlobal = false;
 
-		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Member", TokenList, MemberIdx, EndIdx, ParseOption);
+		int ParamIdx = UNode.MatchSyntax(-1, "$Member", TokenList, MemberIdx, EndIdx, ParseOption);
 
 		if(ParamIdx == -1) {
 			// Global method call
 			int SymbolIdx = BeginIdx;
-			ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+			ParamIdx = UNode.MatchSyntax(-1, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 			isGlobal = true;
 		}
 
@@ -378,10 +378,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(NextIdx == -1){
 			return -1;
 		}
-
-		KonohaToken GroupToken = TokenList.get(ParamIdx);
-		TokenList GroupList = GroupToken.GetGroupList();
-		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
 		KonohaToken ReceiverToken = null;
 		KonohaToken MethodToken = null;
@@ -397,6 +393,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		UntypedNode baseNode = UNodeFromToken(UNode.NodeNameSpace, ReceiverToken);
 		UNode.SetAtNode(MethodCallBaseClass, baseNode);
 		
+		KonohaToken GroupToken = TokenList.get(ParamIdx);
+		TokenList GroupList = GroupToken.GetGroupList();
+		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
+
 		//UntypedNode methodNode = UNodeFromToken(UNode.NodeNameSpace, MethodToken);
 		//UNode.SetAtNode(MethodCallName, methodNode);
 
@@ -560,11 +560,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(CondNode.IsError())
 			return CondNode;
 		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
-		if(ThenNode.IsError())
-			return ThenNode;
-		TypedNode ElseNode = UNode.TypeNodeAt(IfElse, Gamma, ThenNode.TypeInfo, 0);
-		if(ElseNode.IsError())
-			return ElseNode;
+		TypedNode ElseNode = null;
+		if(!UNode.GetAtNode(IfElse).IsEmptyNode()){
+			ElseNode = UNode.TypeNodeAt(IfElse, Gamma, ThenNode.TypeInfo, 0);
+		}
 		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
 	}
 
@@ -610,7 +609,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			NextIdx = UNode.MatchExpression(VarDeclValue, TokenList, ValueIdx, EndIdx, ",", TermRequired);
 			if(NextIdx == -1)
 				return EndIdx;
-			NextIdx = NextIdx - 1;
+			NextIdx = NextIdx - 1; // TokenList[NextIdx] becomes ";" or ","
+			if( ((KonohaToken)TokenList.get(NextIdx)).ResolvedSyntax.IsDelim() ){
+				EndIdx = NextIdx;
+			}
 		} else {
 			UNode.SetAtToken(VarDeclValue, null);
 		}
@@ -698,7 +700,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int ParamSize = UNode.NodeList.size() - MethodDeclParam;
 		KonohaType[] ParamData = new KonohaType[ParamSize + 1];
 		String[] ArgNames = new String[ParamSize + 1];
-		ParamData[0] = UNode.GetTokenType(MethodDeclClass, Gamma.VarType);
+		ParamData[0] = UNode.GetTokenType(MethodDeclReturn, Gamma.VarType);
 		for(int i = 0; i < ParamSize; i++) {
 			UntypedNode ParamNode = (UntypedNode) UNode.NodeList.get(MethodDeclParam + i);
 			KonohaType ParamType = ParamNode.GetTokenType(VarDeclType, Gamma.VarType);
@@ -717,15 +719,15 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}
 
-	public int ParseEmpty(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-		return NoMatch;
-	}
-
-	public TypedNode TypeEmpty(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-		return null;
-	}
+//	public int ParseEmpty(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+//		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
+//		return NoMatch;
+//	}
+//
+//	public TypedNode TypeEmpty(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+//		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
+//		return null;
+//	}
 
 	public int ParseUNUSED(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
@@ -813,7 +815,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
-
+		
 		new KonohaInt().MakeDefinition(NameSpace);
 		new KonohaString().MakeDefinition(NameSpace);
 		new KonohaSystem().MakeDefinition(NameSpace);
