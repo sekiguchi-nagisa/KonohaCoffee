@@ -24,6 +24,7 @@ public class PegParser {
 	KonohaArray		ThunkRangeEnd;
 	KonohaArray		ThunkNodeSizes;
 	KonohaNameSpace	NameSpace;
+	public int		ParseOption;
 
 	public PegParser(KonohaNameSpace NameSpace) {
 		super();
