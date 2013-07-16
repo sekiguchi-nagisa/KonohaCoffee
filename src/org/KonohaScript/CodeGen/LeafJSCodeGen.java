@@ -424,11 +424,15 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
 			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
 			this.VisitBlock(Block);
+			this.VisitList(Exception);
 		}
 		this.VisitBlock(Node.FinallyBlock);
 
 		String FinallyBlock = this.pop();
-		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
+		String CatchBlocks = "";
+		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+			CatchBlocks += "catch(" + this.pop() + ") " + this.pop();
+		}
 		String TryBlock = this.pop();
 		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
 		return true;

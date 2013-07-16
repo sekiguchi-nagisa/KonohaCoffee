@@ -749,13 +749,25 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public final static int	TryBlock		= 0;
-	public final static int	CatchBlocks		= 1;
-	public final static int	FinallyBlock	= 2;
+	public final static int	TargetExpressions		= 1;
+	public final static int	CatchBlocks		= 2;
+	public final static int	FinallyBlock	= 3;
 
 	public int ParseTry(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int CatchBlockIdx = UNode.MatchSingleBlock(TryBlock, TokenList, BeginIdx + 1, EndIdx, ParseOption);
-		// TODO impl catch
-		int FinallyIdx = CatchBlockIdx;
+		int CatchIdx = UNode.MatchSingleBlock(TryBlock, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		int CatchExprIdx = CatchIdx;
+		int CatchBlockIdx = CatchIdx;
+		while(true){
+			CatchIdx = UntypedNode.SkipIndent(TokenList, CatchIdx, EndIdx, ParseOption | SkipIndent);
+			CatchExprIdx = UNode.MatchKeyword(-1, "catch", TokenList, CatchIdx, EndIdx, AllowEmpty);
+			if(CatchIdx == CatchExprIdx) { // skiped
+				break;
+			} else {
+				CatchBlockIdx = UNode.MatchCond(TargetExpressions, TokenList, CatchExprIdx, EndIdx, ParseOption);
+				CatchIdx = UNode.MatchSingleBlock(CatchBlocks, TokenList, CatchBlockIdx, EndIdx, ParseOption);
+			}
+		}
+		int FinallyIdx = CatchIdx;
 		FinallyIdx = UntypedNode.SkipIndent(TokenList, FinallyIdx, EndIdx, ParseOption | SkipIndent);
 		int FinallyBlockIdx = UNode.MatchKeyword(-1, "finally", TokenList, FinallyIdx, EndIdx, AllowEmpty);
 		if(FinallyIdx == FinallyBlockIdx) { // skiped
@@ -770,8 +782,21 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		TypedNode TryBlockNode = UNode.TypeNodeAt(TryBlock, Gamma, Gamma.BooleanType, 0);
 		if(TryBlockNode.IsError())
 			return TryBlockNode;
+
 		TypedNode FinallyBlockNode = UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
-		return new TryNode(TryBlockNode.TypeInfo, TryBlockNode, FinallyBlockNode);
+		TryNode TypedTryNode = new TryNode(TryBlockNode.TypeInfo, TryBlockNode, FinallyBlockNode);
+
+		TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocks, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
+		TypedNode TargetExpressionNode = UNode.TypeNodeAt(TargetExpressions, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
+		CatchBlockNode = CatchBlockNode.IsError() ? null : CatchBlockNode;
+		TargetExpressionNode = TargetExpressionNode.IsError() ? null : TargetExpressionNode;
+		while(CatchBlockNode != null && TargetExpressionNode != null){
+			TypedTryNode.addCatchBlock(TargetExpressionNode, CatchBlockNode);
+			CatchBlockNode = CatchBlockNode.NextNode;
+			TargetExpressionNode = TargetExpressionNode.NextNode;
+		}
+
+		return TypedTryNode;
 	}
 
 	@Override
