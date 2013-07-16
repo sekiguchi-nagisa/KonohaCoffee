@@ -342,8 +342,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public final static int	MethodCallBaseClass	= 0;
-	public final static int	MethodCallName		= 1;
-	public final static int	MethodCallParam		= 2;
+	public final static int	MethodCallParam		= 1;
 
 	private UntypedNode UNodeFromToken(KonohaNameSpace NS, KonohaToken Token){
 		TokenList globalTokenList = new TokenList();
@@ -544,15 +543,16 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	IfElse	= 2;
 
 	public int ParseIf(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int NextIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
-		NextIdx = UNode.MatchSingleBlock(IfThen, TokenList, NextIdx, EndIdx, ParseOption);
-		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty);
-		if(NextIdx == NextIdx2 && NextIdx != -1) { // skiped
-			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
+		int ThenBlockIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		int ElseIdx = UNode.MatchSingleBlock(IfThen, TokenList, ThenBlockIdx, EndIdx, ParseOption);
+		ElseIdx = UntypedNode.SkipIndent(TokenList, ElseIdx, EndIdx, ParseOption | SkipIndent);
+		int ElseBlockIdx = UNode.MatchKeyword(-1, "else", TokenList, ElseIdx, EndIdx, AllowEmpty);
+		if(ElseIdx == ElseBlockIdx) { // skiped
+			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, ElseBlockIdx));
 		} else {
-			NextIdx2 = UNode.MatchSingleBlock(IfElse, TokenList, NextIdx2, EndIdx, ParseOption);
+			return UNode.MatchSingleBlock(IfElse, TokenList, ElseBlockIdx, EndIdx, ParseOption);
 		}
-		return NextIdx2;
+		return ElseBlockIdx;
 	}
 
 	public TypedNode TypeIf(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
@@ -719,16 +719,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}
 
-//	public int ParseEmpty(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-//		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-//		return NoMatch;
-//	}
-//
-//	public TypedNode TypeEmpty(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-//		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-//		return null;
-//	}
-
 	public int ParseUNUSED(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return NoMatch;
@@ -738,6 +728,31 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return null;
 	}
+	
+	public int ParseWhile(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		int NextIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		NextIdx = UNode.MatchSingleBlock(IfThen, TokenList, NextIdx, EndIdx, ParseOption);
+		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty);
+		if(NextIdx == NextIdx2 && NextIdx != -1) { // skiped
+			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
+		} else {
+			NextIdx2 = UNode.MatchSingleBlock(IfElse, TokenList, NextIdx2, EndIdx, ParseOption);
+		}
+		return NextIdx2;
+	}
+
+	public TypedNode TypeWhile(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
+		if(CondNode.IsError())
+			return CondNode;
+		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
+		TypedNode ElseNode = null;
+		if(!UNode.GetAtNode(IfElse).IsEmptyNode()){
+			ElseNode = UNode.TypeNodeAt(IfElse, Gamma, ThenNode.TypeInfo, 0);
+		}
+		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
+	}
+
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
@@ -815,6 +830,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
+		
+		NameSpace.DefineSyntax("while", Statement, this, "While");
 		
 		new KonohaInt().MakeDefinition(NameSpace);
 		new KonohaStringDef().MakeDefinition(NameSpace);
