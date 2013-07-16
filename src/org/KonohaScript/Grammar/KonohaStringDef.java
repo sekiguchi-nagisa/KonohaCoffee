@@ -6,7 +6,7 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
 
-public class KonohaString extends KonohaDef implements KonohaConst {
+public class KonohaStringDef extends KonohaDef implements KonohaConst {
 
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {

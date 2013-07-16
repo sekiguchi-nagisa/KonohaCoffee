@@ -6,7 +6,7 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KonohaDef;
 
-public class KonohaArrayLib extends KonohaDef implements KonohaConst {
+public class KonohaArrayDef extends KonohaDef implements KonohaConst {
     @Override
     public void MakeDefinition(KonohaNameSpace ns) {
         //FIXME int[] only

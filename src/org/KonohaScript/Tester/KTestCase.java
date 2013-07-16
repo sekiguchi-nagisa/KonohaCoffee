@@ -39,7 +39,7 @@ public abstract class KTestCase implements TestAssert {
 	}
 
 	private void Check(boolean Actual, boolean Expected) {
-		if(Actual != Expected) {
+		if (Actual != Expected) {
 			this.PrintErrorInfo(3);
 		}
 	}
@@ -85,5 +85,13 @@ public abstract class KTestCase implements TestAssert {
 
 		System.out.println("Test Fail at " + ClassName + "." + MethodName + "(" + File + ":" + Line + ")");
 
+	}
+
+	@Override
+	public void Test() {
+	}
+
+	@Override
+	public void Init() {
 	}
 }

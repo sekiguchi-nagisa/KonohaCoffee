@@ -817,8 +817,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
 		
 		new KonohaInt().MakeDefinition(NameSpace);
-		new KonohaString().MakeDefinition(NameSpace);
-		new KonohaSystem().MakeDefinition(NameSpace);
-		new KonohaArrayLib().MakeDefinition(NameSpace);
+		new KonohaStringDef().MakeDefinition(NameSpace);
+		new KonohaSystemDef().MakeDefinition(NameSpace);
+		new KonohaArrayDef().MakeDefinition(NameSpace);
 	}
 }
