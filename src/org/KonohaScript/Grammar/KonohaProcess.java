@@ -30,7 +30,7 @@ public class KonohaProcess {
 	public boolean isKilled = false;
 	private String errorMessage;
 	private final String logdirPath = "/tmp/strace-log";
-	public String logFilePath;
+	public String logFilePath = null;
 
 
 	public static void main(String[] args) throws Exception {		
@@ -321,12 +321,17 @@ class KonohaProcessMonitor {
 		for(int i = 0; i < size; i++) {
 			KonohaProcess targetProc = procList.get(i);
 			targetProc.waitFor();
-			if(targetProc.getRet() != 0) {
-				String message = targetProc.getCmdName();
-				Stack<String[]> syscallStack = parseTraceLog(targetProc.getLogFilePath());
-				throw createException(message, syscallStack.peek());
+			
+			String logFilePath = targetProc.getLogFilePath();
+			if(logFilePath != null) {
+				if(targetProc.getRet() != 0) {
+					String message = targetProc.getCmdName();
+					Stack<String[]> syscallStack = parseTraceLog(logFilePath);
+					deleteLogFile(logFilePath);
+					throw createException(message, syscallStack.peek());	
+				}			
+				deleteLogFile(logFilePath);
 			}
-			deleteLogFile(targetProc.getLogFilePath());
 		}
 	}
 	
