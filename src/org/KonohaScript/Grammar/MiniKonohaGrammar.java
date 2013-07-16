@@ -49,6 +49,7 @@ import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
+import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaConst {
@@ -389,10 +390,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			ReceiverToken = TokenList.get(BeginIdx);
 			MethodToken = TokenList.get(BeginIdx + 1);
 		}
-		
+
 		UntypedNode baseNode = UNodeFromToken(UNode.NodeNameSpace, ReceiverToken);
 		UNode.SetAtNode(MethodCallBaseClass, baseNode);
-		
+
 		KonohaToken GroupToken = TokenList.get(ParamIdx);
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
@@ -729,18 +730,48 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return null;
 	}
-	
+
+	public final static int	LoopCond	= 0;
+	public final static int	LoopBody	= 1;
+	public final static int	LoopIter	= 2;
+
 	public int ParseWhile(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int LoopBodyBlockIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
-		return UNode.MatchSingleBlock(IfThen, TokenList, LoopBodyBlockIdx, EndIdx, ParseOption);
+		int LoopBodyBlockIdx = UNode.MatchCond(LoopCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		return UNode.MatchSingleBlock(LoopBody, TokenList, LoopBodyBlockIdx, EndIdx, ParseOption);
 	}
 
 	public TypedNode TypeWhile(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
+		TypedNode CondNode = UNode.TypeNodeAt(LoopCond, Gamma, Gamma.BooleanType, 0);
 		if(CondNode.IsError())
 			return CondNode;
-		TypedNode BodyNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
+		TypedNode BodyNode = UNode.TypeNodeAt(LoopBody, Gamma, TypeInfo, 0);
 		return new LoopNode(BodyNode.TypeInfo, CondNode, BodyNode, null);
+	}
+
+	public final static int	TryBlock		= 0;
+	public final static int	CatchBlocks		= 1;
+	public final static int	FinallyBlock	= 2;
+
+	public int ParseTry(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		int CatchBlockIdx = UNode.MatchSingleBlock(TryBlock, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		// TODO impl catch
+		int FinallyIdx = CatchBlockIdx;
+		FinallyIdx = UntypedNode.SkipIndent(TokenList, FinallyIdx, EndIdx, ParseOption | SkipIndent);
+		int FinallyBlockIdx = UNode.MatchKeyword(-1, "finally", TokenList, FinallyIdx, EndIdx, AllowEmpty);
+		if(FinallyIdx == FinallyBlockIdx) { // skiped
+			UNode.SetAtNode(FinallyBlock, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, FinallyBlockIdx));
+		} else {
+			return UNode.MatchSingleBlock(FinallyBlock, TokenList, FinallyBlockIdx, EndIdx, ParseOption);
+		}
+		return FinallyBlockIdx;
+	}
+
+	public TypedNode TypeTry(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		TypedNode TryBlockNode = UNode.TypeNodeAt(TryBlock, Gamma, Gamma.BooleanType, 0);
+		if(TryBlockNode.IsError())
+			return TryBlockNode;
+		TypedNode FinallyBlockNode = UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
+		return new TryNode(TryBlockNode.TypeInfo, TryBlockNode, FinallyBlockNode);
 	}
 
 	@Override
@@ -819,9 +850,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
-		
+
 		NameSpace.DefineSyntax("while", Statement, this, "While");
-		
+
+		NameSpace.DefineSyntax("try", Statement, this, "Try");
+
 		new KonohaInt().MakeDefinition(NameSpace);
 		new KonohaStringDef().MakeDefinition(NameSpace);
 		new KonohaSystemDef().MakeDefinition(NameSpace);
