@@ -1,5 +1,6 @@
 package org.KonohaScript.Peg.KonohaClass;
 
+import org.KonohaScript.KonohaClass;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
@@ -7,6 +8,7 @@ import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
+import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 // action: <Symbol:"class">, <Symbol:$#Symbol>, <Symbol:$#block>
@@ -17,7 +19,7 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		Report("ClassDefinitionSyntax0", NodeSize);
+		this.Report("ClassDefinitionSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ClassDefinition");
 		int Index = 0;
 		UntypedNode ClassName = (UntypedNode) Parser.Get(Index, NodeSize);
@@ -37,8 +39,10 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		//FIXME
-		return null;
+		int ClassFlag = 0;
+		String ClassName = UNode.GetTokenString(ClassNameOffset, "");
+		KonohaClass DefInfo = new KonohaClass(new KonohaType(UNode.NodeNameSpace.KonohaContext, ClassFlag, ClassName, null));
+		return new DefineNode(TypeInfo, UNode.KeyToken, DefInfo);
 	}
 }
 
@@ -50,7 +54,7 @@ class ClassDefinitionSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		Report("ClassDefinitionSyntax1", NodeSize);
+		this.Report("ClassDefinitionSyntax1", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ClassDefinitionSyntax");
 		int Index = 0;
 		UntypedNode ClassName = (UntypedNode) Parser.Get(Index, NodeSize);
@@ -77,7 +81,7 @@ class ClassDefinitionSyntax1 extends SyntaxAcceptor {
 class TopLevelDefinitionSyntax0 extends SyntaxAcceptor {
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
-		Report("TopLevelDefinitionSyntax0", NodeSize);
+		this.Report("TopLevelDefinitionSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}

@@ -58,7 +58,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		this.CanonicalSymbolId = KonohaSymbol.GetCanonicalSymbolId(MethodName);
 		this.Param = Param;
 		this.MethodInvoker = null;
-		if (MethodRef != null) {
+		if(MethodRef != null) {
 			this.MethodInvoker = new NativeMethodInvoker(Param, MethodRef);
 		}
 		this.ParsedTree = null;
@@ -71,8 +71,8 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		builder.append(" ");
 		builder.append(this.MethodName);
 		builder.append("(");
-		for (int i = 0; i < this.Param.ArgNames.length; i++) {
-			if (i > 0) {
+		for(int i = 0; i < this.Param.ArgNames.length; i++) {
+			if(i > 0) {
 				builder.append(", ");
 			}
 			builder.append(this.Param.Types[i + 1]);
@@ -82,7 +82,6 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		builder.append(")");
 		return builder.toString();
 	};
-
 
 	public boolean Is(int Flag) {
 		return ((this.MethodFlag & Flag) == Flag);
@@ -104,11 +103,11 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 
 	public boolean Match(String MethodName, int ParamSize) {
 		// FIXME(ide) implement match function with strict rule
-		if (MethodName.equals(this.MethodName)) {
-			if (ParamSize == -1) {
+		if(MethodName.equals(this.MethodName)) {
+			if(ParamSize == -1) {
 				return true;
 			}
-			if (this.Param.GetParamSize() == ParamSize) {
+			if(this.Param.GetParamSize() == ParamSize) {
 				return true;
 			}
 		}
@@ -122,22 +121,23 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		return this.MethodInvoker.Invoke(ParamData);
 	}
 
-	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param, KonohaNameSpace LazyNameSpace, TokenList SourceList) {
+	public KonohaMethod(int MethodFlag, KonohaType ClassInfo, String MethodName, KonohaParam Param,
+			KonohaNameSpace LazyNameSpace, TokenList SourceList) {
 		this(MethodFlag, ClassInfo, MethodName, Param, null);
 		this.LazyNameSpace = LazyNameSpace;
 		this.SourceList = SourceList;
 	}
 
 	public void DoCompilation() {
-		if (this.MethodInvoker != null) {
+		if(this.MethodInvoker != null) {
 			return;
 		}
 		UntypedNode UNode = this.ParsedTree;
 		KonohaNameSpace NS = this.LazyNameSpace;
-		if (UNode == null) {
+		if(UNode == null) {
 			TokenList BufferList = new TokenList();
 			NS.PreProcess(this.SourceList, 0, this.SourceList.size(), BufferList);
-			UNode = NS.Parser.ParseNewNode(NS, null, BufferList, 0, BufferList.size(), AllowEmpty);
+			UNode = UntypedNode.ParseNewNode(NS, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
 		}
 		TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);

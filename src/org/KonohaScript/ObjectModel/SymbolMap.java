@@ -21,8 +21,8 @@ public class SymbolMap {
 	public Object Get(int KeySymbol) {
 		int n = Hash(KeySymbol);
 		Entry entryList = this.list[n];
-		while (entryList != null) {
-			if (entryList.key == KeySymbol) {
+		while(entryList != null) {
+			if(entryList.key == KeySymbol) {
 				return entryList.value;
 			}
 			entryList = entryList.next;
@@ -34,12 +34,12 @@ public class SymbolMap {
 		int n = Hash(KeySymbol);
 
 		Entry entryList = this.list[n];
-		if (entryList == null) {
+		if(entryList == null) {
 			this.list[n] = new Entry(KeySymbol, Value);
 			return;
 		}
-		while (entryList.next != null) {
-			if (entryList.key == KeySymbol) {
+		while(entryList.next != null) {
+			if(entryList.key == KeySymbol) {
 				entryList.value = Value;
 				return;
 			}
@@ -57,9 +57,9 @@ public class SymbolMap {
 		Entry[] oldList = list;
 		hashNumber++;
 		list = new Entry[hashNumber];
-		for (int i = 0; i < oldList.length; i++) {
+		for(int i = 0; i < oldList.length; i++) {
 			Entry entryList = oldList[i];
-			while (entryList != null) {
+			while(entryList != null) {
 				this.Set(entryList.key, entryList.value);
 				entryList = entryList.next;
 			}
@@ -70,14 +70,14 @@ public class SymbolMap {
 		int n = Hash(KeySymbol);
 
 		Entry entryList = this.list[n];
-		if (entryList == null)
+		if(entryList == null)
 			return;
-		if (entryList.key == KeySymbol) {
+		if(entryList.key == KeySymbol) {
 			this.list[n] = entryList.next;
 			return;
 		}
-		while (entryList != null) {
-			if (entryList.next != null && entryList.next.key == KeySymbol) {
+		while(entryList != null) {
+			if(entryList.next != null && entryList.next.key == KeySymbol) {
 				entryList.next = entryList.next.next;
 			}
 			entryList = entryList.next;
@@ -106,12 +106,12 @@ public class SymbolMap {
 		System.out.println(test.Get(9));
 		test.Rehash();
 		test.Init();
-		// for (int i = 0; i < test.list.length; i++) {
+		// for(int i = 0; i < test.list.length; i++) {
 		// System.out.println(test.list[i]);
 		// }
 		// test.Rehash();
 		// System.out.println("Rehash");
-		// for (int i = 0; i < test.list.length; i++) {
+		// for(int i = 0; i < test.list.length; i++) {
 		// System.out.println(test.list[i]);
 		// }
 

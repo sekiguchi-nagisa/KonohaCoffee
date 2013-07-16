@@ -107,8 +107,7 @@ public final class KonohaSyntax implements KonohaConst {
 	int InvokeParseFunc(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		try {
 			System.err.println("invoking.." + this.ParseMethod);
-			Integer NextId = (Integer) this.ParseMethod
-					.invoke(this.ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
+			Integer NextId = (Integer) this.ParseMethod.invoke(this.ParseObject, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			return NextId.intValue();
 		}
 		catch (IllegalArgumentException e) {

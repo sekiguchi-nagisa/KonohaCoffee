@@ -463,7 +463,7 @@ void emitSyntax(IO aio, IO sio, Syntax syn) {
 		emitAction(name, aio, subrules);
 	}
 
-	G.io.emit(G.level, "class ${func}Syntax extends SyntaxTemplate {");
+	G.io.emit(G.level, "class ${func}Syntax extends SyntaxPattern {");
 	G.io.emit(G.level+1, "${func}Syntax() {");
 	G.io.emit(G.level+2, "super(\"${syn.name}\");");
 	G.io.emit(G.level+1, "}");
@@ -564,7 +564,7 @@ void main() {
 	sio.emit(0, "import org.KonohaScript.KLib.TokenList;");
 	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxAcceptor;");
 	sio.emit(0, "import org.KonohaScript.PegParser.PegParser;");
-	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxTemplate;");
+	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxPattern;");
 
 	aio.emit(0, "package org.KonohaScript.Peg.${filename};");
 	aio.emit(0, "import org.KonohaScript.KonohaType;");

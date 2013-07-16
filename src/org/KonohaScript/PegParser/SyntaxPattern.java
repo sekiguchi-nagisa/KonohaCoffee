@@ -11,11 +11,11 @@ import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
-public abstract class SyntaxTemplate extends KonohaGrammar {
+public abstract class SyntaxPattern extends KonohaGrammar {
 	String		Name;
 	KonohaArray	Childrens;
 
-	public SyntaxTemplate(String Name) {
+	public SyntaxPattern(String Name) {
 		this.Name = Name;
 		this.Childrens = null;
 	}
@@ -41,7 +41,7 @@ public abstract class SyntaxTemplate extends KonohaGrammar {
 	}
 
 	public void Report(String Message) {
-		System.out.println(Message);
+		//System.out.println(Message);
 	}
 
 	public TypedNode TypePegParser(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {

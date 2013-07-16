@@ -106,7 +106,7 @@ public class MemoryDef extends KonohaDef implements KonohaConst {
 	public void Pointer_SetFloatValue(Pointer self, double Value){
 		self.SetFloatValue((float)Value);
 	}
-	
+
 	public double Pointer_GetDoubleValue(Pointer self){
 		return self.GetDoubleValue();
 	}
@@ -114,7 +114,7 @@ public class MemoryDef extends KonohaDef implements KonohaConst {
 	public void Pointer_SetDoubleValue(Pointer self, double Value){
 		self.SetDoubleValue(Value);
 	}
-	
+
 	public Pointer Pointer_GetPointerValue(Pointer self){
 		return self.GetPointerValue();
 	}
