@@ -90,8 +90,8 @@ $primary <- "this"
 $selector <- "[" $expression "]"
 / "." $identifier
 
-$newExpression <- $memberExpression
-/ "new" $type $ParameterList
+$newExpression <- "new" $type $ParameterList
+/ $memberExpression
 
 $logicalOrExpression <- $logicalAndExpression ("||" $logicalAndExpression)*
 

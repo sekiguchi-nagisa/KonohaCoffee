@@ -6,7 +6,6 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
 
-
 public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	@Override
@@ -60,7 +59,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		BaseClass.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
 	}
 
-	public static KonohaProcess New(String Command) {
+	public static KonohaProcess New(KonohaProcess Process, String Command) {
 		return new KonohaProcess(Command);
 	}
 
@@ -106,11 +105,11 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	}
 
 	// main()
-//	public static void main(String[] args) {
-//		KonohaProcess proc1 = new KonohaProcess("ls", true);
-//		proc1.setArgument("/root");
-//		proc1.start();
-//		System.out.print("<<stdout>>\n" + proc1.getStdout());
-//		System.err.print("<<stderr>>\n" + proc1.getStderr());
-//	}
+	//	public static void main(String[] args) {
+	//		KonohaProcess proc1 = new KonohaProcess("ls", true);
+	//		proc1.setArgument("/root");
+	//		proc1.start();
+	//		System.out.print("<<stdout>>\n" + proc1.getStdout());
+	//		System.err.print("<<stderr>>\n" + proc1.getStderr());
+	//	}
 }
