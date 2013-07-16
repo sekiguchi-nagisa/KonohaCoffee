@@ -1,0 +1,10 @@
+# Try-Catch
+$ExceptionStatement <- "try" $#block $CatchBlocks* $Finally
+/ "try" $#block $CatchBlocks $CatchBlocks*
+/ "throw" $#leftHandSideExpression
+
+$CatchBlocks <- "catch" "(" $#type $#Symbol ")" $#block
+
+$Finally <- "finally" $#block
+
+$statement <- $ExceptionStatement

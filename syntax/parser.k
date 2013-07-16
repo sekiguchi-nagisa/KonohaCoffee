@@ -438,10 +438,12 @@ void emitAction(String name, IO aio, Array[Element] subrules) {
 		e.emitAction(G);
 	}
 	emitActionEpiloge(subrules, G);
+	G.io.emit(G.level, "// FIXME");
 	G.io.emit(G.level, "return EndIdx;");
 	G.ExitBlock();
 	G.io.emit(G.level, "@Override public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {");
 	G.EnterBlock();
+	G.io.emit(G.level, "// FIXME");
 	G.io.emit(G.level, "return null;");
 	G.ExitBlock();
 	G.ExitBlock();
@@ -562,6 +564,7 @@ void main() {
 	sio.emit(0, "package org.KonohaScript.Peg.${filename};");
 	sio.emit(0, "");
 	sio.emit(0, "import org.KonohaScript.KLib.TokenList;");
+	sio.emit(0, "import org.KonohaScript.KonohaNameSpace;");
 	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxAcceptor;");
 	sio.emit(0, "import org.KonohaScript.PegParser.PegParser;");
 	sio.emit(0, "import org.KonohaScript.PegParser.SyntaxPattern;");
