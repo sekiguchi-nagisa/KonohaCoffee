@@ -6,10 +6,10 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
-import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.SyntaxTree.AndNode;
@@ -211,9 +211,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean VisitConst(ConstNode Node) {
-		if(Node.TypeInfo.ShortClassName.equals(KonohaNameSpace.GlobalConstName)){
-			this.push(GlobalObjectName);
-		}else{
+		if(Node.TypeInfo.ShortClassName.equals(KonohaConst.GlobalConstName)) {
+			this.push(this.GlobalObjectName);
+		} else {
 			this.push(Node.ConstValue.toString());
 		}
 		return true;

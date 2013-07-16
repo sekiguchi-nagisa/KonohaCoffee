@@ -129,13 +129,13 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 			BaseType = Gamma.GammaNameSpace.GetGlobalObject().TypeInfo;
 		}
 		String MethodName = UNode.GetTokenString(MethodNameOffset, "new"/* FIXME */);
-		int ParamSize = UNode.NodeList.size() - (MethodParamOffset + 1);
+		int ParamSize = (UNode.NodeList.size() - MethodParamOffset) / 2;
 		KonohaType[] ParamData = new KonohaType[ParamSize + 1];
 		String[] ArgNames = new String[ParamSize];
 		ParamData[0] = UNode.GetTokenType(MethodClassOffset, Gamma.VarType);
-		for(int i = 0; i < ParamSize; i = i + 2) {
-			KonohaType ParamType = UNode.GetTokenType(MethodParamOffset + i, Gamma.VarType);
-			String ParamName = UNode.GetTokenString(MethodParamOffset + i + 1, "");
+		for(int i = 0; i < ParamSize; i = i + 1) {
+			KonohaType ParamType = UNode.GetTokenType(MethodParamOffset + 2 * i, Gamma.VarType);
+			String ParamName = UNode.GetTokenString(MethodParamOffset + 2 * i + 1, "");
 			ParamData[i + 1] = ParamType;
 			ArgNames[i] = ParamName;
 		}
@@ -276,7 +276,7 @@ class ParamDeclsSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		/*do nothing*/
+		/* do nothing */
 		return null;
 	}
 }
@@ -1385,11 +1385,13 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode LeftNode = UNode.TypeNodeAt(OrLeftExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(LeftNode.IsError())
+		if(LeftNode.IsError()) {
 			return LeftNode;
+		}
 		TypedNode RightNode = UNode.TypeNodeAt(OrRightExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(RightNode.IsError())
+		if(RightNode.IsError()) {
 			return RightNode;
+		}
 
 		return new OrNode(RightNode.TypeInfo, UNode.KeyToken, LeftNode, RightNode);
 	}
@@ -1424,11 +1426,13 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode LeftNode = UNode.TypeNodeAt(AndLeftExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(LeftNode.IsError())
+		if(LeftNode.IsError()) {
 			return LeftNode;
+		}
 		TypedNode RightNode = UNode.TypeNodeAt(AndRightExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(RightNode.IsError())
+		if(RightNode.IsError()) {
 			return RightNode;
+		}
 
 		return new AndNode(RightNode.TypeInfo, UNode.KeyToken, LeftNode, RightNode);
 

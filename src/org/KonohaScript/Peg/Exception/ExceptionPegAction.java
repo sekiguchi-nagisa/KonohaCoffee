@@ -19,13 +19,13 @@ class ExceptionStatementSyntax0 extends SyntaxAcceptor {
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		while (Index < NodeSize) {
+		while(Index < NodeSize) {
 			List[Index] = Parser.Get(Index, NodeSize);
 			Index = Index + 1;
 		}
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List[0]);
 		}
 		return EndIdx;
@@ -50,11 +50,11 @@ class ExceptionStatementSyntax1 extends SyntaxAcceptor {
 		Index = Index + 1;
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		while (Index < NodeSize) {
+		while(Index < NodeSize) {
 			List[Index] = Parser.Get(Index, NodeSize);
 			Index = Index + 1;
 		}
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List[0]);
 		}
 		return EndIdx;
@@ -77,7 +77,7 @@ class ExceptionStatementSyntax2 extends SyntaxAcceptor {
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List[0]);
 		}
 		return EndIdx;
@@ -104,7 +104,7 @@ class CatchBlocksSyntax0 extends SyntaxAcceptor {
 		Index = Index + 1;
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List[0]);
 		}
 		return EndIdx;
@@ -127,7 +127,7 @@ class FinallySyntax0 extends SyntaxAcceptor {
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List[0]);
 		}
 		return EndIdx;
@@ -150,7 +150,7 @@ class statementSyntax0 extends SyntaxAcceptor {
 		Object[] List = new Object[NodeSize];
 		List[Index] = Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if (NodeSize > 0) {
+		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List[0]);
 		}
 		return EndIdx;

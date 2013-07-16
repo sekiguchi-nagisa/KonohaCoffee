@@ -68,15 +68,15 @@ class ExceptionStatementSyntax extends SyntaxPattern {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $ExceptionStatement");
-		if (Parser.MatchToken("try", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$block", TokenList) >= 0) {
+		if(Parser.MatchToken("try", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$block", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				while (true) {
-					if (Parser.Match("$CatchBlocks", TokenList) >= 0) {
+				while(true) {
+					if(Parser.Match("$CatchBlocks", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						continue;
 					}
-					if (Parser.Match("$Finally", TokenList) >= 0) {
+					if(Parser.Match("$Finally", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						return this.action0("$ExceptionStatement", Parser, pos0, NodeSize);
 					}
@@ -84,13 +84,13 @@ class ExceptionStatementSyntax extends SyntaxPattern {
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ExceptionStatement 0");
-		if (Parser.MatchToken("try", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$block", TokenList) >= 0) {
+		if(Parser.MatchToken("try", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$block", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if (Parser.Match("$CatchBlocks", TokenList) >= 0) {
+				if(Parser.Match("$CatchBlocks", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					while (true) {
-						if (Parser.Match("$CatchBlocks", TokenList) >= 0) {
+					while(true) {
+						if(Parser.Match("$CatchBlocks", TokenList) >= 0) {
 							NodeSize = NodeSize + 1;
 							continue;
 						}
@@ -100,8 +100,8 @@ class ExceptionStatementSyntax extends SyntaxPattern {
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ExceptionStatement 0");
-		if (Parser.MatchToken("throw", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
+		if(Parser.MatchToken("throw", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				return this.action2("$ExceptionStatement", Parser, pos0, NodeSize);
 			}
@@ -139,14 +139,14 @@ class CatchBlocksSyntax extends SyntaxPattern {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $CatchBlocks");
-		if (Parser.MatchToken("catch", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
-				if (Parser.Match("$type", TokenList) >= 0) {
+		if(Parser.MatchToken("catch", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
+				if(Parser.Match("$type", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					if (Parser.Match("$Symbol", TokenList) >= 0) {
+					if(Parser.Match("$Symbol", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
-						if (Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-							if (Parser.Match("$block", TokenList) >= 0) {
+						if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
+							if(Parser.Match("$block", TokenList) >= 0) {
 								NodeSize = NodeSize + 1;
 								return this.action0("$CatchBlocks", Parser, pos0, NodeSize);
 							}
@@ -187,8 +187,8 @@ class FinallySyntax extends SyntaxPattern {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $Finally");
-		if (Parser.MatchToken("finally", TokenList, Parser.Cursor) >= 0) {
-			if (Parser.Match("$block", TokenList) >= 0) {
+		if(Parser.MatchToken("finally", TokenList, Parser.Cursor) >= 0) {
+			if(Parser.Match("$block", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				return this.action0("$Finally", Parser, pos0, NodeSize);
 			}
@@ -226,7 +226,7 @@ class statementSyntax extends SyntaxPattern {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $statement");
-		if (Parser.Match("$ExceptionStatement", TokenList) >= 0) {
+		if(Parser.Match("$ExceptionStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$statement", Parser, pos0, NodeSize);
 		}
