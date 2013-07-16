@@ -46,6 +46,7 @@ import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
+import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -730,29 +731,17 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 	
 	public int ParseWhile(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int NextIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
-		NextIdx = UNode.MatchSingleBlock(IfThen, TokenList, NextIdx, EndIdx, ParseOption);
-		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty);
-		if(NextIdx == NextIdx2 && NextIdx != -1) { // skiped
-			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
-		} else {
-			NextIdx2 = UNode.MatchSingleBlock(IfElse, TokenList, NextIdx2, EndIdx, ParseOption);
-		}
-		return NextIdx2;
+		int LoopBodyBlockIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		return UNode.MatchSingleBlock(IfThen, TokenList, LoopBodyBlockIdx, EndIdx, ParseOption);
 	}
 
 	public TypedNode TypeWhile(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode CondNode = UNode.TypeNodeAt(IfCond, Gamma, Gamma.BooleanType, 0);
 		if(CondNode.IsError())
 			return CondNode;
-		TypedNode ThenNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
-		TypedNode ElseNode = null;
-		if(!UNode.GetAtNode(IfElse).IsEmptyNode()){
-			ElseNode = UNode.TypeNodeAt(IfElse, Gamma, ThenNode.TypeInfo, 0);
-		}
-		return new IfNode(ThenNode.TypeInfo, CondNode, ThenNode, ElseNode);
+		TypedNode BodyNode = UNode.TypeNodeAt(IfThen, Gamma, TypeInfo, 0);
+		return new LoopNode(BodyNode.TypeInfo, CondNode, BodyNode, null);
 	}
-
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {

@@ -249,7 +249,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		int ClassIdx = BeginIdx + 1;
 		//System.out.println(UNode.KeyToken.ParsedText);
 
-		int ParamIdx = UNode.MatchSyntax(MiniKonohaGrammar.MethodCallName, "$Type", TokenList, ClassIdx, EndIdx, ParseOption);
+		int ParamIdx = UNode.MatchSyntax(-1, "$Type", TokenList, ClassIdx, EndIdx, ParseOption);
 		if(ParamIdx == -1) {
 			return -1;
 		}
@@ -263,7 +263,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
 		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$New");
-		KonohaDebug.P("new " + UNode.GetTokenType(MiniKonohaGrammar.MethodCallName, null).ShortClassName + "();");
+		KonohaDebug.P("new " + UNode.GetTokenType(-1, null).ShortClassName + "();");
 		return NextIdx;
 	}
 
@@ -285,12 +285,12 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		return WorkingNode;
 	}
-	
+
 	public TypedNode TypeNew(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		if(UNode.Syntax != UNode.NodeNameSpace.GetSyntax("$New")) {
 			return null;
 		}
-		KonohaType BaseType = UNode.GetTokenType(MiniKonohaGrammar.MethodCallName, null);
+		KonohaType BaseType = UNode.GetTokenType(0, null);
 		NewNode Node = new NewNode(BaseType, UNode.KeyToken);
 		int ParamSize = UNode.NodeList.size() - MiniKonohaGrammar.MethodCallParam;
 		KonohaMethod Method = BaseType.LookupMethod("New", ParamSize);

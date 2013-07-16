@@ -9,8 +9,11 @@ public class LoopNode extends TypedNode {
 	public TypedNode	LoopBody;
 	public TypedNode	IterationExpr;
 
-	public LoopNode(KonohaType TypeInfo) {
+	public LoopNode(KonohaType TypeInfo, TypedNode CondExpr, TypedNode LoopBody, TypedNode IterationExpr) {
 		super(TypeInfo, null/* fixme */);
+		this.CondExpr = CondExpr;
+		this.LoopBody = LoopBody;
+		this.IterationExpr = IterationExpr;
 	}
 
 	@Override

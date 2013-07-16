@@ -371,12 +371,14 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	@Override
 	public boolean VisitLoop(LoopNode Node) {
 		Node.CondExpr.Evaluate(this);
-		Node.IterationExpr.Evaluate(this);
-		this.VisitList(Node.LoopBody);
+		if(Node.IterationExpr != null) {
+			Node.IterationExpr.Evaluate(this);
+		}
+		this.VisitBlock(Node.LoopBody);
 		String LoopBody = this.pop();
-		String IterExpr = this.pop();
+		String IterExpr = Node.IterationExpr != null ? this.pop() : "";
 		String CondExpr = this.pop();
-		this.push("while(" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		this.push("for(; " + CondExpr + "; " + IterExpr +") " + LoopBody);
 		return true;
 
 	}
