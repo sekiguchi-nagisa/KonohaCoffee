@@ -71,6 +71,7 @@ public class MiniKonohaGrammerTest extends KParserTester {
 
 	@Override
 	public void Test() {
+		CompileAndCheck(NameSpace, "(11)");
 		testLiteral();
 		testInteger();
 		testMethodDefinition();

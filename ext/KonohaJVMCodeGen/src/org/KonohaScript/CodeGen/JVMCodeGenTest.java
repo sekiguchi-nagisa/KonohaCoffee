@@ -139,7 +139,7 @@ public class JVMCodeGenTest extends KTestCase {
 		Builder.Prepare(Fibo, Params);
 		Builder.Compile(Block2);
 	}
-	
+
 	public static void testTry(JVMCodeGenerator Builder) {
 		KonohaType[] ParamData1 = new KonohaType[1];
 		String[] ArgData1 = new String[0];
@@ -246,7 +246,7 @@ public class JVMCodeGenTest extends KTestCase {
 			e.printStackTrace();
 		}
 	}
-	
+
 //	public static void main(String[] args) {
 //		JVMCodeGenTest jvmTest = new JVMCodeGenTest();
 //		jvmTest.Init();

@@ -4,7 +4,7 @@ import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxTemplate;
+import org.KonohaScript.PegParser.SyntaxPattern;
 
 /*
 [$SourceCode:
@@ -13,7 +13,7 @@ import org.KonohaScript.PegParser.SyntaxTemplate;
 	]
 ]
 */
-class SourceCodeSyntax extends SyntaxTemplate {
+class SourceCodeSyntax extends SyntaxPattern {
 	SourceCodeSyntax() {
 		super("$SourceCode");
 	}
@@ -57,7 +57,7 @@ class SourceCodeSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class TopLevelDefinitionSyntax extends SyntaxTemplate {
+class TopLevelDefinitionSyntax extends SyntaxPattern {
 	TopLevelDefinitionSyntax() {
 		super("$TopLevelDefinition");
 	}
@@ -113,7 +113,7 @@ class TopLevelDefinitionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class functionSignatureSyntax extends SyntaxTemplate {
+class functionSignatureSyntax extends SyntaxPattern {
 	functionSignatureSyntax() {
 		super("$functionSignature");
 	}
@@ -161,7 +161,7 @@ class functionSignatureSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class functionBodySyntax extends SyntaxTemplate {
+class functionBodySyntax extends SyntaxPattern {
 	functionBodySyntax() {
 		super("$functionBody");
 	}
@@ -206,7 +206,7 @@ class functionBodySyntax extends SyntaxTemplate {
 	]
 ]
 */
-class functionDefinitionSyntax extends SyntaxTemplate {
+class functionDefinitionSyntax extends SyntaxPattern {
 	functionDefinitionSyntax() {
 		super("$functionDefinition");
 	}
@@ -271,7 +271,7 @@ class functionDefinitionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ParamDeclListSyntax extends SyntaxTemplate {
+class ParamDeclListSyntax extends SyntaxPattern {
 	ParamDeclListSyntax() {
 		super("$ParamDeclList");
 	}
@@ -330,7 +330,7 @@ class ParamDeclListSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ParamDeclsSyntax extends SyntaxTemplate {
+class ParamDeclsSyntax extends SyntaxPattern {
 	ParamDeclsSyntax() {
 		super("$ParamDecls");
 	}
@@ -379,7 +379,7 @@ class ParamDeclsSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ParamDeclSyntax extends SyntaxTemplate {
+class ParamDeclSyntax extends SyntaxPattern {
 	ParamDeclSyntax() {
 		super("$ParamDecl");
 	}
@@ -429,7 +429,7 @@ class ParamDeclSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ParameterListSyntax extends SyntaxTemplate {
+class ParameterListSyntax extends SyntaxPattern {
 	ParameterListSyntax() {
 		super("$ParameterList");
 	}
@@ -488,7 +488,7 @@ class ParameterListSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ParametersSyntax extends SyntaxTemplate {
+class ParametersSyntax extends SyntaxPattern {
 	ParametersSyntax() {
 		super("$Parameters");
 	}
@@ -536,7 +536,7 @@ class ParametersSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ParameterSyntax extends SyntaxTemplate {
+class ParameterSyntax extends SyntaxPattern {
 	ParameterSyntax() {
 		super("$Parameter");
 	}
@@ -588,7 +588,7 @@ class ParameterSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class literalSyntax extends SyntaxTemplate {
+class literalSyntax extends SyntaxPattern {
 	literalSyntax() {
 		super("$literal");
 	}
@@ -682,7 +682,7 @@ class literalSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class typeSyntax extends SyntaxTemplate {
+class typeSyntax extends SyntaxPattern {
 	typeSyntax() {
 		super("$type");
 	}
@@ -763,7 +763,7 @@ class typeSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class statementSyntax extends SyntaxTemplate {
+class statementSyntax extends SyntaxPattern {
 	statementSyntax() {
 		super("$statement");
 	}
@@ -901,7 +901,7 @@ class statementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class variableSyntax extends SyntaxTemplate {
+class variableSyntax extends SyntaxPattern {
 	variableSyntax() {
 		super("$variable");
 	}
@@ -941,7 +941,7 @@ class variableSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class EQSyntax extends SyntaxTemplate {
+class EQSyntax extends SyntaxPattern {
 	EQSyntax() {
 		super("$EQ");
 	}
@@ -988,7 +988,7 @@ class EQSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class variableDeclarationSyntax extends SyntaxTemplate {
+class variableDeclarationSyntax extends SyntaxPattern {
 	variableDeclarationSyntax() {
 		super("$variableDeclaration");
 	}
@@ -1061,7 +1061,7 @@ class variableDeclarationSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class statementsSyntax extends SyntaxTemplate {
+class statementsSyntax extends SyntaxPattern {
 	statementsSyntax() {
 		super("$statements");
 	}
@@ -1104,7 +1104,7 @@ class statementsSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class blockSyntax extends SyntaxTemplate {
+class blockSyntax extends SyntaxPattern {
 	blockSyntax() {
 		super("$block");
 	}
@@ -1161,7 +1161,7 @@ class blockSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class ifStatementSyntax extends SyntaxTemplate {
+class ifStatementSyntax extends SyntaxPattern {
 	ifStatementSyntax() {
 		super("$ifStatement");
 	}
@@ -1242,7 +1242,7 @@ class ifStatementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class whileStatementSyntax extends SyntaxTemplate {
+class whileStatementSyntax extends SyntaxPattern {
 	whileStatementSyntax() {
 		super("$whileStatement");
 	}
@@ -1293,7 +1293,7 @@ class whileStatementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class breakStatementSyntax extends SyntaxTemplate {
+class breakStatementSyntax extends SyntaxPattern {
 	breakStatementSyntax() {
 		super("$breakStatement");
 	}
@@ -1334,7 +1334,7 @@ class breakStatementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class continueStatementSyntax extends SyntaxTemplate {
+class continueStatementSyntax extends SyntaxPattern {
 	continueStatementSyntax() {
 		super("$continueStatement");
 	}
@@ -1380,7 +1380,7 @@ class continueStatementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class returnStatementSyntax extends SyntaxTemplate {
+class returnStatementSyntax extends SyntaxPattern {
 	returnStatementSyntax() {
 		super("$returnStatement");
 	}
@@ -1439,7 +1439,7 @@ class returnStatementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class expressionStatementSyntax extends SyntaxTemplate {
+class expressionStatementSyntax extends SyntaxPattern {
 	expressionStatementSyntax() {
 		super("$expressionStatement");
 	}
@@ -1486,7 +1486,7 @@ class expressionStatementSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class expressionSyntax extends SyntaxTemplate {
+class expressionSyntax extends SyntaxPattern {
 	expressionSyntax() {
 		super("$expression");
 	}
@@ -1551,7 +1551,7 @@ class expressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class leftHandSideExpressionSyntax extends SyntaxTemplate {
+class leftHandSideExpressionSyntax extends SyntaxPattern {
 	leftHandSideExpressionSyntax() {
 		super("$leftHandSideExpression");
 	}
@@ -1606,7 +1606,7 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class callExpressionSyntax extends SyntaxTemplate {
+class callExpressionSyntax extends SyntaxPattern {
 	callExpressionSyntax() {
 		super("$callExpression");
 	}
@@ -1651,7 +1651,7 @@ class callExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class memberExpressionSyntax extends SyntaxTemplate {
+class memberExpressionSyntax extends SyntaxPattern {
 	memberExpressionSyntax() {
 		super("$memberExpression");
 	}
@@ -1709,7 +1709,7 @@ class memberExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class primarySyntax extends SyntaxTemplate {
+class primarySyntax extends SyntaxPattern {
 	primarySyntax() {
 		super("$primary");
 	}
@@ -1799,7 +1799,7 @@ class primarySyntax extends SyntaxTemplate {
 	]
 ]
 */
-class selectorSyntax extends SyntaxTemplate {
+class selectorSyntax extends SyntaxPattern {
 	selectorSyntax() {
 		super("$selector");
 	}
@@ -1864,7 +1864,7 @@ class selectorSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class newExpressionSyntax extends SyntaxTemplate {
+class newExpressionSyntax extends SyntaxPattern {
 	newExpressionSyntax() {
 		super("$newExpression");
 	}
@@ -1925,7 +1925,7 @@ class newExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class logicalOrExpressionSyntax extends SyntaxTemplate {
+class logicalOrExpressionSyntax extends SyntaxPattern {
 	logicalOrExpressionSyntax() {
 		super("$logicalOrExpression");
 	}
@@ -1974,7 +1974,7 @@ class logicalOrExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class logicalAndExpressionSyntax extends SyntaxTemplate {
+class logicalAndExpressionSyntax extends SyntaxPattern {
 	logicalAndExpressionSyntax() {
 		super("$logicalAndExpression");
 	}
@@ -2027,7 +2027,7 @@ class logicalAndExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class relationExpressionSyntax extends SyntaxTemplate {
+class relationExpressionSyntax extends SyntaxPattern {
 	relationExpressionSyntax() {
 		super("$relationExpression");
 	}
@@ -2106,7 +2106,7 @@ class relationExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class relationOperatorSyntax extends SyntaxTemplate {
+class relationOperatorSyntax extends SyntaxPattern {
 	relationOperatorSyntax() {
 		super("$relationOperator");
 	}
@@ -2217,7 +2217,7 @@ class relationOperatorSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class shiftOperatorSyntax extends SyntaxTemplate {
+class shiftOperatorSyntax extends SyntaxPattern {
 	shiftOperatorSyntax() {
 		super("$shiftOperator");
 	}
@@ -2274,7 +2274,7 @@ class shiftOperatorSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class additiveOperatorSyntax extends SyntaxTemplate {
+class additiveOperatorSyntax extends SyntaxPattern {
 	additiveOperatorSyntax() {
 		super("$additiveOperator");
 	}
@@ -2330,7 +2330,7 @@ class additiveOperatorSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class multiplicativeOperatorSyntax extends SyntaxTemplate {
+class multiplicativeOperatorSyntax extends SyntaxPattern {
 	multiplicativeOperatorSyntax() {
 		super("$multiplicativeOperator");
 	}
@@ -2393,7 +2393,7 @@ class multiplicativeOperatorSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class additiveExpressionSyntax extends SyntaxTemplate {
+class additiveExpressionSyntax extends SyntaxPattern {
 	additiveExpressionSyntax() {
 		super("$additiveExpression");
 	}
@@ -2444,7 +2444,7 @@ class additiveExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class multiplicativeExpressionSyntax extends SyntaxTemplate {
+class multiplicativeExpressionSyntax extends SyntaxPattern {
 	multiplicativeExpressionSyntax() {
 		super("$multiplicativeExpression");
 	}
@@ -2494,7 +2494,7 @@ class multiplicativeExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class unaryExpressionSyntax extends SyntaxTemplate {
+class unaryExpressionSyntax extends SyntaxPattern {
 	unaryExpressionSyntax() {
 		super("$unaryExpression");
 	}
@@ -2534,7 +2534,7 @@ class unaryExpressionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class identifierSyntax extends SyntaxTemplate {
+class identifierSyntax extends SyntaxPattern {
 	identifierSyntax() {
 		super("$identifier");
 	}

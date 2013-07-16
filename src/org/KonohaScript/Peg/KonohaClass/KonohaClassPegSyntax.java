@@ -4,7 +4,7 @@ import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxTemplate;
+import org.KonohaScript.PegParser.SyntaxPattern;
 
 /*
 [$ClassDefinition:
@@ -21,7 +21,7 @@ import org.KonohaScript.PegParser.SyntaxTemplate;
 	]
 ]
 */
-class ClassDefinitionSyntax extends SyntaxTemplate {
+class ClassDefinitionSyntax extends SyntaxPattern {
 	ClassDefinitionSyntax() {
 		super("$ClassDefinition");
 	}
@@ -85,7 +85,7 @@ class ClassDefinitionSyntax extends SyntaxTemplate {
 	]
 ]
 */
-class TopLevelDefinitionSyntax extends SyntaxTemplate {
+class TopLevelDefinitionSyntax extends SyntaxPattern {
 	TopLevelDefinitionSyntax() {
 		super("$TopLevelDefinition");
 	}
