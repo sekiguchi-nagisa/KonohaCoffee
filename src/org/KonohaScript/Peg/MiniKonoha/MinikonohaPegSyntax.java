@@ -4,20 +4,21 @@ import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxTemplate;
+import org.KonohaScript.PegParser.SyntaxPattern;
 
 /*
-[$SourceCode:
-	[
-		<Repeat:<Symbol:$TopLevelDefinition>>
-	]
-]
-*/
-class SourceCodeSyntax extends SyntaxTemplate {
+ [$SourceCode:
+ [
+ <Repeat:<Symbol:$TopLevelDefinition>>
+ ]
+ ]
+ */
+class SourceCodeSyntax extends SyntaxPattern {
 	SourceCodeSyntax() {
 		super("$SourceCode");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new TopLevelDefinitionSyntax(), false);
 	}
@@ -25,7 +26,7 @@ class SourceCodeSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new SourceCodeSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $SourceCode");
+		this.Report("Accept $SourceCode");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -36,32 +37,27 @@ class SourceCodeSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $SourceCode");
+		this.Report("Enter $SourceCode");
 		while(true) {
 			if(Parser.Match("$TopLevelDefinition", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				continue;
 			}
-			return action0("$SourceCode", Parser, pos0, NodeSize);
+			return this.action0("$SourceCode", Parser, pos0, NodeSize);
 		}
 	}
 }
 
 /*
-[$TopLevelDefinition:
-	[
-		<Symbol:$statement>
-	]
-	[
-		<Symbol:$functionDefinition>
-	]
-]
-*/
-class TopLevelDefinitionSyntax extends SyntaxTemplate {
+ * [$TopLevelDefinition: [ <Symbol:$statement> ] [ <Symbol:$functionDefinition>
+ * ] ]
+ */
+class TopLevelDefinitionSyntax extends SyntaxPattern {
 	TopLevelDefinitionSyntax() {
 		super("$TopLevelDefinition");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new functionDefinitionSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new statementSyntax(), false);
@@ -70,7 +66,7 @@ class TopLevelDefinitionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new TopLevelDefinitionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $TopLevelDefinition");
+		this.Report("Accept $TopLevelDefinition");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -78,7 +74,7 @@ class TopLevelDefinitionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new TopLevelDefinitionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $TopLevelDefinition");
+		this.Report("Accept $TopLevelDefinition");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -89,35 +85,31 @@ class TopLevelDefinitionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $TopLevelDefinition");
+		this.Report("Enter $TopLevelDefinition");
 		if(Parser.Match("$statement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$TopLevelDefinition", Parser, pos0, NodeSize);
+			return this.action0("$TopLevelDefinition", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $TopLevelDefinition 0");
 		if(Parser.Match("$functionDefinition", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action1("$TopLevelDefinition", Parser, pos0, NodeSize);
+			return this.action1("$TopLevelDefinition", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $TopLevelDefinition 0");
-		return Fail("$TopLevelDefinition", Parser);
+		return this.Fail("$TopLevelDefinition", Parser);
 	}
 }
 
 /*
-[$functionSignature:
-	[
-		<Symbol:$type>
-		<Symbol:$identifier>
-		<Symbol:$ParamDeclList>
-	]
-]
-*/
-class functionSignatureSyntax extends SyntaxTemplate {
+ * [$functionSignature: [ <Symbol:$type> <Symbol:$identifier>
+ * <Symbol:$ParamDeclList> ] ]
+ */
+class functionSignatureSyntax extends SyntaxPattern {
 	functionSignatureSyntax() {
 		super("$functionSignature");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
@@ -127,7 +119,7 @@ class functionSignatureSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new functionSignatureSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $functionSignature");
+		this.Report("Accept $functionSignature");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -138,34 +130,31 @@ class functionSignatureSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $functionSignature");
+		this.Report("Enter $functionSignature");
 		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.Match("$ParamDeclList", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					return action0("$functionSignature", Parser, pos0, NodeSize);
+					return this.action0("$functionSignature", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $functionSignature 0");
-		return Fail("$functionSignature", Parser);
+		return this.Fail("$functionSignature", Parser);
 	}
 }
 
 /*
-[$functionBody:
-	[
-		<Symbol:$block>
-	]
-]
-*/
-class functionBodySyntax extends SyntaxTemplate {
+ * [$functionBody: [ <Symbol:$block> ] ]
+ */
+class functionBodySyntax extends SyntaxPattern {
 	functionBodySyntax() {
 		super("$functionBody");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
 	}
@@ -173,7 +162,7 @@ class functionBodySyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new functionBodySyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $functionBody");
+		this.Report("Accept $functionBody");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -184,33 +173,26 @@ class functionBodySyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $functionBody");
+		this.Report("Enter $functionBody");
 		if(Parser.Match("$block", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$functionBody", Parser, pos0, NodeSize);
+			return this.action0("$functionBody", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $functionBody 0");
-		return Fail("$functionBody", Parser);
+		return this.Fail("$functionBody", Parser);
 	}
 }
 
 /*
-[$functionDefinition:
-	[
-		<Symbol:$functionSignature>
-		<Symbol:$functionBody>
-	]
-	[
-		<Symbol:$functionSignature>
-		<Symbol:";">
-	]
-]
-*/
-class functionDefinitionSyntax extends SyntaxTemplate {
+ * [$functionDefinition: [ <Symbol:$functionSignature> <Symbol:$functionBody> ]
+ * [ <Symbol:$functionSignature> <Symbol:";"> ] ]
+ */
+class functionDefinitionSyntax extends SyntaxPattern {
 	functionDefinitionSyntax() {
 		super("$functionDefinition");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new functionSignatureSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new functionBodySyntax(), false);
@@ -219,7 +201,7 @@ class functionDefinitionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new functionDefinitionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $functionDefinition");
+		this.Report("Accept $functionDefinition");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -227,7 +209,7 @@ class functionDefinitionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new functionDefinitionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $functionDefinition");
+		this.Report("Accept $functionDefinition");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -238,44 +220,36 @@ class functionDefinitionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $functionDefinition");
+		this.Report("Enter $functionDefinition");
 		if(Parser.Match("$functionSignature", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$functionBody", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				return action0("$functionDefinition", Parser, pos0, NodeSize);
+				return this.action0("$functionDefinition", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $functionDefinition 0");
 		if(Parser.Match("$functionSignature", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-				return action1("$functionDefinition", Parser, pos0, NodeSize);
+				return this.action1("$functionDefinition", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $functionDefinition 0");
-		return Fail("$functionDefinition", Parser);
+		return this.Fail("$functionDefinition", Parser);
 	}
 }
 
 /*
-[$ParamDeclList:
-	[
-		<Symbol:"(">
-		<Symbol:")">
-	]
-	[
-		<Symbol:"(">
-		<Symbol:$ParamDecls>
-		<Symbol:")">
-	]
-]
-*/
-class ParamDeclListSyntax extends SyntaxTemplate {
+ * [$ParamDeclList: [ <Symbol:"("> <Symbol:")"> ] [ <Symbol:"(">
+ * <Symbol:$ParamDecls> <Symbol:")"> ] ]
+ */
+class ParamDeclListSyntax extends SyntaxPattern {
 	ParamDeclListSyntax() {
 		super("$ParamDeclList");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new ParamDeclsSyntax(), false);
 	}
@@ -283,7 +257,7 @@ class ParamDeclListSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ParamDeclListSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ParamDeclList");
+		this.Report("Accept $ParamDeclList");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -291,7 +265,7 @@ class ParamDeclListSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new ParamDeclListSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ParamDeclList");
+		this.Report("Accept $ParamDeclList");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -302,10 +276,10 @@ class ParamDeclListSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $ParamDeclList");
+		this.Report("Enter $ParamDeclList");
 		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-				return action0("$ParamDeclList", Parser, pos0, NodeSize);
+				return this.action0("$ParamDeclList", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParamDeclList 0");
@@ -313,28 +287,25 @@ class ParamDeclListSyntax extends SyntaxTemplate {
 			if(Parser.Match("$ParamDecls", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-					return action1("$ParamDeclList", Parser, pos0, NodeSize);
+					return this.action1("$ParamDeclList", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParamDeclList 0");
-		return Fail("$ParamDeclList", Parser);
+		return this.Fail("$ParamDeclList", Parser);
 	}
 }
 
 /*
-[$ParamDecls:
-	[
-		<Symbol:$ParamDecl>
-		<Repeat:<Group:<Symbol:","> <Symbol:$ParamDecl> >>
-	]
-]
-*/
-class ParamDeclsSyntax extends SyntaxTemplate {
+ * [$ParamDecls: [ <Symbol:$ParamDecl> <Repeat:<Group:<Symbol:",">
+ * <Symbol:$ParamDecl> >> ] ]
+ */
+class ParamDeclsSyntax extends SyntaxPattern {
 	ParamDeclsSyntax() {
 		super("$ParamDecls");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new ParamDeclSyntax(), false);
 	}
@@ -342,7 +313,7 @@ class ParamDeclsSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ParamDeclsSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ParamDecls");
+		this.Report("Accept $ParamDecls");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -353,7 +324,7 @@ class ParamDeclsSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $ParamDecls");
+		this.Report("Enter $ParamDecls");
 		if(Parser.Match("$ParamDecl", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -363,27 +334,23 @@ class ParamDeclsSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action0("$ParamDecls", Parser, pos0, NodeSize);
+				return this.action0("$ParamDecls", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParamDecls 0");
-		return Fail("$ParamDecls", Parser);
+		return this.Fail("$ParamDecls", Parser);
 	}
 }
 
 /*
-[$ParamDecl:
-	[
-		<Symbol:$type>
-		<Symbol:$identifier>
-	]
-]
-*/
-class ParamDeclSyntax extends SyntaxTemplate {
+ * [$ParamDecl: [ <Symbol:$type> <Symbol:$identifier> ] ]
+ */
+class ParamDeclSyntax extends SyntaxPattern {
 	ParamDeclSyntax() {
 		super("$ParamDecl");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
@@ -392,7 +359,7 @@ class ParamDeclSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ParamDeclSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ParamDecl");
+		this.Report("Accept $ParamDecl");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -403,37 +370,29 @@ class ParamDeclSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $ParamDecl");
+		this.Report("Enter $ParamDecl");
 		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				return action0("$ParamDecl", Parser, pos0, NodeSize);
+				return this.action0("$ParamDecl", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParamDecl 0");
-		return Fail("$ParamDecl", Parser);
+		return this.Fail("$ParamDecl", Parser);
 	}
 }
 
 /*
-[$ParameterList:
-	[
-		<Symbol:"(">
-		<Symbol:")">
-	]
-	[
-		<Symbol:"(">
-		<Symbol:$Parameters>
-		<Symbol:")">
-	]
-]
-*/
-class ParameterListSyntax extends SyntaxTemplate {
+ * [$ParameterList: [ <Symbol:"("> <Symbol:")"> ] [ <Symbol:"(">
+ * <Symbol:$Parameters> <Symbol:")"> ] ]
+ */
+class ParameterListSyntax extends SyntaxPattern {
 	ParameterListSyntax() {
 		super("$ParameterList");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new ParametersSyntax(), false);
 	}
@@ -441,7 +400,7 @@ class ParameterListSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ParameterListSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ParameterList");
+		this.Report("Accept $ParameterList");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -449,7 +408,7 @@ class ParameterListSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new ParameterListSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ParameterList");
+		this.Report("Accept $ParameterList");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -460,10 +419,10 @@ class ParameterListSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $ParameterList");
+		this.Report("Enter $ParameterList");
 		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-				return action0("$ParameterList", Parser, pos0, NodeSize);
+				return this.action0("$ParameterList", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParameterList 0");
@@ -471,28 +430,25 @@ class ParameterListSyntax extends SyntaxTemplate {
 			if(Parser.Match("$Parameters", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-					return action1("$ParameterList", Parser, pos0, NodeSize);
+					return this.action1("$ParameterList", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ParameterList 0");
-		return Fail("$ParameterList", Parser);
+		return this.Fail("$ParameterList", Parser);
 	}
 }
 
 /*
-[$Parameters:
-	[
-		<Symbol:$Parameter>
-		<Repeat:<Group:<Symbol:","> <Symbol:$Parameter> >>
-	]
-]
-*/
-class ParametersSyntax extends SyntaxTemplate {
+ * [$Parameters: [ <Symbol:$Parameter> <Repeat:<Group:<Symbol:",">
+ * <Symbol:$Parameter> >> ] ]
+ */
+class ParametersSyntax extends SyntaxPattern {
 	ParametersSyntax() {
 		super("$Parameters");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new ParameterSyntax(), false);
 	}
@@ -500,7 +456,7 @@ class ParametersSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ParametersSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $Parameters");
+		this.Report("Accept $Parameters");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -511,7 +467,7 @@ class ParametersSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $Parameters");
+		this.Report("Enter $Parameters");
 		if(Parser.Match("$Parameter", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -521,26 +477,23 @@ class ParametersSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action0("$Parameters", Parser, pos0, NodeSize);
+				return this.action0("$Parameters", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $Parameters 0");
-		return Fail("$Parameters", Parser);
+		return this.Fail("$Parameters", Parser);
 	}
 }
 
 /*
-[$Parameter:
-	[
-		<Symbol:$expression>
-	]
-]
-*/
-class ParameterSyntax extends SyntaxTemplate {
+ * [$Parameter: [ <Symbol:$expression> ] ]
+ */
+class ParameterSyntax extends SyntaxPattern {
 	ParameterSyntax() {
 		super("$Parameter");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
@@ -548,7 +501,7 @@ class ParameterSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ParameterSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $Parameter");
+		this.Report("Accept $Parameter");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -559,40 +512,26 @@ class ParameterSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $Parameter");
+		this.Report("Enter $Parameter");
 		if(Parser.Match("$expression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$Parameter", Parser, pos0, NodeSize);
+			return this.action0("$Parameter", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $Parameter 0");
-		return Fail("$Parameter", Parser);
+		return this.Fail("$Parameter", Parser);
 	}
 }
 
 /*
-[$literal:
-	[
-		<Symbol:"null">
-	]
-	[
-		<Symbol:"true">
-	]
-	[
-		<Symbol:"false">
-	]
-	[
-		<Symbol:$intLiteral>
-	]
-	[
-		<Symbol:$stringLiteral>
-	]
-]
-*/
-class literalSyntax extends SyntaxTemplate {
+ * [$literal: [ <Symbol:"null"> ] [ <Symbol:"true"> ] [ <Symbol:"false"> ] [
+ * <Symbol:$intLiteral> ] [ <Symbol:$stringLiteral> ] ]
+ */
+class literalSyntax extends SyntaxPattern {
 	literalSyntax() {
 		super("$literal");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new stringLiteralSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new intLiteralSyntax(), false);
@@ -601,7 +540,7 @@ class literalSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new literalSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $literal");
+		this.Report("Accept $literal");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -609,7 +548,7 @@ class literalSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new literalSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $literal");
+		this.Report("Accept $literal");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -617,7 +556,7 @@ class literalSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor2	= new literalSyntax2();
 
 	int action2(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $literal");
+		this.Report("Accept $literal");
 		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -625,7 +564,7 @@ class literalSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor3	= new literalSyntax3();
 
 	int action3(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $literal");
+		this.Report("Accept $literal");
 		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -633,7 +572,7 @@ class literalSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor4	= new literalSyntax4();
 
 	int action4(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $literal");
+		this.Report("Accept $literal");
 		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -644,49 +583,43 @@ class literalSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $literal");
+		this.Report("Enter $literal");
 		if(Parser.MatchToken("null", TokenList, Parser.Cursor) >= 0) {
-			return action0("$literal", Parser, pos0, NodeSize);
+			return this.action0("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
 		if(Parser.MatchToken("true", TokenList, Parser.Cursor) >= 0) {
-			return action1("$literal", Parser, pos0, NodeSize);
+			return this.action1("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
 		if(Parser.MatchToken("false", TokenList, Parser.Cursor) >= 0) {
-			return action2("$literal", Parser, pos0, NodeSize);
+			return this.action2("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
 		if(Parser.Match("$intLiteral", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action3("$literal", Parser, pos0, NodeSize);
+			return this.action3("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
 		if(Parser.Match("$stringLiteral", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action4("$literal", Parser, pos0, NodeSize);
+			return this.action4("$literal", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $literal 0");
-		return Fail("$literal", Parser);
+		return this.Fail("$literal", Parser);
 	}
 }
 
 /*
-[$type:
-	[
-		<Symbol:$Type>
-	]
-	[
-		<Symbol:$Type>
-		<Repeat:<Group:<Symbol:"["> <Symbol:"]"> >>
-	]
-]
-*/
-class typeSyntax extends SyntaxTemplate {
+ * [$type: [ <Symbol:$Type> ] [ <Symbol:$Type> <Repeat:<Group:<Symbol:"[">
+ * <Symbol:"]"> >> ] ]
+ */
+class typeSyntax extends SyntaxPattern {
 	typeSyntax() {
 		super("$type");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new TypeTokenSyntax(), false);
 	}
@@ -694,7 +627,7 @@ class typeSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new typeSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $type");
+		this.Report("Accept $type");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -702,7 +635,7 @@ class typeSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new typeSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $type");
+		this.Report("Accept $type");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -713,10 +646,10 @@ class typeSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $type");
+		this.Report("Enter $type");
 		if(Parser.Match("$Type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$type", Parser, pos0, NodeSize);
+			return this.action0("$type", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $type 0");
 		if(Parser.Match("$Type", TokenList) >= 0) {
@@ -727,47 +660,26 @@ class typeSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action1("$type", Parser, pos0, NodeSize);
+				return this.action1("$type", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $type 0");
-		return Fail("$type", Parser);
+		return this.Fail("$type", Parser);
 	}
 }
 
 /*
-[$statement:
-	[
-		<Symbol:$block>
-	]
-	[
-		<Symbol:$variableDeclaration>
-	]
-	[
-		<Symbol:$expressionStatement>
-	]
-	[
-		<Symbol:$ifStatement>
-	]
-	[
-		<Symbol:$whileStatement>
-	]
-	[
-		<Symbol:$breakStatement>
-	]
-	[
-		<Symbol:$continueStatement>
-	]
-	[
-		<Symbol:$returnStatement>
-	]
-]
-*/
-class statementSyntax extends SyntaxTemplate {
+ * [$statement: [ <Symbol:$block> ] [ <Symbol:$variableDeclaration> ] [
+ * <Symbol:$expressionStatement> ] [ <Symbol:$ifStatement> ] [
+ * <Symbol:$whileStatement> ] [ <Symbol:$breakStatement> ] [
+ * <Symbol:$continueStatement> ] [ <Symbol:$returnStatement> ] ]
+ */
+class statementSyntax extends SyntaxPattern {
 	statementSyntax() {
 		super("$statement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new returnStatementSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new whileStatementSyntax(), false);
@@ -782,7 +694,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new statementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -790,7 +702,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new statementSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -798,7 +710,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor2	= new statementSyntax2();
 
 	int action2(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -806,7 +718,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor3	= new statementSyntax3();
 
 	int action3(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -814,7 +726,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor4	= new statementSyntax4();
 
 	int action4(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -822,7 +734,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor5	= new statementSyntax5();
 
 	int action5(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor5, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -830,7 +742,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor6	= new statementSyntax6();
 
 	int action6(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor6, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -838,7 +750,7 @@ class statementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor7	= new statementSyntax7();
 
 	int action7(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statement");
+		this.Report("Accept $statement");
 		Parser.PushThunk(this.Acceptor7, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -849,63 +761,60 @@ class statementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $statement");
+		this.Report("Enter $statement");
 		if(Parser.Match("$block", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$statement", Parser, pos0, NodeSize);
+			return this.action0("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$variableDeclaration", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action1("$statement", Parser, pos0, NodeSize);
+			return this.action1("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$expressionStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action2("$statement", Parser, pos0, NodeSize);
+			return this.action2("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$ifStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action3("$statement", Parser, pos0, NodeSize);
+			return this.action3("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$whileStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action4("$statement", Parser, pos0, NodeSize);
+			return this.action4("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$breakStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action5("$statement", Parser, pos0, NodeSize);
+			return this.action5("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$continueStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action6("$statement", Parser, pos0, NodeSize);
+			return this.action6("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		if(Parser.Match("$returnStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action7("$statement", Parser, pos0, NodeSize);
+			return this.action7("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		return Fail("$statement", Parser);
+		return this.Fail("$statement", Parser);
 	}
 }
 
 /*
-[$variable:
-	[
-		<Symbol:$identifier>
-	]
-]
-*/
-class variableSyntax extends SyntaxTemplate {
+ * [$variable: [ <Symbol:$identifier> ] ]
+ */
+class variableSyntax extends SyntaxPattern {
 	variableSyntax() {
 		super("$variable");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
 	}
@@ -913,7 +822,7 @@ class variableSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new variableSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $variable");
+		this.Report("Accept $variable");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -924,35 +833,32 @@ class variableSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $variable");
+		this.Report("Enter $variable");
 		if(Parser.Match("$identifier", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$variable", Parser, pos0, NodeSize);
+			return this.action0("$variable", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $variable 0");
-		return Fail("$variable", Parser);
+		return this.Fail("$variable", Parser);
 	}
 }
 
 /*
-[$EQ:
-	[
-		<Symbol:"=">
-	]
-]
-*/
-class EQSyntax extends SyntaxTemplate {
+ * [$EQ: [ <Symbol:"="> ] ]
+ */
+class EQSyntax extends SyntaxPattern {
 	EQSyntax() {
 		super("$EQ");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new EQSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $EQ");
+		this.Report("Accept $EQ");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -963,36 +869,26 @@ class EQSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $EQ");
+		this.Report("Enter $EQ");
 		if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
-			return action0("$EQ", Parser, pos0, NodeSize);
+			return this.action0("$EQ", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $EQ 0");
-		return Fail("$EQ", Parser);
+		return this.Fail("$EQ", Parser);
 	}
 }
 
 /*
-[$variableDeclaration:
-	[
-		<Symbol:$type>
-		<Symbol:$identifier>
-		<Symbol:";">
-	]
-	[
-		<Symbol:$type>
-		<Symbol:$variable>
-		<Symbol:$EQ>
-		<Symbol:$expression>
-		<Symbol:";">
-	]
-]
-*/
-class variableDeclarationSyntax extends SyntaxTemplate {
+ * [$variableDeclaration: [ <Symbol:$type> <Symbol:$identifier> <Symbol:";"> ] [
+ * <Symbol:$type> <Symbol:$variable> <Symbol:$EQ> <Symbol:$expression>
+ * <Symbol:";"> ] ]
+ */
+class variableDeclarationSyntax extends SyntaxPattern {
 	variableDeclarationSyntax() {
 		super("$variableDeclaration");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
@@ -1004,7 +900,7 @@ class variableDeclarationSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new variableDeclarationSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $variableDeclaration");
+		this.Report("Accept $variableDeclaration");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1012,7 +908,7 @@ class variableDeclarationSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new variableDeclarationSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $variableDeclaration");
+		this.Report("Accept $variableDeclaration");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1023,13 +919,13 @@ class variableDeclarationSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $variableDeclaration");
+		this.Report("Enter $variableDeclaration");
 		if(Parser.Match("$type", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-					return action0("$variableDeclaration", Parser, pos0, NodeSize);
+					return this.action0("$variableDeclaration", Parser, pos0, NodeSize);
 				}
 			}
 		}
@@ -1043,29 +939,26 @@ class variableDeclarationSyntax extends SyntaxTemplate {
 					if(Parser.Match("$expression", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
 						if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-							return action1("$variableDeclaration", Parser, pos0, NodeSize);
+							return this.action1("$variableDeclaration", Parser, pos0, NodeSize);
 						}
 					}
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $variableDeclaration 0");
-		return Fail("$variableDeclaration", Parser);
+		return this.Fail("$variableDeclaration", Parser);
 	}
 }
 
 /*
-[$statements:
-	[
-		<Repeat:<Symbol:$statement>>
-	]
-]
-*/
-class statementsSyntax extends SyntaxTemplate {
+ * [$statements: [ <Repeat:<Symbol:$statement>> ] ]
+ */
+class statementsSyntax extends SyntaxPattern {
 	statementsSyntax() {
 		super("$statements");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new statementSyntax(), false);
 	}
@@ -1073,7 +966,7 @@ class statementsSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new statementsSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $statements");
+		this.Report("Accept $statements");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1084,31 +977,26 @@ class statementsSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $statements");
+		this.Report("Enter $statements");
 		while(true) {
 			if(Parser.Match("$statement", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				continue;
 			}
-			return action0("$statements", Parser, pos0, NodeSize);
+			return this.action0("$statements", Parser, pos0, NodeSize);
 		}
 	}
 }
 
 /*
-[$block:
-	[
-		<Symbol:"{">
-		<Symbol:$statements>
-		<Symbol:"}">
-	]
-]
-*/
-class blockSyntax extends SyntaxTemplate {
+ * [$block: [ <Symbol:"{"> <Symbol:$statements> <Symbol:"}"> ] ]
+ */
+class blockSyntax extends SyntaxPattern {
 	blockSyntax() {
 		super("$block");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new statementsSyntax(), false);
 	}
@@ -1116,7 +1004,7 @@ class blockSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new blockSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $block");
+		this.Report("Accept $block");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1127,45 +1015,31 @@ class blockSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $block");
+		this.Report("Enter $block");
 		if(Parser.MatchToken("$LCBrace", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$statements", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RCBrace", TokenList, Parser.Cursor) >= 0) {
-					return action0("$block", Parser, pos0, NodeSize);
+					return this.action0("$block", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $block 0");
-		return Fail("$block", Parser);
+		return this.Fail("$block", Parser);
 	}
 }
 
 /*
-[$ifStatement:
-	[
-		<Symbol:"if">
-		<Symbol:"(">
-		<Symbol:$expression>
-		<Symbol:")">
-		<Symbol:$block>
-		<Symbol:"else">
-		<Symbol:$block>
-	]
-	[
-		<Symbol:"if">
-		<Symbol:"(">
-		<Symbol:$expression>
-		<Symbol:")">
-		<Symbol:$block>
-	]
-]
-*/
-class ifStatementSyntax extends SyntaxTemplate {
+ * [$ifStatement: [ <Symbol:"if"> <Symbol:"("> <Symbol:$expression> <Symbol:")">
+ * <Symbol:$block> <Symbol:"else"> <Symbol:$block> ] [ <Symbol:"if">
+ * <Symbol:"("> <Symbol:$expression> <Symbol:")"> <Symbol:$block> ] ]
+ */
+class ifStatementSyntax extends SyntaxPattern {
 	ifStatementSyntax() {
 		super("$ifStatement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
@@ -1174,7 +1048,7 @@ class ifStatementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new ifStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ifStatement");
+		this.Report("Accept $ifStatement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1182,7 +1056,7 @@ class ifStatementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new ifStatementSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ifStatement");
+		this.Report("Accept $ifStatement");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1193,7 +1067,7 @@ class ifStatementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $ifStatement");
+		this.Report("Enter $ifStatement");
 		if(Parser.MatchToken("if", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 				if(Parser.Match("$expression", TokenList) >= 0) {
@@ -1204,7 +1078,7 @@ class ifStatementSyntax extends SyntaxTemplate {
 							if(Parser.MatchToken("else", TokenList, Parser.Cursor) >= 0) {
 								if(Parser.Match("$block", TokenList) >= 0) {
 									NodeSize = NodeSize + 1;
-									return action0("$ifStatement", Parser, pos0, NodeSize);
+									return this.action0("$ifStatement", Parser, pos0, NodeSize);
 								}
 							}
 						}
@@ -1220,33 +1094,27 @@ class ifStatementSyntax extends SyntaxTemplate {
 					if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 						if(Parser.Match("$block", TokenList) >= 0) {
 							NodeSize = NodeSize + 1;
-							return action1("$ifStatement", Parser, pos0, NodeSize);
+							return this.action1("$ifStatement", Parser, pos0, NodeSize);
 						}
 					}
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ifStatement 0");
-		return Fail("$ifStatement", Parser);
+		return this.Fail("$ifStatement", Parser);
 	}
 }
 
 /*
-[$whileStatement:
-	[
-		<Symbol:"while">
-		<Symbol:"(">
-		<Symbol:$expression>
-		<Symbol:")">
-		<Symbol:$block>
-	]
-]
-*/
-class whileStatementSyntax extends SyntaxTemplate {
+ * [$whileStatement: [ <Symbol:"while"> <Symbol:"("> <Symbol:$expression>
+ * <Symbol:")"> <Symbol:$block> ] ]
+ */
+class whileStatementSyntax extends SyntaxPattern {
 	whileStatementSyntax() {
 		super("$whileStatement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
@@ -1255,7 +1123,7 @@ class whileStatementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new whileStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $whileStatement");
+		this.Report("Accept $whileStatement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1266,7 +1134,7 @@ class whileStatementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $whileStatement");
+		this.Report("Enter $whileStatement");
 		if(Parser.MatchToken("while", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 				if(Parser.Match("$expression", TokenList) >= 0) {
@@ -1274,37 +1142,33 @@ class whileStatementSyntax extends SyntaxTemplate {
 					if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
 						if(Parser.Match("$block", TokenList) >= 0) {
 							NodeSize = NodeSize + 1;
-							return action0("$whileStatement", Parser, pos0, NodeSize);
+							return this.action0("$whileStatement", Parser, pos0, NodeSize);
 						}
 					}
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $whileStatement 0");
-		return Fail("$whileStatement", Parser);
+		return this.Fail("$whileStatement", Parser);
 	}
 }
 
 /*
-[$breakStatement:
-	[
-		<Symbol:"break">
-		<Symbol:";">
-	]
-]
-*/
-class breakStatementSyntax extends SyntaxTemplate {
+ * [$breakStatement: [ <Symbol:"break"> <Symbol:";"> ] ]
+ */
+class breakStatementSyntax extends SyntaxPattern {
 	breakStatementSyntax() {
 		super("$breakStatement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new breakStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $breakStatement");
+		this.Report("Accept $breakStatement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1315,37 +1179,33 @@ class breakStatementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $breakStatement");
+		this.Report("Enter $breakStatement");
 		if(Parser.MatchToken("break", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-				return action0("$breakStatement", Parser, pos0, NodeSize);
+				return this.action0("$breakStatement", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $breakStatement 0");
-		return Fail("$breakStatement", Parser);
+		return this.Fail("$breakStatement", Parser);
 	}
 }
 
 /*
-[$continueStatement:
-	[
-		<Symbol:"continue">
-		<Symbol:";">
-	]
-]
-*/
-class continueStatementSyntax extends SyntaxTemplate {
+ * [$continueStatement: [ <Symbol:"continue"> <Symbol:";"> ] ]
+ */
+class continueStatementSyntax extends SyntaxPattern {
 	continueStatementSyntax() {
 		super("$continueStatement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new continueStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $continueStatement");
+		this.Report("Accept $continueStatement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1356,35 +1216,27 @@ class continueStatementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $continueStatement");
+		this.Report("Enter $continueStatement");
 		if(Parser.MatchToken("continue", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-				return action0("$continueStatement", Parser, pos0, NodeSize);
+				return this.action0("$continueStatement", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $continueStatement 0");
-		return Fail("$continueStatement", Parser);
+		return this.Fail("$continueStatement", Parser);
 	}
 }
 
 /*
-[$returnStatement:
-	[
-		<Symbol:"return">
-		<Symbol:";">
-	]
-	[
-		<Symbol:"return">
-		<Symbol:$expression>
-		<Symbol:";">
-	]
-]
-*/
-class returnStatementSyntax extends SyntaxTemplate {
+ * [$returnStatement: [ <Symbol:"return"> <Symbol:";"> ] [ <Symbol:"return">
+ * <Symbol:$expression> <Symbol:";"> ] ]
+ */
+class returnStatementSyntax extends SyntaxPattern {
 	returnStatementSyntax() {
 		super("$returnStatement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
@@ -1392,7 +1244,7 @@ class returnStatementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new returnStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $returnStatement");
+		this.Report("Accept $returnStatement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1400,7 +1252,7 @@ class returnStatementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new returnStatementSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $returnStatement");
+		this.Report("Accept $returnStatement");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1411,10 +1263,10 @@ class returnStatementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $returnStatement");
+		this.Report("Enter $returnStatement");
 		if(Parser.MatchToken("return", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-				return action0("$returnStatement", Parser, pos0, NodeSize);
+				return this.action0("$returnStatement", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $returnStatement 0");
@@ -1422,28 +1274,24 @@ class returnStatementSyntax extends SyntaxTemplate {
 			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-					return action1("$returnStatement", Parser, pos0, NodeSize);
+					return this.action1("$returnStatement", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $returnStatement 0");
-		return Fail("$returnStatement", Parser);
+		return this.Fail("$returnStatement", Parser);
 	}
 }
 
 /*
-[$expressionStatement:
-	[
-		<Symbol:$expression>
-		<Symbol:";">
-	]
-]
-*/
-class expressionStatementSyntax extends SyntaxTemplate {
+ * [$expressionStatement: [ <Symbol:$expression> <Symbol:";"> ] ]
+ */
+class expressionStatementSyntax extends SyntaxPattern {
 	expressionStatementSyntax() {
 		super("$expressionStatement");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
@@ -1451,7 +1299,7 @@ class expressionStatementSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new expressionStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $expressionStatement");
+		this.Report("Accept $expressionStatement");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1462,35 +1310,28 @@ class expressionStatementSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $expressionStatement");
+		this.Report("Enter $expressionStatement");
 		if(Parser.Match("$expression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
-				return action0("$expressionStatement", Parser, pos0, NodeSize);
+				return this.action0("$expressionStatement", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $expressionStatement 0");
-		return Fail("$expressionStatement", Parser);
+		return this.Fail("$expressionStatement", Parser);
 	}
 }
 
 /*
-[$expression:
-	[
-		<Symbol:$leftHandSideExpression>
-		<Symbol:$EQ>
-		<Symbol:$expression>
-	]
-	[
-		<Symbol:$logicalOrExpression>
-	]
-]
-*/
-class expressionSyntax extends SyntaxTemplate {
+ * [$expression: [ <Symbol:$leftHandSideExpression> <Symbol:$EQ>
+ * <Symbol:$expression> ] [ <Symbol:$logicalOrExpression> ] ]
+ */
+class expressionSyntax extends SyntaxPattern {
 	expressionSyntax() {
 		super("$expression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new logicalOrExpressionSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
@@ -1501,7 +1342,7 @@ class expressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new expressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $expression");
+		this.Report("Accept $expression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1509,7 +1350,7 @@ class expressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new expressionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $expression");
+		this.Report("Accept $expression");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1520,42 +1361,37 @@ class expressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $expression");
+		this.Report("Enter $expression");
 		if(Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$EQ", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.Match("$expression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					return action0("$expression", Parser, pos0, NodeSize);
+					return this.action0("$expression", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $expression 0");
 		if(Parser.Match("$logicalOrExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action1("$expression", Parser, pos0, NodeSize);
+			return this.action1("$expression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $expression 0");
-		return Fail("$expression", Parser);
+		return this.Fail("$expression", Parser);
 	}
 }
 
 /*
-[$leftHandSideExpression:
-	[
-		<Symbol:$callExpression>
-	]
-	[
-		<Symbol:$newExpression>
-	]
-]
-*/
-class leftHandSideExpressionSyntax extends SyntaxTemplate {
+ * [$leftHandSideExpression: [ <Symbol:$callExpression> ] [
+ * <Symbol:$newExpression> ] ]
+ */
+class leftHandSideExpressionSyntax extends SyntaxPattern {
 	leftHandSideExpressionSyntax() {
 		super("$leftHandSideExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new newExpressionSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new callExpressionSyntax(), false);
@@ -1564,7 +1400,7 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new leftHandSideExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $leftHandSideExpression");
+		this.Report("Accept $leftHandSideExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1572,7 +1408,7 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new leftHandSideExpressionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $leftHandSideExpression");
+		this.Report("Accept $leftHandSideExpression");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1583,34 +1419,30 @@ class leftHandSideExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $leftHandSideExpression");
+		this.Report("Enter $leftHandSideExpression");
 		if(Parser.Match("$callExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$leftHandSideExpression", Parser, pos0, NodeSize);
+			return this.action0("$leftHandSideExpression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $leftHandSideExpression 0");
 		if(Parser.Match("$newExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action1("$leftHandSideExpression", Parser, pos0, NodeSize);
+			return this.action1("$leftHandSideExpression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $leftHandSideExpression 0");
-		return Fail("$leftHandSideExpression", Parser);
+		return this.Fail("$leftHandSideExpression", Parser);
 	}
 }
 
 /*
-[$callExpression:
-	[
-		<Symbol:$memberExpression>
-		<Symbol:$ParameterList>
-	]
-]
-*/
-class callExpressionSyntax extends SyntaxTemplate {
+ * [$callExpression: [ <Symbol:$memberExpression> <Symbol:$ParameterList> ] ]
+ */
+class callExpressionSyntax extends SyntaxPattern {
 	callExpressionSyntax() {
 		super("$callExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new ParameterListSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new memberExpressionSyntax(), false);
@@ -1619,7 +1451,7 @@ class callExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new callExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $callExpression");
+		this.Report("Accept $callExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1630,32 +1462,28 @@ class callExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $callExpression");
+		this.Report("Enter $callExpression");
 		if(Parser.Match("$memberExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$ParameterList", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				return action0("$callExpression", Parser, pos0, NodeSize);
+				return this.action0("$callExpression", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $callExpression 0");
-		return Fail("$callExpression", Parser);
+		return this.Fail("$callExpression", Parser);
 	}
 }
 
 /*
-[$memberExpression:
-	[
-		<Symbol:$primary>
-		<Repeat:<Symbol:$selector>>
-	]
-]
-*/
-class memberExpressionSyntax extends SyntaxTemplate {
+ * [$memberExpression: [ <Symbol:$primary> <Repeat:<Symbol:$selector>> ] ]
+ */
+class memberExpressionSyntax extends SyntaxPattern {
 	memberExpressionSyntax() {
 		super("$memberExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new primarySyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new selectorSyntax(), false);
@@ -1664,7 +1492,7 @@ class memberExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new memberExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $memberExpression");
+		this.Report("Accept $memberExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1675,7 +1503,7 @@ class memberExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $memberExpression");
+		this.Report("Enter $memberExpression");
 		if(Parser.Match("$primary", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -1683,37 +1511,24 @@ class memberExpressionSyntax extends SyntaxTemplate {
 					NodeSize = NodeSize + 1;
 					continue;
 				}
-				return action0("$memberExpression", Parser, pos0, NodeSize);
+				return this.action0("$memberExpression", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $memberExpression 0");
-		return Fail("$memberExpression", Parser);
+		return this.Fail("$memberExpression", Parser);
 	}
 }
 
 /*
-[$primary:
-	[
-		<Symbol:"this">
-	]
-	[
-		<Symbol:$literal>
-	]
-	[
-		<Symbol:$identifier>
-	]
-	[
-		<Symbol:"(">
-		<Symbol:$expression>
-		<Symbol:")">
-	]
-]
-*/
-class primarySyntax extends SyntaxTemplate {
+ * [$primary: [ <Symbol:"this"> ] [ <Symbol:$literal> ] [ <Symbol:$identifier> ]
+ * [ <Symbol:"("> <Symbol:$expression> <Symbol:")"> ] ]
+ */
+class primarySyntax extends SyntaxPattern {
 	primarySyntax() {
 		super("$primary");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new literalSyntax(), false);
@@ -1723,7 +1538,7 @@ class primarySyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new primarySyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $primary");
+		this.Report("Accept $primary");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1731,7 +1546,7 @@ class primarySyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new primarySyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $primary");
+		this.Report("Accept $primary");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1739,7 +1554,7 @@ class primarySyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor2	= new primarySyntax2();
 
 	int action2(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $primary");
+		this.Report("Accept $primary");
 		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1747,7 +1562,7 @@ class primarySyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor3	= new primarySyntax3();
 
 	int action3(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $primary");
+		this.Report("Accept $primary");
 		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1758,52 +1573,44 @@ class primarySyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $primary");
+		this.Report("Enter $primary");
 		if(Parser.MatchToken("this", TokenList, Parser.Cursor) >= 0) {
-			return action0("$primary", Parser, pos0, NodeSize);
+			return this.action0("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
 		if(Parser.Match("$literal", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action1("$primary", Parser, pos0, NodeSize);
+			return this.action1("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
 		if(Parser.Match("$identifier", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action2("$primary", Parser, pos0, NodeSize);
+			return this.action2("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
 		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-					return action3("$primary", Parser, pos0, NodeSize);
+					return this.action3("$primary", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
-		return Fail("$primary", Parser);
+		return this.Fail("$primary", Parser);
 	}
 }
 
 /*
-[$selector:
-	[
-		<Symbol:"[">
-		<Symbol:$expression>
-		<Symbol:"]">
-	]
-	[
-		<Symbol:".">
-		<Symbol:$identifier>
-	]
-]
-*/
-class selectorSyntax extends SyntaxTemplate {
+ * [$selector: [ <Symbol:"["> <Symbol:$expression> <Symbol:"]"> ] [ <Symbol:".">
+ * <Symbol:$identifier> ] ]
+ */
+class selectorSyntax extends SyntaxPattern {
 	selectorSyntax() {
 		super("$selector");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
@@ -1812,7 +1619,7 @@ class selectorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new selectorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $selector");
+		this.Report("Accept $selector");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1820,7 +1627,7 @@ class selectorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new selectorSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $selector");
+		this.Report("Accept $selector");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1831,12 +1638,12 @@ class selectorSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $selector");
+		this.Report("Enter $selector");
 		if(Parser.MatchToken("$LParenthesis", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RParenthesis", TokenList, Parser.Cursor) >= 0) {
-					return action0("$selector", Parser, pos0, NodeSize);
+					return this.action0("$selector", Parser, pos0, NodeSize);
 				}
 			}
 		}
@@ -1844,31 +1651,24 @@ class selectorSyntax extends SyntaxTemplate {
 		if(Parser.MatchToken("$Dot", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$identifier", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				return action1("$selector", Parser, pos0, NodeSize);
+				return this.action1("$selector", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $selector 0");
-		return Fail("$selector", Parser);
+		return this.Fail("$selector", Parser);
 	}
 }
 
 /*
-[$newExpression:
-	[
-		<Symbol:$memberExpression>
-	]
-	[
-		<Symbol:"new">
-		<Symbol:$type>
-		<Symbol:$ParameterList>
-	]
-]
-*/
-class newExpressionSyntax extends SyntaxTemplate {
+ * [$newExpression: [ <Symbol:$memberExpression> ] [ <Symbol:"new">
+ * <Symbol:$type> <Symbol:$ParameterList> ] ]
+ */
+class newExpressionSyntax extends SyntaxPattern {
 	newExpressionSyntax() {
 		super("$newExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new ParameterListSyntax(), false);
@@ -1878,7 +1678,7 @@ class newExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new newExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $newExpression");
+		this.Report("Accept $newExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1886,7 +1686,7 @@ class newExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new newExpressionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $newExpression");
+		this.Report("Accept $newExpression");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1897,39 +1697,36 @@ class newExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $newExpression");
-		if(Parser.Match("$memberExpression", TokenList) >= 0) {
-			NodeSize = NodeSize + 1;
-			return action0("$newExpression", Parser, pos0, NodeSize);
-		}
-		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $newExpression 0");
+		this.Report("Enter $newExpression");
 		if(Parser.MatchToken("new", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$type", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.Match("$ParameterList", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					return action1("$newExpression", Parser, pos0, NodeSize);
+					return this.action0("$newExpression", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $newExpression 0");
-		return Fail("$newExpression", Parser);
+		if(Parser.Match("$memberExpression", TokenList) >= 0) {
+			NodeSize = NodeSize + 1;
+			return this.action1("$newExpression", Parser, pos0, NodeSize);
+		}
+		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $newExpression 0");
+		return this.Fail("$newExpression", Parser);
 	}
 }
 
 /*
-[$logicalOrExpression:
-	[
-		<Symbol:$logicalAndExpression>
-		<Repeat:<Group:<Symbol:"||"> <Symbol:$logicalAndExpression> >>
-	]
-]
-*/
-class logicalOrExpressionSyntax extends SyntaxTemplate {
+ * [$logicalOrExpression: [ <Symbol:$logicalAndExpression>
+ * <Repeat:<Group:<Symbol:"||"> <Symbol:$logicalAndExpression> >> ] ]
+ */
+class logicalOrExpressionSyntax extends SyntaxPattern {
 	logicalOrExpressionSyntax() {
 		super("$logicalOrExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new logicalAndExpressionSyntax(), false);
 	}
@@ -1937,7 +1734,7 @@ class logicalOrExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new logicalOrExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $logicalOrExpression");
+		this.Report("Accept $logicalOrExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1948,7 +1745,7 @@ class logicalOrExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $logicalOrExpression");
+		this.Report("Enter $logicalOrExpression");
 		if(Parser.Match("$logicalAndExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -1958,27 +1755,24 @@ class logicalOrExpressionSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action0("$logicalOrExpression", Parser, pos0, NodeSize);
+				return this.action0("$logicalOrExpression", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $logicalOrExpression 0");
-		return Fail("$logicalOrExpression", Parser);
+		return this.Fail("$logicalOrExpression", Parser);
 	}
 }
 
 /*
-[$logicalAndExpression:
-	[
-		<Symbol:$relationExpression>
-		<Repeat:<Group:<Symbol:"&&"> <Symbol:$relationExpression> >>
-	]
-]
-*/
-class logicalAndExpressionSyntax extends SyntaxTemplate {
+ * [$logicalAndExpression: [ <Symbol:$relationExpression>
+ * <Repeat:<Group:<Symbol:"&&"> <Symbol:$relationExpression> >> ] ]
+ */
+class logicalAndExpressionSyntax extends SyntaxPattern {
 	logicalAndExpressionSyntax() {
 		super("$logicalAndExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new relationExpressionSyntax(), false);
 	}
@@ -1986,7 +1780,7 @@ class logicalAndExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new logicalAndExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $logicalAndExpression");
+		this.Report("Accept $logicalAndExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -1997,7 +1791,7 @@ class logicalAndExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $logicalAndExpression");
+		this.Report("Enter $logicalAndExpression");
 		if(Parser.Match("$relationExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -2007,31 +1801,25 @@ class logicalAndExpressionSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action0("$logicalAndExpression", Parser, pos0, NodeSize);
+				return this.action0("$logicalAndExpression", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $logicalAndExpression 0");
-		return Fail("$logicalAndExpression", Parser);
+		return this.Fail("$logicalAndExpression", Parser);
 	}
 }
 
 /*
-[$relationExpression:
-	[
-		<Symbol:$additiveExpression>
-		<Symbol:$relationOperator>
-		<Symbol:$additiveExpression>
-	]
-	[
-		<Symbol:$additiveExpression>
-	]
-]
-*/
-class relationExpressionSyntax extends SyntaxTemplate {
+ * [$relationExpression: [ <Symbol:$additiveExpression>
+ * <Symbol:$relationOperator> <Symbol:$additiveExpression> ] [
+ * <Symbol:$additiveExpression> ] ]
+ */
+class relationExpressionSyntax extends SyntaxPattern {
 	relationExpressionSyntax() {
 		super("$relationExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new additiveExpressionSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new relationOperatorSyntax(), false);
@@ -2040,7 +1828,7 @@ class relationExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new relationExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationExpression");
+		this.Report("Accept $relationExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2048,7 +1836,7 @@ class relationExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new relationExpressionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationExpression");
+		this.Report("Accept $relationExpression");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2059,65 +1847,45 @@ class relationExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $relationExpression");
+		this.Report("Enter $relationExpression");
 		if(Parser.Match("$additiveExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			if(Parser.Match("$relationOperator", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.Match("$additiveExpression", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					return action0("$relationExpression", Parser, pos0, NodeSize);
+					return this.action0("$relationExpression", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationExpression 0");
 		if(Parser.Match("$additiveExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action1("$relationExpression", Parser, pos0, NodeSize);
+			return this.action1("$relationExpression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationExpression 0");
-		return Fail("$relationExpression", Parser);
+		return this.Fail("$relationExpression", Parser);
 	}
 }
 
 /*
-[$relationOperator:
-	[
-		<Symbol:"=">
-		<Symbol:"=">
-	]
-	[
-		<Symbol:"!">
-		<Symbol:"=">
-	]
-	[
-		<Symbol:">">
-		<Symbol:"=">
-	]
-	[
-		<Symbol:">">
-	]
-	[
-		<Symbol:"<">
-		<Symbol:"=">
-	]
-	[
-		<Symbol:"<">
-	]
-]
-*/
-class relationOperatorSyntax extends SyntaxTemplate {
+ * [$relationOperator: [ <Symbol:"="> <Symbol:"="> ] [ <Symbol:"!"> <Symbol:"=">
+ * ] [ <Symbol:">"> <Symbol:"="> ] [ <Symbol:">"> ] [ <Symbol:"<"> <Symbol:"=">
+ * ] [ <Symbol:"<"> ] ]
+ */
+class relationOperatorSyntax extends SyntaxPattern {
 	relationOperatorSyntax() {
 		super("$relationOperator");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new relationOperatorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationOperator");
+		this.Report("Accept $relationOperator");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2125,7 +1893,7 @@ class relationOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new relationOperatorSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationOperator");
+		this.Report("Accept $relationOperator");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2133,7 +1901,7 @@ class relationOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor2	= new relationOperatorSyntax2();
 
 	int action2(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationOperator");
+		this.Report("Accept $relationOperator");
 		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2141,7 +1909,7 @@ class relationOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor3	= new relationOperatorSyntax3();
 
 	int action3(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationOperator");
+		this.Report("Accept $relationOperator");
 		Parser.PushThunk(this.Acceptor3, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2149,7 +1917,7 @@ class relationOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor4	= new relationOperatorSyntax4();
 
 	int action4(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationOperator");
+		this.Report("Accept $relationOperator");
 		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2157,7 +1925,7 @@ class relationOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor5	= new relationOperatorSyntax5();
 
 	int action5(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $relationOperator");
+		this.Report("Accept $relationOperator");
 		Parser.PushThunk(this.Acceptor5, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2168,67 +1936,60 @@ class relationOperatorSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $relationOperator");
+		this.Report("Enter $relationOperator");
 		if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
-				return action0("$relationOperator", Parser, pos0, NodeSize);
+				return this.action0("$relationOperator", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$Exclamation", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
-				return action1("$relationOperator", Parser, pos0, NodeSize);
+				return this.action1("$relationOperator", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
-				return action2("$relationOperator", Parser, pos0, NodeSize);
+				return this.action2("$relationOperator", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
-			return action3("$relationOperator", Parser, pos0, NodeSize);
+			return this.action3("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$Equal", TokenList, Parser.Cursor) >= 0) {
-				return action4("$relationOperator", Parser, pos0, NodeSize);
+				return this.action4("$relationOperator", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
 		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
-			return action5("$relationOperator", Parser, pos0, NodeSize);
+			return this.action5("$relationOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $relationOperator 0");
-		return Fail("$relationOperator", Parser);
+		return this.Fail("$relationOperator", Parser);
 	}
 }
 
 /*
-[$shiftOperator:
-	[
-		<Symbol:"<">
-		<Symbol:"<">
-	]
-	[
-		<Symbol:">">
-		<Symbol:">">
-	]
-]
-*/
-class shiftOperatorSyntax extends SyntaxTemplate {
+ * [$shiftOperator: [ <Symbol:"<"> <Symbol:"<"> ] [ <Symbol:">"> <Symbol:">"> ]
+ * ]
+ */
+class shiftOperatorSyntax extends SyntaxPattern {
 	shiftOperatorSyntax() {
 		super("$shiftOperator");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new shiftOperatorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $shiftOperator");
+		this.Report("Accept $shiftOperator");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2236,7 +1997,7 @@ class shiftOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new shiftOperatorSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $shiftOperator");
+		this.Report("Accept $shiftOperator");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2247,45 +2008,39 @@ class shiftOperatorSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $shiftOperator");
+		this.Report("Enter $shiftOperator");
 		if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$LessThan", TokenList, Parser.Cursor) >= 0) {
-				return action0("$shiftOperator", Parser, pos0, NodeSize);
+				return this.action0("$shiftOperator", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $shiftOperator 0");
 		if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.MatchToken("$GraterThan", TokenList, Parser.Cursor) >= 0) {
-				return action1("$shiftOperator", Parser, pos0, NodeSize);
+				return this.action1("$shiftOperator", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $shiftOperator 0");
-		return Fail("$shiftOperator", Parser);
+		return this.Fail("$shiftOperator", Parser);
 	}
 }
 
 /*
-[$additiveOperator:
-	[
-		<Symbol:"+">
-	]
-	[
-		<Symbol:"-">
-	]
-]
-*/
-class additiveOperatorSyntax extends SyntaxTemplate {
+ * [$additiveOperator: [ <Symbol:"+"> ] [ <Symbol:"-"> ] ]
+ */
+class additiveOperatorSyntax extends SyntaxPattern {
 	additiveOperatorSyntax() {
 		super("$additiveOperator");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new additiveOperatorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $additiveOperator");
+		this.Report("Accept $additiveOperator");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2293,7 +2048,7 @@ class additiveOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new additiveOperatorSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $additiveOperator");
+		this.Report("Accept $additiveOperator");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2304,44 +2059,36 @@ class additiveOperatorSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $additiveOperator");
+		this.Report("Enter $additiveOperator");
 		if(Parser.MatchToken("$Plus", TokenList, Parser.Cursor) >= 0) {
-			return action0("$additiveOperator", Parser, pos0, NodeSize);
+			return this.action0("$additiveOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $additiveOperator 0");
 		if(Parser.MatchToken("$Minus", TokenList, Parser.Cursor) >= 0) {
-			return action1("$additiveOperator", Parser, pos0, NodeSize);
+			return this.action1("$additiveOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $additiveOperator 0");
-		return Fail("$additiveOperator", Parser);
+		return this.Fail("$additiveOperator", Parser);
 	}
 }
 
 /*
-[$multiplicativeOperator:
-	[
-		<Symbol:"*">
-	]
-	[
-		<Symbol:"/">
-	]
-	[
-		<Symbol:"%">
-	]
-]
-*/
-class multiplicativeOperatorSyntax extends SyntaxTemplate {
+ * [$multiplicativeOperator: [ <Symbol:"*"> ] [ <Symbol:"/"> ] [ <Symbol:"%"> ]
+ * ]
+ */
+class multiplicativeOperatorSyntax extends SyntaxPattern {
 	multiplicativeOperatorSyntax() {
 		super("$multiplicativeOperator");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new multiplicativeOperatorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $multiplicativeOperator");
+		this.Report("Accept $multiplicativeOperator");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2349,7 +2096,7 @@ class multiplicativeOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor1	= new multiplicativeOperatorSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $multiplicativeOperator");
+		this.Report("Accept $multiplicativeOperator");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2357,7 +2104,7 @@ class multiplicativeOperatorSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor2	= new multiplicativeOperatorSyntax2();
 
 	int action2(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $multiplicativeOperator");
+		this.Report("Accept $multiplicativeOperator");
 		Parser.PushThunk(this.Acceptor2, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2368,36 +2115,34 @@ class multiplicativeOperatorSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $multiplicativeOperator");
+		this.Report("Enter $multiplicativeOperator");
 		if(Parser.MatchToken("$Star", TokenList, Parser.Cursor) >= 0) {
-			return action0("$multiplicativeOperator", Parser, pos0, NodeSize);
+			return this.action0("$multiplicativeOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeOperator 0");
 		if(Parser.MatchToken("$Slash", TokenList, Parser.Cursor) >= 0) {
-			return action1("$multiplicativeOperator", Parser, pos0, NodeSize);
+			return this.action1("$multiplicativeOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeOperator 0");
 		if(Parser.MatchToken("$Percent", TokenList, Parser.Cursor) >= 0) {
-			return action2("$multiplicativeOperator", Parser, pos0, NodeSize);
+			return this.action2("$multiplicativeOperator", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeOperator 0");
-		return Fail("$multiplicativeOperator", Parser);
+		return this.Fail("$multiplicativeOperator", Parser);
 	}
 }
 
 /*
-[$additiveExpression:
-	[
-		<Symbol:$multiplicativeExpression>
-		<Repeat:<Group:<Symbol:$additiveOperator> <Symbol:$multiplicativeExpression> >>
-	]
-]
-*/
-class additiveExpressionSyntax extends SyntaxTemplate {
+ * [$additiveExpression: [ <Symbol:$multiplicativeExpression>
+ * <Repeat:<Group:<Symbol:$additiveOperator> <Symbol:$multiplicativeExpression>
+ * >> ] ]
+ */
+class additiveExpressionSyntax extends SyntaxPattern {
 	additiveExpressionSyntax() {
 		super("$additiveExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new additiveOperatorSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new multiplicativeExpressionSyntax(), false);
@@ -2406,7 +2151,7 @@ class additiveExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new additiveExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $additiveExpression");
+		this.Report("Accept $additiveExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2417,7 +2162,7 @@ class additiveExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $additiveExpression");
+		this.Report("Enter $additiveExpression");
 		if(Parser.Match("$multiplicativeExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -2428,27 +2173,25 @@ class additiveExpressionSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action0("$additiveExpression", Parser, pos0, NodeSize);
+				return this.action0("$additiveExpression", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $additiveExpression 0");
-		return Fail("$additiveExpression", Parser);
+		return this.Fail("$additiveExpression", Parser);
 	}
 }
 
 /*
-[$multiplicativeExpression:
-	[
-		<Symbol:$unaryExpression>
-		<Repeat:<Group:<Symbol:$multiplicativeOperator> <Symbol:$unaryExpression> >>
-	]
-]
-*/
-class multiplicativeExpressionSyntax extends SyntaxTemplate {
+ * [$multiplicativeExpression: [ <Symbol:$unaryExpression>
+ * <Repeat:<Group:<Symbol:$multiplicativeOperator> <Symbol:$unaryExpression> >>
+ * ] ]
+ */
+class multiplicativeExpressionSyntax extends SyntaxPattern {
 	multiplicativeExpressionSyntax() {
 		super("$multiplicativeExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new multiplicativeOperatorSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new unaryExpressionSyntax(), false);
@@ -2457,7 +2200,7 @@ class multiplicativeExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new multiplicativeExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $multiplicativeExpression");
+		this.Report("Accept $multiplicativeExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2468,7 +2211,7 @@ class multiplicativeExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $multiplicativeExpression");
+		this.Report("Enter $multiplicativeExpression");
 		if(Parser.Match("$unaryExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			while(true) {
@@ -2479,26 +2222,23 @@ class multiplicativeExpressionSyntax extends SyntaxTemplate {
 						continue;
 					}
 				}
-				return action0("$multiplicativeExpression", Parser, pos0, NodeSize);
+				return this.action0("$multiplicativeExpression", Parser, pos0, NodeSize);
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $multiplicativeExpression 0");
-		return Fail("$multiplicativeExpression", Parser);
+		return this.Fail("$multiplicativeExpression", Parser);
 	}
 }
 
 /*
-[$unaryExpression:
-	[
-		<Symbol:$leftHandSideExpression>
-	]
-]
-*/
-class unaryExpressionSyntax extends SyntaxTemplate {
+ * [$unaryExpression: [ <Symbol:$leftHandSideExpression> ] ]
+ */
+class unaryExpressionSyntax extends SyntaxPattern {
 	unaryExpressionSyntax() {
 		super("$unaryExpression");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new leftHandSideExpressionSyntax(), false);
 	}
@@ -2506,7 +2246,7 @@ class unaryExpressionSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new unaryExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $unaryExpression");
+		this.Report("Accept $unaryExpression");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2517,28 +2257,25 @@ class unaryExpressionSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $unaryExpression");
+		this.Report("Enter $unaryExpression");
 		if(Parser.Match("$leftHandSideExpression", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$unaryExpression", Parser, pos0, NodeSize);
+			return this.action0("$unaryExpression", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $unaryExpression 0");
-		return Fail("$unaryExpression", Parser);
+		return this.Fail("$unaryExpression", Parser);
 	}
 }
 
 /*
-[$identifier:
-	[
-		<Symbol:$Symbol>
-	]
-]
-*/
-class identifierSyntax extends SyntaxTemplate {
+ * [$identifier: [ <Symbol:$Symbol> ] ]
+ */
+class identifierSyntax extends SyntaxPattern {
 	identifierSyntax() {
 		super("$identifier");
 	}
 
+	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new SymbolSyntax(), false);
 	}
@@ -2546,7 +2283,7 @@ class identifierSyntax extends SyntaxTemplate {
 	public SyntaxAcceptor	Acceptor0	= new identifierSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $identifier");
+		this.Report("Accept $identifier");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -2557,12 +2294,12 @@ class identifierSyntax extends SyntaxTemplate {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $identifier");
+		this.Report("Enter $identifier");
 		if(Parser.Match("$Symbol", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$identifier", Parser, pos0, NodeSize);
+			return this.action0("$identifier", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $identifier 0");
-		return Fail("$identifier", Parser);
+		return this.Fail("$identifier", Parser);
 	}
 }

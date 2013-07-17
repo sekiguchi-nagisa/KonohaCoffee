@@ -8,7 +8,7 @@ import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
-import org.KonohaScript.PegParser.SyntaxTemplate;
+import org.KonohaScript.PegParser.SyntaxPattern;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -29,7 +29,7 @@ class intLiteral0 extends SyntaxAcceptor {
 	}
 }
 
-class intLiteralSyntax extends SyntaxTemplate {
+class intLiteralSyntax extends SyntaxPattern {
 	public intLiteralSyntax() {
 		super("$intLiteral");
 	}
@@ -79,7 +79,7 @@ class stringLiteral0 extends SyntaxAcceptor {
 	}
 }
 
-class stringLiteralSyntax extends SyntaxTemplate {
+class stringLiteralSyntax extends SyntaxPattern {
 	public stringLiteralSyntax() {
 		super("$stringLiteral");
 	}
@@ -144,7 +144,7 @@ class Symbol0 extends SyntaxAcceptor {
 	}
 }
 
-class SymbolSyntax extends SyntaxTemplate {
+class SymbolSyntax extends SyntaxPattern {
 	public SymbolSyntax() {
 		super("$Symbol");
 	}
@@ -192,7 +192,7 @@ class Type0 extends SyntaxAcceptor {
 	}
 }
 
-class TypeTokenSyntax extends SyntaxTemplate {
+class TypeTokenSyntax extends SyntaxPattern {
 	public TypeTokenSyntax() {
 		super("$Type");
 	}

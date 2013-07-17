@@ -157,14 +157,14 @@ public final class Konoha implements KonohaConst {
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
-		if (BuilderClassName != null) {
+		if(BuilderClassName != null) {
 			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
 		}
 	}
 
 	KonohaType LookupHostLangType(Class<?> ClassInfo) {
 		KonohaType TypeInfo = (KonohaType) this.ClassNameMap.get(ClassInfo.getName());
-		if (TypeInfo == null) {
+		if(TypeInfo == null) {
 			TypeInfo = new KonohaType(this, ClassInfo);
 			this.ClassNameMap.put(ClassInfo.getName(), TypeInfo);
 		}
@@ -191,6 +191,8 @@ public final class Konoha implements KonohaConst {
 		// konoha.Eval("int ++ fibo(int n) { return n == 1; }", 1);
 		// KonohaContext.Eval("a == b + C; D + e == F", 2);
 		// KonohaContext.Eval("1+2*3", 3333);
-		KonohaContext.Eval("int fibo(int n) {\n" + "\tif(n < 3) return 1;\n" + "\treturn fibo(n-1)+fibo(n-2);\n" + "}", 1000);
+		//KonohaContext.Eval("class X {};", 0);
+		//KonohaContext.Eval("int fibo(int n) {\n" + "\tif(n < 3) return 1;\n" + "\treturn fibo(n-1)+fibo(n-2);\n" + "}", 1000);
+		KonohaContext.Eval("int f(int a, int b) { return a + b; }", 0);
 	}
 }

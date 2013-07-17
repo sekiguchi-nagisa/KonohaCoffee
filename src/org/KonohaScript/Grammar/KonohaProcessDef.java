@@ -6,62 +6,83 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
 
-
 public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {
-		KonohaType BaseClass = ns.LookupHostLangType(KonohaProcess.class);
+		KonohaType baseClass_Process = ns.LookupHostLangType(KonohaProcess.class);
 
 		// define Constructor
-		String MN_newKonohaProcess = "New";
+		String MN_constructor = "New";
 		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
-		BaseClass.DefineMethod(0, MN_newKonohaProcess, Process_String_Param, this, MN_newKonohaProcess); //FIXME
+		baseClass_Process.DefineMethod(0, MN_constructor, Process_String_Param, this, MN_constructor);
+
+		KonohaParam Process_String_boolean_Param = KonohaParam.ParseOf(ns, "Process String x boolean y");
+		baseClass_Process.DefineMethod(0, MN_constructor, Process_String_boolean_Param, this, MN_constructor);
 
 		// define SetArgument()
 		String MN_SetArgument = "SetArgument";
 		KonohaParam void_Strings_Param = KonohaParam.ParseOf(ns, "void String[] x");
-		BaseClass.DefineMethod(0, MN_SetArgument, void_Strings_Param, this, MN_SetArgument);
+		baseClass_Process.DefineMethod(0, MN_SetArgument, void_Strings_Param, this, MN_SetArgument);
 
 		KonohaParam void_String_Param = KonohaParam.ParseOf(ns, "void String x");
-		BaseClass.DefineMethod(0, MN_SetArgument, void_String_Param, this, MN_SetArgument);
+		baseClass_Process.DefineMethod(0, MN_SetArgument, void_String_Param, this, MN_SetArgument);
 
 		// define Start()
 		String MN_Start = "Start";
 		KonohaParam void_Param = KonohaParam.ParseOf(ns, "void");
-		BaseClass.DefineMethod(0, MN_Start, void_Param, this, MN_Start);
+		baseClass_Process.DefineMethod(0, MN_Start, void_Param, this, MN_Start);
 
 		// define Pipe()
 		String MN_Pipe = "Pipe";
 		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
-		BaseClass.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
+		baseClass_Process.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
 
 		// define ReadFromFile()
 		String MN_ReadFromFile = "ReadFromFile";
-		BaseClass.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);
+		baseClass_Process.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);
 
 		// define GetOut()
 		String MN_GetOut = "GetOut";
 		KonohaParam String_Param = KonohaParam.ParseOf(ns, "String");
-		BaseClass.DefineMethod(0, MN_GetOut, String_Param, this, MN_GetOut);
+		baseClass_Process.DefineMethod(0, MN_GetOut, String_Param, this, MN_GetOut);
 
 		// define GetError()
 		String MN_GetError = "GetError";
-		BaseClass.DefineMethod(0, MN_GetError, String_Param, this, MN_GetError);
+		baseClass_Process.DefineMethod(0, MN_GetError, String_Param, this, MN_GetError);
 
 		// define WaitFor()
 		String MN_WaitFor = "WaitFor";
 		KonohaParam void_int_Param = KonohaParam.ParseOf(ns, "void int x");
-		BaseClass.DefineMethod(0, MN_WaitFor, void_int_Param, this, MN_WaitFor);
+		baseClass_Process.DefineMethod(0, MN_WaitFor, void_int_Param, this, MN_WaitFor);
 
 		// define GetRetValue()
 		String MN_GetRetValue = "GetRetValue";
 		KonohaParam int_Param = KonohaParam.ParseOf(ns, "int");
-		BaseClass.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
+		baseClass_Process.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
+
+
+		KonohaType baseClass_ProcessMonitor = ns.LookupHostLangType(KonohaProcessMonitor.class);
+
+		// define Constructor
+		KonohaParam ProcessMonitor_Param = KonohaParam.ParseOf(ns, "ProcessMonitor");
+		baseClass_ProcessMonitor.DefineMethod(0, MN_constructor, ProcessMonitor_Param, this, MN_constructor);
+
+		// define SetProcess
+		String MN_SetProcess = "SetProcess";
+		baseClass_ProcessMonitor.DefineMethod(0, MN_SetProcess, void_Process_Param, this, MN_SetProcess);
+
+		// define ThrowException
+		String MN_ThrowException = "ThrowException";
+		baseClass_ProcessMonitor.DefineMethod(0, MN_ThrowException, void_Param, this, MN_ThrowException);
 	}
 
-	public static KonohaProcess New(String Command) {
+	public static KonohaProcess New(KonohaProcess Process, String Command) {
 		return new KonohaProcess(Command);
+	}
+
+	public static KonohaProcess New(String Command, boolean enableSyscallTrace) {
+		return new KonohaProcess(Command, enableSyscallTrace);
 	}
 
 	public static void SetArgument(KonohaProcess Process, String[] Args) {
@@ -105,12 +126,16 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		return Process.getRet();
 	}
 
-	// main()
-//	public static void main(String[] args) {
-//		KonohaProcess proc1 = new KonohaProcess("ls", true);
-//		proc1.setArgument("/root");
-//		proc1.start();
-//		System.out.print("<<stdout>>\n" + proc1.getStdout());
-//		System.err.print("<<stderr>>\n" + proc1.getStderr());
-//	}
+	// KonohaProcessMonitor Binding
+	public static KonohaProcessMonitor New() {
+		return new KonohaProcessMonitor();
+	}
+
+	public static void SetProcess(KonohaProcessMonitor Monitor, KonohaProcess targetProc) {
+		Monitor.setProcess(targetProc);
+	}
+
+	public static void ThrowException(KonohaProcessMonitor Monitor) throws Exception {
+		Monitor.throwException();
+	}
 }

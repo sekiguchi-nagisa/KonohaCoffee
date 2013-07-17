@@ -30,12 +30,12 @@ import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.Parser.KonohaChar;
-import org.KonohaScript.Parser.KonohaParser;
 import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.LexicalConverter;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
+import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaNameSpace implements KonohaConst {
@@ -43,12 +43,12 @@ public final class KonohaNameSpace implements KonohaConst {
 	public Konoha		KonohaContext;
 	KonohaNameSpace		ParentNameSpace;
 	KonohaArray			ImportedNameSpaceList;
-	public KonohaParser	Parser;
+	public PegParser	PegParser;
 
 	public KonohaNameSpace(Konoha KonohaContext, KonohaNameSpace ParentNameSpace) {
 		this.KonohaContext = KonohaContext;
 		this.ParentNameSpace = ParentNameSpace;
-		this.Parser = null;
+		this.PegParser = null;
 
 		if(ParentNameSpace != null) {
 			this.ImportedTokenMatrix = new KonohaFunc[KonohaChar.MAX];
@@ -60,22 +60,14 @@ public final class KonohaNameSpace implements KonohaConst {
 			if(ParentNameSpace.ImportedSymbolTable != null) {
 				this.ImportedSymbolTable = ParentNameSpace.ImportedSymbolTable.Duplicate();
 			}
-			this.Parser = ParentNameSpace.Parser;
+			this.PegParser = ParentNameSpace.PegParser;
+		}
+		if(this.PegParser == null) {
+			this.PegParser = new PegParser(this);
 		}
 	}
 
 	// class
-	@Deprecated
-	public final KonohaType LookupTypeInfo(String ClassName) {
-		try {
-			return this.KonohaContext.LookupHostLangType(Class.forName(ClassName));
-
-		}
-		catch (ClassNotFoundException e) {
-		}
-		return null;
-	}
-
 	public final KonohaType LookupHostLangType(Class<?> ClassInfo) {
 		return this.KonohaContext.LookupHostLangType(ClassInfo);
 	}
@@ -151,9 +143,9 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
 		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-			Callee,
-			MethodName,
-			null));
+				Callee,
+				MethodName,
+				null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -205,6 +197,15 @@ public final class KonohaNameSpace implements KonohaConst {
 		this.DefineSymbol(Key, Syntax);
 	}
 
+	//	public void DefineSyntaxPattern(String SyntaxName, int flag, KonohaGrammar Grammar, KonohaGrammar Parent, boolean TopLevel) {
+	//		//KonohaSyntax Syntax = new KonohaSyntax(SyntaxName, MetaPattern, Grammar, "ParsePattern", "TypePattern");
+	//		//this.AddSyntax(Syntax, TopLevel);
+	//		if(this.PegParser == null) {
+	//			this.PegParser = new PegParser(this);
+	//		}
+	//		this.PegParser.AddSyntax(this, Parent, Grammar, TopLevel);
+	//	}
+
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
 		this.DefineSyntax(SyntaxName, flag, Callee, MethodName, MethodName);
 	}
@@ -253,7 +254,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-		.Do(tokenList, BeginIdx, EndIdx, BufferList);
+				.Do(tokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {
@@ -282,7 +283,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		TokenList BufferList = this.Tokenize(text, uline);
 		int next = BufferList.size();
 		this.PreProcess(BufferList, 0, next, BufferList);
-		UntypedNode UNode = this.Parser.ParseNewNode(this, null, BufferList, next, BufferList.size(), KonohaConst.AllowEmpty);
+		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
 		System.out.println("untyped tree: " + UNode);
 		while(UNode != null) {
 			TypeEnv Gamma = new TypeEnv(this, null);
@@ -311,16 +312,13 @@ public final class KonohaNameSpace implements KonohaConst {
 		try {
 			Class<?> ClassInfo = Class.forName(ClassName);
 			return ClassInfo.newInstance();
-		}
-		catch (ClassNotFoundException e1) {
+		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-		catch (InstantiationException e) {
+		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -331,19 +329,6 @@ public final class KonohaNameSpace implements KonohaConst {
 		KonohaBuilder Builder = (KonohaBuilder) this.LoadClass(Name);
 		if(Builder != null) {
 			this.Builder = Builder;
-			return true;
-		}
-		return false;
-	}
-
-	public boolean LoadParser(String Name) {
-		KonohaParser Parser = (KonohaParser) this.LoadClass(Name);
-		return this.LoadParser(Parser);
-	}
-
-	public boolean LoadParser(KonohaParser Parser) {
-		if(Parser != null) {
-			this.Parser = Parser;
 			return true;
 		}
 		return false;

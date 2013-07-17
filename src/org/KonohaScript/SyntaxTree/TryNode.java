@@ -21,7 +21,7 @@ public class TryNode extends TypedNode {
 		this.CatchBlock = new KonohaArray();
 		this.TargetException = new KonohaArray();
 	}
-	
+
 	public void addCatchBlock(TypedNode TargetException, TypedNode CatchBlock) { //FIXME
 		this.TargetException.add(TargetException);
 		this.CatchBlock.add(CatchBlock);

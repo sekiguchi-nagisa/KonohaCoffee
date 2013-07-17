@@ -18,7 +18,7 @@ public abstract class KParserTester extends KTestCase {
 		TokenList TokenList = new TokenList();
 		NameSpace.PreProcess(BufferList, 0, BufferList.size(), TokenList);
 		KonohaToken.DumpTokenList(0, "Dump::", TokenList, 0, TokenList.size());
-		UntypedNode UNode = NameSpace.Parser.ParseNewNode(NameSpace, null, TokenList, 0, TokenList.size(), 0);
+		UntypedNode UNode = UntypedNode.ParseNewNode(NameSpace, null, TokenList, 0, TokenList.size(), 0);
 
 		System.out.println("untyped tree: " + UNode);
 		TypeEnv Gamma = new TypeEnv(NameSpace, null);
