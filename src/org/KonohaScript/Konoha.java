@@ -157,14 +157,14 @@ public final class Konoha implements KonohaConst {
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);
 		this.DefaultNameSpace = new KonohaNameSpace(this, this.RootNameSpace);
-		if (BuilderClassName != null) {
+		if(BuilderClassName != null) {
 			this.DefaultNameSpace.LoadBuilder(BuilderClassName);
 		}
 	}
 
 	KonohaType LookupHostLangType(Class<?> ClassInfo) {
 		KonohaType TypeInfo = (KonohaType) this.ClassNameMap.get(ClassInfo.getName());
-		if (TypeInfo == null) {
+		if(TypeInfo == null) {
 			TypeInfo = new KonohaType(this, ClassInfo);
 			this.ClassNameMap.put(ClassInfo.getName(), TypeInfo);
 		}
