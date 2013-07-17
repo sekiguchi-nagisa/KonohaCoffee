@@ -372,12 +372,14 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	@Override
 	public boolean VisitLoop(LoopNode Node) {
 		Node.CondExpr.Evaluate(this);
-		Node.IterationExpr.Evaluate(this);
-		this.VisitList(Node.LoopBody);
+		if(Node.IterationExpr != null) {
+			Node.IterationExpr.Evaluate(this);
+		}
+		this.VisitBlock(Node.LoopBody);
 		String LoopBody = this.pop();
-		String IterExpr = this.pop();
+		String IterExpr = Node.IterationExpr != null ? this.pop() : "";
 		String CondExpr = this.pop();
-		this.push("while(" + CondExpr + ") {" + LoopBody + IterExpr + "}");
+		this.push("for(; " + CondExpr + "; " + IterExpr +") " + LoopBody);
 		return true;
 
 	}
@@ -418,16 +420,20 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean VisitTry(TryNode Node) {
-		this.VisitList(Node.TryBlock);
+		this.VisitBlock(Node.TryBlock);
 		for(int i = 0; i < Node.CatchBlock.size(); i++) {
 			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
 			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
-			this.VisitList(Block);
+			this.VisitBlock(Block);
+			this.VisitList(Exception);
 		}
-		this.VisitList(Node.FinallyBlock);
+		this.VisitBlock(Node.FinallyBlock);
 
 		String FinallyBlock = this.pop();
-		String CatchBlocks = this.PopNReverseWithPrefix(Node.CatchBlock.size(), "catch() ");
+		String CatchBlocks = "";
+		for(int i = 0; i < Node.CatchBlock.size(); i++) {
+			CatchBlocks += "catch(" + this.pop() + ") " + this.pop();
+		}
 		String TryBlock = this.pop();
 		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
 		return true;

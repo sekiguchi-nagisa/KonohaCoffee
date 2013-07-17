@@ -220,7 +220,8 @@ public class UntypedNode implements KonohaConst {
 	}
 
 	public final static int	LeftTerm	= 0;
-	public final static int	RightTerm	= 1;
+	public final static int	Operator	= 1;
+	public final static int	RightTerm	= 2;
 
 	/* 1 + 2 * 3 */
 	/* 1 * 2 + 3 */

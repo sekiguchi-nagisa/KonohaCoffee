@@ -48,9 +48,11 @@ import org.KonohaScript.SyntaxTree.ErrorNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
+import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.OrNode;
 import org.KonohaScript.SyntaxTree.ReturnNode;
+import org.KonohaScript.SyntaxTree.TryNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaConst {
@@ -344,7 +346,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public final static int	MethodCallBaseClass	= 0;
-	public final static int	MethodCallName		= 1;
+	public final static int	MethodCallName	= 1;
 	public final static int	MethodCallParam		= 2;
 
 	private UntypedNode UNodeFromToken(KonohaNameSpace NS, KonohaToken Token) {
@@ -356,7 +358,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	/**
 	 * $Symbol [ "." $Symbol ] () => [(reciever:$Symbol), method@0, (...)]
-	 * 
+	 *
 	 * @return
 	 */
 	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -366,12 +368,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int MemberIdx = BeginIdx + 1;
 		boolean isGlobal = false;
 
-		int ParamIdx = UNode.MatchSyntax(-1, "$Member", TokenList, MemberIdx, EndIdx, ParseOption);
+		int ParamIdx = UNode.MatchSyntax(MethodCallName, "$Member", TokenList, MemberIdx, EndIdx, ParseOption);
 
 		if(ParamIdx == -1) {
 			// Global method call
 			int SymbolIdx = BeginIdx;
-			ParamIdx = UNode.MatchSyntax(-1, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
+			ParamIdx = UNode.MatchSyntax(MethodCallName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 			isGlobal = true;
 		}
 
@@ -425,9 +427,16 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return null;
 	}
 
+	private int ParamSizeFromNodeList(KonohaArray NodeList){
+		return NodeList.size() - 2;
+	}
+	private UntypedNode GetUntypedParamNodeFromNodeList(KonohaArray NodeList, int ParamIndex){
+		return (UntypedNode) NodeList.get(ParamIndex + 2);
+	}
+
 	private TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, TypedNode BaseNode, KonohaType TypeInfo) {
 		KonohaArray NodeList = UNode.NodeList;
-		int ParamSize = NodeList.size() - 1;
+		int ParamSize = ParamSizeFromNodeList(NodeList);
 		KonohaToken KeyToken = UNode.KeyToken;
 		KonohaMethod Method = null;
 		Method = Gamma.GammaNameSpace.LookupMethod(KeyToken.ParsedText, ParamSize);
@@ -445,9 +454,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeMethodEachParam(TypeEnv Gamma, KonohaType BaseType, ApplyNode WorkingNode, KonohaArray NodeList) {
 		KonohaMethod Method = WorkingNode.Method;
-		for(int ParamIdx = 0; ParamIdx < NodeList.size() - 1; ParamIdx++) {
+		int ParamSize = ParamSizeFromNodeList(NodeList);
+		for(int ParamIdx = 0; ParamIdx < ParamSize; ParamIdx++) {
 			KonohaType ParamType = Method.GetParamType(BaseType, ParamIdx);
-			UntypedNode UntypedParamNode = (UntypedNode) NodeList.get(ParamIdx + 1);
+			UntypedNode UntypedParamNode = GetUntypedParamNodeFromNodeList(NodeList, ParamIdx);
 			TypedNode ParamNode;
 			if(UntypedParamNode != null) {
 				ParamNode = TypeEnv.TypeCheck(Gamma, UntypedParamNode, ParamType, DefaultTypeCheckPolicy);
@@ -659,7 +669,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int SymbolIdx = BeginIdx + 1;
 		int AfterSymbolIdx = UNode.MatchSyntax(-1, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		if(AfterSymbolIdx == -1) {
-			return -1;
+			return NoMatch;
 		}
 		// System.out.printf("SymbolIdx=%d,  AfterSymbolIdx=%d, EndIdx=%d\n",
 		// SymbolIdx, AfterSymbolIdx, EndIdx);
@@ -700,7 +710,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int ParamIdx = UNode.MatchSyntax(MethodDeclName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		int BlockIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
 		int NextIdx = UNode.MatchSyntax(MethodDeclBlock, "{}", TokenList, BlockIdx, EndIdx, ParseOption);
-		if(NextIdx != -1) {
+		if(NextIdx != NoMatch) {
 			KonohaToken GroupToken = TokenList.get(ParamIdx);
 			TokenList GroupList = GroupToken.GetGroupList();
 			UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
@@ -799,16 +809,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return Node;
 	}
 
-	//	public int ParseEmpty(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-	//		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-	//		return NoMatch;
-	//	}
-	//
-	//	public TypedNode TypeEmpty(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-	//		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-	//		return null;
-	//	}
-
 	public int ParseUNUSED(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return NoMatch;
@@ -817,6 +817,77 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public TypedNode TypeUNUSED(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		return null;
+	}
+
+	public final static int	LoopCond	= 0;
+	public final static int	LoopBody	= 1;
+	public final static int	LoopIter	= 2;
+
+	public int ParseWhile(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		int NextIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, BeginIdx + 1, EndIdx, AllowEmpty);
+		NextIdx = UNode.MatchPattern(LoopCond, "$expression", TokenList, NextIdx, EndIdx, ParseOption);
+		NextIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, NextIdx, EndIdx, AllowEmpty);
+		NextIdx = UNode.MatchPattern(LoopBody, "$block", TokenList, NextIdx, EndIdx, ParseOption);
+		return NextIdx;
+	}
+
+	public TypedNode TypeWhile(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		TypedNode CondNode = UNode.TypeNodeAt(LoopCond, Gamma, Gamma.BooleanType, 0);
+		if(CondNode.IsError())
+			return CondNode;
+		TypedNode BodyNode = UNode.TypeNodeAt(LoopBody, Gamma, TypeInfo, 0);
+		return new LoopNode(BodyNode.TypeInfo, CondNode, BodyNode, null);
+	}
+
+	public final static int	TryBlock		= 0;
+	public final static int	TargetExpressions		= 1;
+	public final static int	CatchBlocks		= 2;
+	public final static int	FinallyBlock	= 3;
+
+	public int ParseTry(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		int CatchIdx = UNode.MatchSingleBlock(TryBlock, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		int CatchExprIdx = CatchIdx;
+		int CatchBlockIdx = CatchIdx;
+		while(true){
+			CatchIdx = UntypedNode.SkipIndent(TokenList, CatchIdx, EndIdx, ParseOption | SkipIndent);
+			CatchExprIdx = UNode.MatchKeyword(-1, "catch", TokenList, CatchIdx, EndIdx, AllowEmpty);
+			if(CatchIdx == CatchExprIdx) { // skiped
+				break;
+			} else {
+				CatchBlockIdx = UNode.MatchCond(TargetExpressions, TokenList, CatchExprIdx, EndIdx, ParseOption);
+				CatchIdx = UNode.MatchSingleBlock(CatchBlocks, TokenList, CatchBlockIdx, EndIdx, ParseOption);
+			}
+		}
+		int FinallyIdx = CatchIdx;
+		FinallyIdx = UntypedNode.SkipIndent(TokenList, FinallyIdx, EndIdx, ParseOption | SkipIndent);
+		int FinallyBlockIdx = UNode.MatchKeyword(-1, "finally", TokenList, FinallyIdx, EndIdx, AllowEmpty);
+		if(FinallyIdx == FinallyBlockIdx) { // skiped
+			UNode.SetAtNode(FinallyBlock, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, FinallyBlockIdx));
+		} else {
+			return UNode.MatchSingleBlock(FinallyBlock, TokenList, FinallyBlockIdx, EndIdx, ParseOption);
+		}
+		return FinallyBlockIdx;
+	}
+
+	public TypedNode TypeTry(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		TypedNode TryBlockNode = UNode.TypeNodeAt(TryBlock, Gamma, Gamma.BooleanType, 0);
+		if(TryBlockNode.IsError())
+			return TryBlockNode;
+
+		TypedNode FinallyBlockNode = UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
+		TryNode TypedTryNode = new TryNode(TryBlockNode.TypeInfo, TryBlockNode, FinallyBlockNode);
+
+		TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocks, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
+		TypedNode TargetExpressionNode = UNode.TypeNodeAt(TargetExpressions, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
+		CatchBlockNode = CatchBlockNode.IsError() ? null : CatchBlockNode;
+		TargetExpressionNode = TargetExpressionNode.IsError() ? null : TargetExpressionNode;
+		while(CatchBlockNode != null && TargetExpressionNode != null){
+			TypedTryNode.addCatchBlock(TargetExpressionNode, CatchBlockNode);
+			CatchBlockNode = CatchBlockNode.NextNode;
+			TargetExpressionNode = TargetExpressionNode.NextNode;
+		}
+
+		return TypedTryNode;
 	}
 
 	@Override
@@ -895,6 +966,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
+
+		NameSpace.DefineSyntax("while", Statement, this, "While");
+
+		NameSpace.DefineSyntax("try", Statement, this, "Try");
 
 		// Load Class Syntax
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
