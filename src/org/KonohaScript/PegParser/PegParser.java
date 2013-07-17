@@ -45,9 +45,22 @@ public class PegParser {
 		return UNode;
 	}
 
-	void Init() {
-		this.Cursor = 0;
-		this.EndIdx = 0;
+	public int MatchPattern(String SyntaxName, UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx) {
+		this.Init(BeginIdx, EndIdx);
+		this.EndIdx = this.Match(SyntaxName, TokenList);
+		if(EndIdx > 0) {
+			UntypedNode ret = null;
+			if(this.UNodeStack.size() > 0) {
+				ret = (UntypedNode) this.Pop();
+			}
+			UNode.Copy(ret);
+		}
+		return EndIdx;
+	}
+
+	void Init(int BeginIdx, int EndIdx) {
+		this.Cursor = BeginIdx;
+		this.EndIdx = EndIdx;
 		this.ThunkPos = 0;
 		this.ThunkObjects.clear();
 		this.ThunkRangeBegins.clear();
@@ -136,7 +149,7 @@ public class PegParser {
 	}
 
 	public UntypedNode Parse(TokenList TokenList, int BeginIdx, int EndIdx, Integer EndIdxRef) {
-		this.Init();
+		this.Init(BeginIdx, EndIdx);
 		this.EndIdx = this.MatchSyntax(TokenList, BeginIdx, EndIdx);
 		if(EndIdx == -1) {
 			return null;
