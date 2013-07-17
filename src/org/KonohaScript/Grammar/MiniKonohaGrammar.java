@@ -819,80 +819,80 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
-		// Define Types
-		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType); // FIXME
-		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
-		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
-		NameSpace.DefineSymbol("String", NameSpace.KonohaContext.StringType);
-
-		// Define Constants
-		NameSpace.DefineSymbol("true", new Boolean(true));
-		NameSpace.DefineSymbol("false", new Boolean(false));
-
-		NameSpace.AddTokenFunc(" \t", this, "WhiteSpaceToken");
-		NameSpace.AddTokenFunc("\n", this, "IndentToken");
-		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
-		NameSpace.AddTokenFunc("Aa", this, "SymbolToken");
-		NameSpace.AddTokenFunc(".", this, "MemberToken");
-		NameSpace.AddTokenFunc("\"", this, "StringLiteralToken");
-		NameSpace.AddTokenFunc("1", this, "NumberLiteralToken");
-
-		// Macro
-		//NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
-		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
-		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
-		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
-		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
-		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
-		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
-		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
-		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");
-		// ns.AddSymbol(symbol, constValue);
-
-		NameSpace.DefineSyntax("*", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("/", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("%", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
-
-		NameSpace.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator",
-				"MethodCall");
-		NameSpace.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator",
-				"MethodCall");
-
-		NameSpace.DefineSyntax("<", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("<=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax(">", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax(">=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-
-		NameSpace.DefineSyntax("==", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("!=", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
-
-		NameSpace.DefineSyntax("=", BinaryOperator | Precedence_CStyleAssign | LeftJoin, this, "UNUSED", "Assign");
-
-		NameSpace.DefineSyntax("&&", BinaryOperator | Precedence_CStyleAND, this, "UNUSED", "AndOperator");
-		NameSpace.DefineSyntax("||", BinaryOperator | Precedence_CStyleOR, this, "UNUSED", "OrOperator");
-		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
-		NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
-
-		NameSpace.DefineSyntax("$Const", Term, this, "Const");
-		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
-		NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
-
-		NameSpace.DefineSyntax("$MethodCall", Precedence_CStyleSuffixCall, this, "MethodCall");
-		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
-		NameSpace.DefineSyntax("$New", Term, this, "New");
-
-		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
-		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
-		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StringLiteral");
-		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
-
-		NameSpace.DefineSyntax("{}", Statement, this, "Block");
-
-		NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
-		NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");
-
-		NameSpace.DefineSyntax("if", Statement, this, "If");
-		NameSpace.DefineSyntax("return", Statement, this, "Return");
+		//		// Define Types
+		//		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType); // FIXME
+		//		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
+		//		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
+		//		NameSpace.DefineSymbol("String", NameSpace.KonohaContext.StringType);
+		//
+		//		// Define Constants
+		//		NameSpace.DefineSymbol("true", new Boolean(true));
+		//		NameSpace.DefineSymbol("false", new Boolean(false));
+		//
+		//		NameSpace.AddTokenFunc(" \t", this, "WhiteSpaceToken");
+		//		NameSpace.AddTokenFunc("\n", this, "IndentToken");
+		//		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "SingleSymbolToken");
+		//		NameSpace.AddTokenFunc("Aa", this, "SymbolToken");
+		//		NameSpace.AddTokenFunc(".", this, "MemberToken");
+		//		NameSpace.AddTokenFunc("\"", this, "StringLiteralToken");
+		//		NameSpace.AddTokenFunc("1", this, "NumberLiteralToken");
+		//
+		//		// Macro
+		//		//NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
+		//		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
+		//		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
+		//		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
+		//		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
+		//		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
+		//		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
+		//		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
+		//		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");
+		//		// ns.AddSymbol(symbol, constValue);
+		//
+		//		NameSpace.DefineSyntax("*", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("/", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("%", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator",
+		//				"MethodCall");
+		//		NameSpace.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator",
+		//				"MethodCall");
+		//
+		//		NameSpace.DefineSyntax("<", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("<=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax(">", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax(">=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("==", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("!=", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("=", BinaryOperator | Precedence_CStyleAssign | LeftJoin, this, "UNUSED", "Assign");
+		//
+		//		NameSpace.DefineSyntax("&&", BinaryOperator | Precedence_CStyleAND, this, "UNUSED", "AndOperator");
+		//		NameSpace.DefineSyntax("||", BinaryOperator | Precedence_CStyleOR, this, "UNUSED", "OrOperator");
+		//		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
+		//		NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
+		//
+		//		NameSpace.DefineSyntax("$Const", Term, this, "Const");
+		//		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
+		//		NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("$MethodCall", Precedence_CStyleSuffixCall, this, "MethodCall");
+		//		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
+		//		NameSpace.DefineSyntax("$New", Term, this, "New");
+		//
+		//		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
+		//		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
+		//		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StringLiteral");
+		//		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
+		//
+		//		NameSpace.DefineSyntax("{}", Statement, this, "Block");
+		//
+		//		NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
+		//		NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");
+		//
+		//		NameSpace.DefineSyntax("if", Statement, this, "If");
+		//		NameSpace.DefineSyntax("return", Statement, this, "Return");
 
 		// Load Class Syntax
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
