@@ -567,16 +567,17 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	IfElse	= 2;
 
 	public int ParseIf(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int ThenBlockIdx = UNode.MatchCond(IfCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
-		int ElseIdx = UNode.MatchSingleBlock(IfThen, TokenList, ThenBlockIdx, EndIdx, ParseOption);
-		ElseIdx = UntypedNode.SkipIndent(TokenList, ElseIdx, EndIdx, ParseOption | SkipIndent);
-		int ElseBlockIdx = UNode.MatchKeyword(-1, "else", TokenList, ElseIdx, EndIdx, AllowEmpty);
-		if(ElseIdx == ElseBlockIdx) { // skiped
-			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, ElseBlockIdx));
+		int NextIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, BeginIdx + 1, EndIdx, AllowEmpty);
+		NextIdx = UNode.MatchPattern(IfCond, "$expression", TokenList, NextIdx, EndIdx, ParseOption);
+		NextIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, NextIdx, EndIdx, AllowEmpty);
+		NextIdx = UNode.MatchPattern(IfThen, "$block", TokenList, NextIdx, EndIdx, ParseOption);
+		int NextIdx2 = UNode.MatchKeyword(-1, "else", TokenList, NextIdx, EndIdx, AllowEmpty);
+		if(NextIdx == NextIdx2 && NextIdx != -1) { // skiped
+			UNode.SetAtNode(IfElse, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, NextIdx2));
 		} else {
-			return UNode.MatchSingleBlock(IfElse, TokenList, ElseBlockIdx, EndIdx, ParseOption);
+			NextIdx2 = UNode.MatchPattern(IfElse, "$block", TokenList, NextIdx2, EndIdx, ParseOption);
 		}
-		return ElseBlockIdx;
+		return NextIdx2;
 	}
 
 	public TypedNode TypeIf(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
@@ -895,8 +896,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSymbol("String", NameSpace.KonohaContext.StringType);
 
 		// Define Constants
-		NameSpace.DefineSymbol("true", new Boolean(true));
-		NameSpace.DefineSymbol("false", new Boolean(false));
+		//NameSpace.DefineSymbol("true", new Boolean(true));
+		//NameSpace.DefineSymbol("false", new Boolean(false));
 
 		NameSpace.AddTokenFunc(" \t", this, "WhiteSpaceToken");
 		NameSpace.AddTokenFunc("\n", this, "IndentToken");
@@ -908,11 +909,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		// Macro
 		//NameSpace.DefineMacro("(", this, "OpenParenthesisMacro");
-		NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
-		NameSpace.DefineMacro("{", this, "OpenBraceMacro");
-		NameSpace.DefineMacro("}", this, "CloseBraceMacro");
-		NameSpace.DefineMacro("[", this, "OpenBracketMacro");
-		NameSpace.DefineMacro("]", this, "CloseBracketMacro");
+		//NameSpace.DefineMacro(")", this, "CloseParenthesisMacro");
+		//NameSpace.DefineMacro("{", this, "OpenBraceMacro");
+		//NameSpace.DefineMacro("}", this, "CloseBraceMacro");
+		//NameSpace.DefineMacro("[", this, "OpenBracketMacro");
+		//NameSpace.DefineMacro("]", this, "CloseBracketMacro");
 		NameSpace.DefineMacro("=", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("&", this, "MergeOperatorMacro");
 		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");

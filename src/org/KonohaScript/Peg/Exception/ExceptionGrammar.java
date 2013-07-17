@@ -8,6 +8,6 @@ public class ExceptionGrammar extends KonohaGrammar {
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
-		NameSpace.PegParser.MixSyntax(new statementSyntax(), new ExceptionStatementSyntax(), false);
+		NameSpace.MergePatternSyntax(new statementSyntax(), new ExceptionStatementSyntax(), false);
 	}
 }

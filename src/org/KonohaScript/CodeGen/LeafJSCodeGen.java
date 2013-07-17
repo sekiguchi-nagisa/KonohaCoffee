@@ -10,6 +10,7 @@ import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.SyntaxTree.AndNode;
@@ -474,7 +475,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		if(Ret == null) {
 			Ret = "";
 		}
-		//System.out.println(Ret.toString());
+		if(KonohaDebug.UseBuiltInTest) {
+			System.out.println(Ret.toString());
+		}
 		return Ret;
 	}
 

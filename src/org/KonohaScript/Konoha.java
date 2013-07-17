@@ -193,6 +193,7 @@ public final class Konoha implements KonohaConst {
 		// KonohaContext.Eval("1+2*3", 3333);
 		//KonohaContext.Eval("class X {};", 0);
 		//KonohaContext.Eval("int fibo(int n) {\n" + "\tif(n < 3) return 1;\n" + "\treturn fibo(n-1)+fibo(n-2);\n" + "}", 1000);
-		KonohaContext.Eval("int f(int a, int b) { return a + b; }", 0);
+		//KonohaContext.Eval("int f(int a, int b) { return a + b; }", 0);
+		KonohaContext.Eval("if(true) { 1; } else { 3; }", 0);
 	}
 }

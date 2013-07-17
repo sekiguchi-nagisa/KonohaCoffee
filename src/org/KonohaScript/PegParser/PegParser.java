@@ -45,9 +45,23 @@ public class PegParser {
 		return UNode;
 	}
 
-	void Init() {
-		this.Cursor = 0;
-		this.EndIdx = 0;
+	public int MatchPattern(String SyntaxName, UntypedNode[] Ref, TokenList TokenList, int BeginIdx, int EndIdx) {
+		this.Init(BeginIdx, EndIdx);
+		int NextIdx = this.Match(SyntaxName, TokenList);
+		if(NextIdx > 0) {
+			UntypedNode ret = null;
+			NextIdx = this.ConstructSyntaxTree(TokenList, BeginIdx, EndIdx);
+			if(this.UNodeStack.size() > 0) {
+				ret = (UntypedNode) this.Pop();
+			}
+			Ref[0] = ret;
+		}
+		return NextIdx;
+	}
+
+	void Init(int BeginIdx, int EndIdx) {
+		this.Cursor = BeginIdx;
+		this.EndIdx = EndIdx;
 		this.ThunkPos = 0;
 		this.ThunkObjects.clear();
 		this.ThunkRangeBegins.clear();
@@ -80,9 +94,9 @@ public class PegParser {
 		if(Index < this.EndIdx) {
 			KonohaToken Token = TokenList.get(Index);
 			KonohaSyntax Syntax = Token.ResolvedSyntax;
-			//	if(Syntax == null) {
-			//		System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
-			//	}
+			if(Syntax == null) {
+				System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
+			}
 			//System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
 			if(SyntaxName.equals(Syntax.SyntaxName)) {
 				this.Cursor = this.Cursor + 1;
@@ -107,7 +121,7 @@ public class PegParser {
 		this.EndIdx = EndIdx;
 		int Pos = this.RootSyntax.Match(this, TokenList);
 		if(Pos != BeginIdx) {
-			System.out.println("BeginIdx=" + BeginIdx + "CurrentIdx=" + Pos + ", EndIdx=" + this.EndIdx);
+			//System.out.println("BeginIdx=" + BeginIdx + "CurrentIdx=" + Pos + ", EndIdx=" + this.EndIdx);
 			return this.ConstructSyntaxTree(TokenList, BeginIdx, EndIdx);
 		}
 		for(int i = 0; i < this.EntryPoints.size(); i++) {
@@ -136,7 +150,7 @@ public class PegParser {
 	}
 
 	public UntypedNode Parse(TokenList TokenList, int BeginIdx, int EndIdx, Integer EndIdxRef) {
-		this.Init();
+		this.Init(BeginIdx, EndIdx);
 		this.EndIdx = this.MatchSyntax(TokenList, BeginIdx, EndIdx);
 		if(EndIdx == -1) {
 			return null;

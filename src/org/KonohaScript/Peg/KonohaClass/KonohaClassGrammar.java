@@ -8,6 +8,6 @@ public class KonohaClassGrammar extends KonohaGrammar {
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
-		NameSpace.PegParser.MixSyntax(new TopLevelDefinitionSyntax(), new ClassDefinitionSyntax(), false);
+		NameSpace.MergePatternSyntax(new TopLevelDefinitionSyntax(), new ClassDefinitionSyntax(), false);
 	}
 }

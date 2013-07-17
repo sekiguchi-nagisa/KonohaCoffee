@@ -10,71 +10,71 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {
-		KonohaType baseClass_Process = ns.LookupHostLangType(KonohaProcess.class);
+		KonohaType ProcessType = ns.LookupHostLangType(KonohaProcess.class);
+		KonohaType ProcessMonitorType = ns.LookupHostLangType(KonohaProcessMonitor.class);
+		ns.DefineSymbol("Process", ProcessType);
+		ns.DefineSymbol("ProcessMonitor", ProcessMonitorType);
 
 		// define Constructor
 		String MN_constructor = "New";
 		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
-		baseClass_Process.DefineMethod(0, MN_constructor, Process_String_Param, this, MN_constructor);
+		ProcessType.DefineMethod(0, MN_constructor, Process_String_Param, this, MN_constructor);
 
 		KonohaParam Process_String_boolean_Param = KonohaParam.ParseOf(ns, "Process String x boolean y");
-		baseClass_Process.DefineMethod(0, MN_constructor, Process_String_boolean_Param, this, MN_constructor);
+		ProcessType.DefineMethod(0, MN_constructor, Process_String_boolean_Param, this, MN_constructor);
 
 		// define SetArgument()
 		String MN_SetArgument = "SetArgument";
 		KonohaParam void_Strings_Param = KonohaParam.ParseOf(ns, "void String[] x");
-		baseClass_Process.DefineMethod(0, MN_SetArgument, void_Strings_Param, this, MN_SetArgument);
+		ProcessType.DefineMethod(0, MN_SetArgument, void_Strings_Param, this, MN_SetArgument);
 
 		KonohaParam void_String_Param = KonohaParam.ParseOf(ns, "void String x");
-		baseClass_Process.DefineMethod(0, MN_SetArgument, void_String_Param, this, MN_SetArgument);
+		ProcessType.DefineMethod(0, MN_SetArgument, void_String_Param, this, MN_SetArgument);
 
 		// define Start()
 		String MN_Start = "Start";
 		KonohaParam void_Param = KonohaParam.ParseOf(ns, "void");
-		baseClass_Process.DefineMethod(0, MN_Start, void_Param, this, MN_Start);
+		ProcessType.DefineMethod(0, MN_Start, void_Param, this, MN_Start);
 
 		// define Pipe()
 		String MN_Pipe = "Pipe";
 		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
-		baseClass_Process.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
+		ProcessType.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
 
 		// define ReadFromFile()
 		String MN_ReadFromFile = "ReadFromFile";
-		baseClass_Process.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);
+		ProcessType.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);
 
 		// define GetOut()
 		String MN_GetOut = "GetOut";
 		KonohaParam String_Param = KonohaParam.ParseOf(ns, "String");
-		baseClass_Process.DefineMethod(0, MN_GetOut, String_Param, this, MN_GetOut);
+		ProcessType.DefineMethod(0, MN_GetOut, String_Param, this, MN_GetOut);
 
 		// define GetError()
 		String MN_GetError = "GetError";
-		baseClass_Process.DefineMethod(0, MN_GetError, String_Param, this, MN_GetError);
+		ProcessType.DefineMethod(0, MN_GetError, String_Param, this, MN_GetError);
 
 		// define WaitFor()
 		String MN_WaitFor = "WaitFor";
 		KonohaParam void_int_Param = KonohaParam.ParseOf(ns, "void int x");
-		baseClass_Process.DefineMethod(0, MN_WaitFor, void_int_Param, this, MN_WaitFor);
+		ProcessType.DefineMethod(0, MN_WaitFor, void_int_Param, this, MN_WaitFor);
 
 		// define GetRetValue()
 		String MN_GetRetValue = "GetRetValue";
 		KonohaParam int_Param = KonohaParam.ParseOf(ns, "int");
-		baseClass_Process.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
-
-
-		KonohaType baseClass_ProcessMonitor = ns.LookupHostLangType(KonohaProcessMonitor.class);
+		ProcessType.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
 
 		// define Constructor
 		KonohaParam ProcessMonitor_Param = KonohaParam.ParseOf(ns, "ProcessMonitor");
-		baseClass_ProcessMonitor.DefineMethod(0, MN_constructor, ProcessMonitor_Param, this, MN_constructor);
+		ProcessMonitorType.DefineMethod(0, MN_constructor, ProcessMonitor_Param, this, MN_constructor);
 
 		// define SetProcess
 		String MN_SetProcess = "SetProcess";
-		baseClass_ProcessMonitor.DefineMethod(0, MN_SetProcess, void_Process_Param, this, MN_SetProcess);
+		ProcessMonitorType.DefineMethod(0, MN_SetProcess, void_Process_Param, this, MN_SetProcess);
 
 		// define ThrowException
 		String MN_ThrowException = "ThrowException";
-		baseClass_ProcessMonitor.DefineMethod(0, MN_ThrowException, void_Param, this, MN_ThrowException);
+		ProcessMonitorType.DefineMethod(0, MN_ThrowException, void_Param, this, MN_ThrowException);
 	}
 
 	public static KonohaProcess New(KonohaProcess Process, String Command) {

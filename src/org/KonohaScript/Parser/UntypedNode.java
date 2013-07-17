@@ -183,10 +183,14 @@ public class UntypedNode implements KonohaConst {
 			return NoMatch;
 		}
 		EndIdx = TokenConverter.GetComposedListIndex(TokenList, BeginIdx, EndIdx, EndIdxRef.intValue());
-		this.KeyToken = UNode2.KeyToken;
-		this.NodeList = UNode2.NodeList;
-		this.Syntax = UNode2.Syntax;
+		this.Copy(UNode2);
 		return EndIdx;
+	}
+
+	public void Copy(UntypedNode Source) {
+		this.KeyToken = Source.KeyToken;
+		this.NodeList = Source.NodeList;
+		this.Syntax = Source.Syntax;
 	}
 
 	public int ParseByKeyToken(KonohaToken KeyToken, TokenList TokenList, int BeginIdx, int EndIdx) {
@@ -450,6 +454,23 @@ public class UntypedNode implements KonohaConst {
 			}
 		}
 		return this.ReportExpectedAfter(TokenList, BeginIdx, EndIdx, SyntaxName, ParseOption);
+	}
+
+	public int MatchPattern(int Index, String SyntaxName, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		if(BeginIdx < 0) {
+			return -1;
+		}
+		BeginIdx = UntypedNode.SkipIndent(TokenList, BeginIdx, EndIdx, ParseOption);
+		if(BeginIdx < EndIdx) {
+			UntypedNode[] Ref = new UntypedNode[1];
+			int NextIdx = this.NodeNameSpace.PegParser.MatchPattern(SyntaxName, Ref, TokenList, BeginIdx, EndIdx);
+			if(NextIdx > 0) {
+				this.SetAtNode(Index, Ref[0]);
+				return NextIdx;
+			}
+		}
+		return this.ReportExpectedAfter(TokenList, BeginIdx, EndIdx, SyntaxName, ParseOption);
+
 	}
 
 	public final TypedNode TypeNodeAt(int Index, TypeEnv Gamma, KonohaType TypeInfo, int TypeCheckPolicy) {

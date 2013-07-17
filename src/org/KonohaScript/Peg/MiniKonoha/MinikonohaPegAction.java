@@ -175,11 +175,9 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionDefinition");
 		UNode.SetAtNode(FunctionSignatureOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		KonohaArray Body = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode Body = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if(Body.size() > 0) {
-			UNode.SetAtNode(FunctionBodyOffset, (UntypedNode) Body.get(0));
-		}
+		UNode.SetAtNode(FunctionBodyOffset, Body);
 		if(NodeSize > 0) {
 			Parser.ReAssign(NodeSize, UNode);
 		}
@@ -776,7 +774,11 @@ class statementsSyntax0 extends SyntaxAcceptor {
 			UntypedNode Next = (UntypedNode) List.get(i + 1);
 			Current.LinkNode(Next);
 		}
-		Parser.ReAssign(NodeSize, List);
+		UntypedNode Ret = null;
+		if(List.size() > 0) {
+			Ret = (UntypedNode) List.get(0);
+		}
+		Parser.ReAssign(NodeSize, Ret);
 		return EndIdx;
 	}
 
@@ -816,17 +818,13 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
 		UNode.SetAtNode(IfConditionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		KonohaArray ThenBlock = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode ThenBlock = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		KonohaArray ElseBlock = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode ElseBlock = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 
-		if(ThenBlock.size() > 0) {
-			UNode.SetAtNode(IfThenBlockOffset, (UntypedNode) ThenBlock.get(0));
-		}
-		if(ElseBlock.size() > 0) {
-			UNode.SetAtNode(IfElseBlockOffset, (UntypedNode) ElseBlock.get(0));
-		}
+		UNode.SetAtNode(IfThenBlockOffset, ThenBlock);
+		UNode.SetAtNode(IfElseBlockOffset, ElseBlock);
 		Parser.ReAssign(NodeSize, UNode);
 
 		return EndIdx;
@@ -871,12 +869,10 @@ class ifStatementSyntax1 extends SyntaxAcceptor {
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
 		UNode.SetAtNode(IfConditionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		KonohaArray ThenBlock = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode ThenBlock = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 
-		if(ThenBlock.size() > 0) {
-			UNode.SetAtNode(IfThenBlockOffset, (UntypedNode) ThenBlock.get(0));
-		}
+		UNode.SetAtNode(IfThenBlockOffset, ThenBlock);
 		UNode.SetAtNode(IfElseBlockOffset, null);
 		Parser.ReAssign(NodeSize, UNode);
 
