@@ -107,7 +107,7 @@ public class PegParser {
 		this.EndIdx = EndIdx;
 		int Pos = this.RootSyntax.Match(this, TokenList);
 		if(Pos != BeginIdx) {
-			System.out.println("BeginIdx=" + BeginIdx + "CurrentIdx=" + Pos + ", EndIdx=" + this.EndIdx);
+			//System.out.println("BeginIdx=" + BeginIdx + "CurrentIdx=" + Pos + ", EndIdx=" + this.EndIdx);
 			return this.ConstructSyntaxTree(TokenList, BeginIdx, EndIdx);
 		}
 		for(int i = 0; i < this.EntryPoints.size(); i++) {

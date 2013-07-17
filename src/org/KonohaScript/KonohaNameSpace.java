@@ -36,6 +36,7 @@ import org.KonohaScript.Parser.LexicalConverter;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.PegParser.PegParser;
+import org.KonohaScript.PegParser.SyntaxPattern;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public final class KonohaNameSpace implements KonohaConst {
@@ -252,9 +253,9 @@ public final class KonohaNameSpace implements KonohaConst {
 		// }
 	}
 
-	public int PreProcess(TokenList tokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
+	public int PreProcess(TokenList TokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-				.Do(tokenList, BeginIdx, EndIdx, BufferList);
+				.Do(TokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {
@@ -340,6 +341,14 @@ public final class KonohaNameSpace implements KonohaConst {
 		//1. (ClassName, MethodName) = MethodName.split(".")
 		//2. find MethodName(arg0, arg1, ... , arg_ParamSize)
 		return null;
+	}
+
+	public void AddPatternSyntax(SyntaxPattern Parent, SyntaxPattern Syntax, boolean TopLevel) {
+		this.PegParser.AddSyntax(this, Parent, Syntax, TopLevel);
+	}
+
+	public void MergePatternSyntax(SyntaxPattern Parent, SyntaxPattern NewSyntax, boolean TopLevel) {
+		this.PegParser.MixSyntax(Parent, NewSyntax, TopLevel);
 	}
 
 }

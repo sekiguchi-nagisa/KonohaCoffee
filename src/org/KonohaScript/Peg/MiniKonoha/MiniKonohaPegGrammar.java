@@ -131,7 +131,7 @@ public class MiniKonohaPegGrammar extends KonohaGrammar implements KonohaConst {
 
 		new KonohaInt().MakeDefinition(NameSpace);
 
-		NameSpace.PegParser.AddSyntax(NameSpace, null, new SourceCodeSyntax(), true);
+		NameSpace.AddPatternSyntax(null, new SourceCodeSyntax(), true);
 	}
 
 }
