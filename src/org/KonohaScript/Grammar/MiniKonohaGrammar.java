@@ -401,8 +401,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
-		//UntypedNode methodNode = UNodeFromToken(UNode.NodeNameSpace, MethodToken);
-		//UNode.SetAtNode(MethodCallName, methodNode);
+		UntypedNode methodNode = UNodeFromToken(UNode.NodeNameSpace, MethodToken);
+		UNode.SetAtNode(MethodCallName, methodNode);
 
 		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
 		// System.out.printf("SymbolIdx=%d,  ParamIdx=%d, BlockIdx=%d, NextIdx=%d, EndIdx=%d\n",
@@ -840,22 +840,25 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public final static int	TryBlock		= 0;
-	public final static int	TargetExpressions		= 1;
-	public final static int	CatchBlocks		= 2;
-	public final static int	FinallyBlock	= 3;
+	public final static int	FinallyBlock	= 1;
+	public final static int	TargetExceptionsBaseIdx	= 2;
+	public final static int	CatchBlocksBaseIdx		= 3;
+
 
 	public int ParseTry(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int CatchIdx = UNode.MatchSingleBlock(TryBlock, TokenList, BeginIdx + 1, EndIdx, ParseOption);
+		int CatchIdx = UNode.MatchPattern(TryBlock, "$block", TokenList, BeginIdx + 1, EndIdx, ParseOption);
 		int CatchExprIdx = CatchIdx;
 		int CatchBlockIdx = CatchIdx;
-		while(true){
+		for(int i = 0;; i += 2){
 			CatchIdx = UntypedNode.SkipIndent(TokenList, CatchIdx, EndIdx, ParseOption | SkipIndent);
 			CatchExprIdx = UNode.MatchKeyword(-1, "catch", TokenList, CatchIdx, EndIdx, AllowEmpty);
 			if(CatchIdx == CatchExprIdx) { // skiped
 				break;
 			} else {
-				CatchBlockIdx = UNode.MatchCond(TargetExpressions, TokenList, CatchExprIdx, EndIdx, ParseOption);
-				CatchIdx = UNode.MatchSingleBlock(CatchBlocks, TokenList, CatchBlockIdx, EndIdx, ParseOption);
+				CatchBlockIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, CatchExprIdx, EndIdx, AllowEmpty);
+				CatchBlockIdx = UNode.MatchPattern(TargetExceptionsBaseIdx + i, "$expression", TokenList, CatchBlockIdx, EndIdx, ParseOption);
+				CatchBlockIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, CatchBlockIdx, EndIdx, AllowEmpty);
+				CatchIdx = UNode.MatchPattern(CatchBlocksBaseIdx + i, "$block", TokenList, CatchBlockIdx, EndIdx, ParseOption);
 			}
 		}
 		int FinallyIdx = CatchIdx;
@@ -864,7 +867,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(FinallyIdx == FinallyBlockIdx) { // skiped
 			UNode.SetAtNode(FinallyBlock, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, FinallyBlockIdx));
 		} else {
-			return UNode.MatchSingleBlock(FinallyBlock, TokenList, FinallyBlockIdx, EndIdx, ParseOption);
+			return UNode.MatchKeyword(FinallyBlock, "$block", TokenList, FinallyBlockIdx, EndIdx, ParseOption);
 		}
 		return FinallyBlockIdx;
 	}
@@ -874,17 +877,15 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(TryBlockNode.IsError())
 			return TryBlockNode;
 
-		TypedNode FinallyBlockNode = UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
+		boolean IsFinallyEmpty = UNode.GetAtNode(FinallyBlock).IsEmptyNode();
+		TypedNode FinallyBlockNode = IsFinallyEmpty ? null : UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
 		TryNode TypedTryNode = new TryNode(TryBlockNode.TypeInfo, TryBlockNode, FinallyBlockNode);
 
-		TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocks, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
-		TypedNode TargetExpressionNode = UNode.TypeNodeAt(TargetExpressions, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
-		CatchBlockNode = CatchBlockNode.IsError() ? null : CatchBlockNode;
-		TargetExpressionNode = TargetExpressionNode.IsError() ? null : TargetExpressionNode;
-		while(CatchBlockNode != null && TargetExpressionNode != null){
-			TypedTryNode.addCatchBlock(TargetExpressionNode, CatchBlockNode);
-			CatchBlockNode = CatchBlockNode.NextNode;
-			TargetExpressionNode = TargetExpressionNode.NextNode;
+		int NumberOfCatchBlocks = (UNode.NodeList.size() - TargetExceptionsBaseIdx) / 2;
+		for(int i = 0; i < NumberOfCatchBlocks; i++) {
+			TypedNode TargetExceptionNode = UNode.TypeNodeAt(TargetExceptionsBaseIdx + 2 * i, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
+			TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocksBaseIdx + 2 * i, Gamma, Gamma.VoidType, TypeCheckPolicy_AllowEmpty);
+			TypedTryNode.addCatchBlock(TargetExceptionNode, CatchBlockNode);
 		}
 
 		return TypedTryNode;

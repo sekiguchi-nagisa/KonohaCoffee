@@ -172,7 +172,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 		int Size = this.getProgramSize() - this.PopProgramSize();
 
-		String Block = this.PopNWithModifier(Size, true, null, ";\n" + currentLevelIndent, null);
+		String Block = this.PopNWithModifier(Size, true, null, /*";\n" + currentLevelIndent*/null, null);
 		this.push(Block);
 		return ret;
 	}
@@ -377,9 +377,13 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		}
 		this.VisitBlock(Node.LoopBody);
 		String LoopBody = this.pop();
-		String IterExpr = Node.IterationExpr != null ? this.pop() : "";
+		String IterExpr = Node.IterationExpr != null ? this.pop() : null;
 		String CondExpr = this.pop();
-		this.push("for(; " + CondExpr + "; " + IterExpr +") " + LoopBody);
+		if(IterExpr != null){
+			this.push("for(; " + CondExpr + "; " + IterExpr +") " + LoopBody);
+		}else {
+			this.push("while(" + CondExpr + ") " + LoopBody);
+		}
 		return true;
 
 	}
@@ -435,7 +439,11 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 			CatchBlocks += "catch(" + this.pop() + ") " + this.pop();
 		}
 		String TryBlock = this.pop();
-		this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
+		if(Node.FinallyBlock != null) {
+			this.push("try " + TryBlock + "" + CatchBlocks + "finally " + FinallyBlock);
+		}else {
+			this.push("try " + TryBlock + "" + CatchBlocks);
+		}
 		return true;
 	}
 
