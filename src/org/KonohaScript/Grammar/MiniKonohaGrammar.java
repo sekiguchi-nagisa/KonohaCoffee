@@ -824,8 +824,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	LoopIter	= 2;
 
 	public int ParseWhile(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
-		int LoopBodyBlockIdx = UNode.MatchCond(LoopCond, TokenList, BeginIdx + 1, EndIdx, ParseOption);
-		return UNode.MatchSingleBlock(LoopBody, TokenList, LoopBodyBlockIdx, EndIdx, ParseOption);
+		int NextIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, BeginIdx + 1, EndIdx, AllowEmpty);
+		NextIdx = UNode.MatchPattern(LoopCond, "$expression", TokenList, NextIdx, EndIdx, ParseOption);
+		NextIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, NextIdx, EndIdx, AllowEmpty);
+		NextIdx = UNode.MatchPattern(LoopBody, "$block", TokenList, NextIdx, EndIdx, ParseOption);
+		return NextIdx;
 	}
 
 	public TypedNode TypeWhile(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
