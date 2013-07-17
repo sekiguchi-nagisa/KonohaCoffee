@@ -175,8 +175,8 @@ public final class Konoha implements KonohaConst {
 		this.RootNameSpace.DefineSymbol(Symbol, Value);
 	}
 
-	public void Eval(String text, long uline) {
-		this.DefaultNameSpace.Eval(text, uline);
+	public Object Eval(String text, long uline) {
+		return this.DefaultNameSpace.Eval(text, uline);
 	}
 
 	public void Load(String FileName) {
