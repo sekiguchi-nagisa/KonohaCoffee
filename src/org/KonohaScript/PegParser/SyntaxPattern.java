@@ -41,7 +41,7 @@ public abstract class SyntaxPattern extends KonohaGrammar {
 	}
 
 	public void Report(String Message) {
-		//System.out.println(Message);
+		System.out.println(Message);
 	}
 
 	public TypedNode TypePegParser(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {

@@ -45,17 +45,18 @@ public class PegParser {
 		return UNode;
 	}
 
-	public int MatchPattern(String SyntaxName, UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx) {
+	public int MatchPattern(String SyntaxName, UntypedNode[] Ref, TokenList TokenList, int BeginIdx, int EndIdx) {
 		this.Init(BeginIdx, EndIdx);
-		this.EndIdx = this.Match(SyntaxName, TokenList);
-		if(EndIdx > 0) {
+		int NextIdx = this.Match(SyntaxName, TokenList);
+		if (NextIdx > 0) {
 			UntypedNode ret = null;
-			if(this.UNodeStack.size() > 0) {
+			NextIdx = this.ConstructSyntaxTree(TokenList, BeginIdx, EndIdx);
+			if (this.UNodeStack.size() > 0) {
 				ret = (UntypedNode) this.Pop();
 			}
-			UNode.Copy(ret);
+			Ref[0] = ret;
 		}
-		return EndIdx;
+		return NextIdx;
 	}
 
 	void Init(int BeginIdx, int EndIdx) {
@@ -71,13 +72,13 @@ public class PegParser {
 
 	public int Match(String SyntaxName, TokenList TokenList) {
 		Object Syntax = this.SyntaxTable.get(SyntaxName);
-		if(Syntax != null) {
-			if(Syntax instanceof KonohaArray) {
+		if (Syntax != null) {
+			if (Syntax instanceof KonohaArray) {
 				KonohaArray List = (KonohaArray) Syntax;
-				for(int i = 0; i < List.size(); i++) {
+				for (int i = 0; i < List.size(); i++) {
 					SyntaxPattern Syn = (SyntaxPattern) List.get(i);
 					int Index = Syn.Match(this, TokenList);
-					if(Index >= 0) {
+					if (Index >= 0) {
 						return Index;
 					}
 				}
@@ -90,18 +91,18 @@ public class PegParser {
 	}
 
 	public int MatchToken(String SyntaxName, TokenList TokenList, int Index) {
-		if(Index < this.EndIdx) {
+		if (Index < this.EndIdx) {
 			KonohaToken Token = TokenList.get(Index);
 			KonohaSyntax Syntax = Token.ResolvedSyntax;
-			//	if(Syntax == null) {
-			//		System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
-			//	}
+			if (Syntax == null) {
+				System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
+			}
 			//System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
-			if(SyntaxName.equals(Syntax.SyntaxName)) {
+			if (SyntaxName.equals(Syntax.SyntaxName)) {
 				this.Cursor = this.Cursor + 1;
 				return this.Cursor;
 			}
-			if(Syntax.SyntaxName.equals("$Symbol") && Token.ParsedText.equals(SyntaxName)) {
+			if (Syntax.SyntaxName.equals("$Symbol") && Token.ParsedText.equals(SyntaxName)) {
 				this.Cursor = this.Cursor + 1;
 				return this.Cursor;
 			}
@@ -119,17 +120,17 @@ public class PegParser {
 		this.Cursor = BeginIdx;
 		this.EndIdx = EndIdx;
 		int Pos = this.RootSyntax.Match(this, TokenList);
-		if(Pos != BeginIdx) {
+		if (Pos != BeginIdx) {
 			//System.out.println("BeginIdx=" + BeginIdx + "CurrentIdx=" + Pos + ", EndIdx=" + this.EndIdx);
 			return this.ConstructSyntaxTree(TokenList, BeginIdx, EndIdx);
 		}
-		for(int i = 0; i < this.EntryPoints.size(); i++) {
+		for (int i = 0; i < this.EntryPoints.size(); i++) {
 			SyntaxPattern Syntax = (SyntaxPattern) this.EntryPoints.get(i);
-			if(Syntax == this.RootSyntax) {
+			if (Syntax == this.RootSyntax) {
 				continue;
 			}
 			Pos = this.RootSyntax.Match(this, TokenList);
-			if(Pos != BeginIdx) {
+			if (Pos != BeginIdx) {
 				return this.ConstructSyntaxTree(TokenList, BeginIdx, EndIdx);
 			}
 		}
@@ -138,7 +139,7 @@ public class PegParser {
 
 	int ConstructSyntaxTree(TokenList TokenList, int BeginIdx, int EndIdx) {
 		int Pos = BeginIdx;
-		for(int i = 0; i < this.ThunkPos; i++) {
+		for (int i = 0; i < this.ThunkPos; i++) {
 			SyntaxAcceptor Action = (SyntaxAcceptor) this.ThunkObjects.get(i);
 			int Begin = ((Integer) this.ThunkRangeBegins.get(i)).intValue();
 			int End = ((Integer) this.ThunkRangeEnd.get(i)).intValue();
@@ -151,11 +152,11 @@ public class PegParser {
 	public UntypedNode Parse(TokenList TokenList, int BeginIdx, int EndIdx, Integer EndIdxRef) {
 		this.Init(BeginIdx, EndIdx);
 		this.EndIdx = this.MatchSyntax(TokenList, BeginIdx, EndIdx);
-		if(EndIdx == -1) {
+		if (EndIdx == -1) {
 			return null;
 		}
 		UntypedNode ret = null;
-		if(this.UNodeStack.size() > 0) {
+		if (this.UNodeStack.size() > 0) {
 			ret = (UntypedNode) this.Pop();
 		}
 		EndIdxRef = EndIdx;
@@ -173,11 +174,11 @@ public class PegParser {
 	}
 
 	void AddSyntax(SyntaxPattern ParentSyntax, SyntaxPattern Syntax, boolean TopLevelSyntax) {
-		if(TopLevelSyntax) {
+		if (TopLevelSyntax) {
 			this.RootSyntax = Syntax;
 			this.EntryPoints.add(Syntax);
 		}
-		if(!this.AlreadyRegistered(Syntax)) {
+		if (!this.AlreadyRegistered(Syntax)) {
 			this.SyntaxTable.put(Syntax.Name, Syntax);
 			this.NameSpace.DefineSyntax(Syntax.Name, 0, Syntax, "UNUSED", "PegParser");
 			Syntax.Init(this.NameSpace, this);
@@ -186,10 +187,10 @@ public class PegParser {
 	}
 
 	public void MixSyntax(SyntaxPattern ParentSyntax, SyntaxPattern Syntax, boolean TopLevelSyntax) {
-		if(this.AlreadyRegistered(ParentSyntax)) {
+		if (this.AlreadyRegistered(ParentSyntax)) {
 			Object Parent = this.SyntaxTable.get(ParentSyntax.Name);
 			ParentSyntax.Init(this.NameSpace, this);
-			if(Parent instanceof KonohaArray) {
+			if (Parent instanceof KonohaArray) {
 				KonohaArray List = (KonohaArray) Parent;
 				List.add(ParentSyntax);
 			} else {
@@ -217,7 +218,7 @@ public class PegParser {
 		KonohaArray BeginIndexes = this.ThunkRangeBegins;
 		KonohaArray EndIndexes = this.ThunkRangeEnd;
 		KonohaArray NodeIndexes = this.ThunkNodeSizes;
-		while(BeginIndexes.size() <= thunkpos) {
+		while (BeginIndexes.size() <= thunkpos) {
 			Actions.add(null);
 			BeginIndexes.add(0);
 			EndIndexes.add(0);
@@ -245,7 +246,7 @@ public class PegParser {
 	}
 
 	public void ReAssign(int NodeSize, Object Value) {
-		while(NodeSize > 0) {
+		while (NodeSize > 0) {
 			this.Pop();
 			NodeSize = NodeSize - 1;
 		}

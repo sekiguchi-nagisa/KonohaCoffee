@@ -35,11 +35,11 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 		this.Report("SourceCodeSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			List.add(Parser.Get(Index, NodeSize));
 			Index = Index + 1;
 		}
-		for(int i = 0; i < List.size() - 1; i++) {
+		for (int i = 0; i < List.size() - 1; i++) {
 			UntypedNode Current = (UntypedNode) List.get(i);
 			UntypedNode Next = (UntypedNode) List.get(i + 1);
 			Current.LinkNode(Next);
@@ -112,10 +112,10 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 		Index = Index + 1;
 
 		KonohaArray ParamList = (KonohaArray) Parser.Get(Index, NodeSize);
-		for(int i = 0; i < ParamList.size(); i++) {
+		for (int i = 0; i < ParamList.size(); i++) {
 			UNode.SetAtToken(MethodParamOffset + i, (KonohaToken) ParamList.get(i));
 		}
-		if(NodeSize > 0) {
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, UNode);
 		}
 		return EndIdx;
@@ -125,7 +125,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		System.err.println("@@@@@ " + UNode);
 		KonohaType BaseType = UNode.GetTokenType(MethodClassOffset, null);
-		if(BaseType == null) {
+		if (BaseType == null) {
 			BaseType = Gamma.GammaNameSpace.GetGlobalObject().TypeInfo;
 		}
 		String MethodName = UNode.GetTokenString(MethodNameOffset, "new"/* FIXME */);
@@ -133,7 +133,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 		KonohaType[] ParamData = new KonohaType[ParamSize + 1];
 		String[] ArgNames = new String[ParamSize];
 		ParamData[0] = UNode.GetTokenType(MethodClassOffset, Gamma.VarType);
-		for(int i = 0; i < ParamSize; i = i + 1) {
+		for (int i = 0; i < ParamSize; i = i + 1) {
 			KonohaType ParamType = UNode.GetTokenType(MethodParamOffset + 2 * i, Gamma.VarType);
 			String ParamName = UNode.GetTokenString(MethodParamOffset + 2 * i + 1, "");
 			ParamData[i + 1] = ParamType;
@@ -175,12 +175,10 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionDefinition");
 		UNode.SetAtNode(FunctionSignatureOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		KonohaArray Body = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode Body = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		if(Body.size() > 0) {
-			UNode.SetAtNode(FunctionBodyOffset, (UntypedNode) Body.get(0));
-		}
-		if(NodeSize > 0) {
+		UNode.SetAtNode(FunctionBodyOffset, Body);
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, UNode);
 		}
 		return EndIdx;
@@ -189,7 +187,7 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode FuncNode = UNode.TypeNodeAt(FunctionSignatureOffset, Gamma, TypeInfo, 0);
-		if(FuncNode instanceof DefineNode) {
+		if (FuncNode instanceof DefineNode) {
 			DefineNode Def = (DefineNode) FuncNode;
 			KonohaMethod Method = (KonohaMethod) Def.DefInfo;
 			UntypedNode Body = UNode.GetAtNode(FunctionBodyOffset);
@@ -262,13 +260,13 @@ class ParamDeclsSyntax0 extends SyntaxAcceptor {
 		List.add(Param.get(0)); // Type
 		List.add(Param.get(1)); // ParamName
 		Index = Index + 1;
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			Param = (KonohaArray) Parser.Get(Index, NodeSize);
 			List.add(Param.get(0)); // Type
 			List.add(Param.get(1)); // ParamName
 			Index = Index + 1;
 		}
-		if(NodeSize > 0) {
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List);
 		}
 		return EndIdx;
@@ -348,11 +346,11 @@ class ParametersSyntax0 extends SyntaxAcceptor {
 		KonohaArray List = new KonohaArray();
 		List.add(Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			List.add(Parser.Get(Index, NodeSize));
 			Index = Index + 1;
 		}
-		if(NodeSize > 0) {
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, List);
 		}
 		return EndIdx;
@@ -495,7 +493,7 @@ class typeSyntax1 extends SyntaxAcceptor {
 		KonohaToken BaseTypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		int i = NodeSize;
-		while(NodeSize > 1) {
+		while (NodeSize > 1) {
 			KonohaToken TypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
 			//FIXME Create BaseTypeToken[TypeToken] class
 			//BaseTypeToken = ;
@@ -710,7 +708,7 @@ class variableDeclarationSyntax0 extends SyntaxAcceptor {
 		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
 		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
 		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
-		if(VarType.equals(Gamma.VarType)) {
+		if (VarType.equals(Gamma.VarType)) {
 			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
 		}
 		assert (VarName != null);
@@ -751,7 +749,7 @@ class variableDeclarationSyntax1 extends SyntaxAcceptor {
 		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
 
 		TypedNode Expr = UNode.TypeNodeAt(VarDeclExprOffset, Gamma, TypeInfo, 0);
-		if(VarType.equals(Gamma.VarType)) {
+		if (VarType.equals(Gamma.VarType)) {
 			VarType = Expr.TypeInfo;
 		}
 		assert (VarName != null);
@@ -767,16 +765,20 @@ class statementsSyntax0 extends SyntaxAcceptor {
 		this.Report("statementsSyntax0", NodeSize);
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			List.add(Parser.Get(Index, NodeSize));
 			Index = Index + 1;
 		}
-		for(int i = 0; i < List.size() - 1; i++) {
+		for (int i = 0; i < List.size() - 1; i++) {
 			UntypedNode Current = (UntypedNode) List.get(i);
 			UntypedNode Next = (UntypedNode) List.get(i + 1);
 			Current.LinkNode(Next);
 		}
-		Parser.ReAssign(NodeSize, List);
+		UntypedNode Ret = null;
+		if (List.size() > 0) {
+			Ret = (UntypedNode) List.get(0);
+		}
+		Parser.ReAssign(NodeSize, Ret);
 		return EndIdx;
 	}
 
@@ -816,17 +818,13 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
 		UNode.SetAtNode(IfConditionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		KonohaArray ThenBlock = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode ThenBlock = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		KonohaArray ElseBlock = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode ElseBlock = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 
-		if(ThenBlock.size() > 0) {
-			UNode.SetAtNode(IfThenBlockOffset, (UntypedNode) ThenBlock.get(0));
-		}
-		if(ElseBlock.size() > 0) {
-			UNode.SetAtNode(IfElseBlockOffset, (UntypedNode) ElseBlock.get(0));
-		}
+		UNode.SetAtNode(IfThenBlockOffset, ThenBlock);
+		UNode.SetAtNode(IfElseBlockOffset, ElseBlock);
 		Parser.ReAssign(NodeSize, UNode);
 
 		return EndIdx;
@@ -839,17 +837,17 @@ class ifStatementSyntax0 extends SyntaxAcceptor {
 
 	static public TypedNode TypeCheckIf(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode CondNode = UNode.TypeNodeAt(IfConditionOffset, Gamma, Gamma.BooleanType, 0);
-		if(CondNode.IsError()) {
+		if (CondNode.IsError()) {
 			return CondNode;
 		}
 		TypedNode ThenNode = UNode.TypeNodeAt(IfThenBlockOffset, Gamma, TypeInfo, 0);
-		if(ThenNode.IsError()) {
+		if (ThenNode.IsError()) {
 			return ThenNode;
 		}
 		TypedNode ElseNode = null;
-		if(UNode.GetAtNode(IfElseBlockOffset) != null) {
+		if (UNode.GetAtNode(IfElseBlockOffset) != null) {
 			ElseNode = UNode.TypeNodeAt(IfElseBlockOffset, Gamma, ThenNode.TypeInfo, 0);
-			if(ElseNode.IsError()) {
+			if (ElseNode.IsError()) {
 				return ElseNode;
 			}
 		}
@@ -871,12 +869,10 @@ class ifStatementSyntax1 extends SyntaxAcceptor {
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$ifStatement");
 		UNode.SetAtNode(IfConditionOffset, (UntypedNode) Parser.Get(Index, NodeSize));
 		Index = Index + 1;
-		KonohaArray ThenBlock = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode ThenBlock = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 
-		if(ThenBlock.size() > 0) {
-			UNode.SetAtNode(IfThenBlockOffset, (UntypedNode) ThenBlock.get(0));
-		}
+		UNode.SetAtNode(IfThenBlockOffset, ThenBlock);
 		UNode.SetAtNode(IfElseBlockOffset, null);
 		Parser.ReAssign(NodeSize, UNode);
 
@@ -1000,7 +996,7 @@ class returnStatementSyntax1 extends SyntaxAcceptor {
 
 	static TypedNode TypeCheckReturn(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode Expr = UNode.TypeNodeAt(ReturnExpressionOffset, Gamma, Gamma.ReturnType, 0);
-		if(Expr.IsError()) {
+		if (Expr.IsError()) {
 			return Expr;
 		}
 		return new ReturnNode(Expr.TypeInfo, Expr);
@@ -1049,7 +1045,7 @@ class expressionSyntax0 extends SyntaxAcceptor {
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode LeftNode = UNode.TypeNodeAt(AssignmentLeftOffset, Gamma, TypeInfo, 0);
 		TypedNode RightNode = UNode.TypeNodeAt(AssignmentExprOffset, Gamma, TypeInfo, 0);
-		if(LeftNode.TypeInfo.equals(RightNode.TypeInfo)) {
+		if (LeftNode.TypeInfo.equals(RightNode.TypeInfo)) {
 			TypedNode TNode = new AssignNode(TypeInfo, UNode.KeyToken, LeftNode, RightNode);
 			return TNode;
 		}
@@ -1122,11 +1118,11 @@ class callExpressionSyntax0 extends SyntaxAcceptor {
 		Index = Index + 1;
 		KonohaArray Params = (KonohaArray) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		for(int i = 0; i < Params.size(); i++) {
+		for (int i = 0; i < Params.size(); i++) {
 			UntypedNode Node = (UntypedNode) Params.get(i);
 			UNode.SetAtNode(CallParameterOffset + i, Node);
 		}
-		if(NodeSize > 0) {
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, UNode);
 		}
 
@@ -1149,7 +1145,7 @@ class memberExpressionSyntax0 extends SyntaxAcceptor {
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		// (E0 E1 E2 E3) => (E3 (E2 (E1 E0)))
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			UntypedNode Right = (UntypedNode) Parser.Get(Index, NodeSize);
 			Right.AddParsedNode(Left);
 			Left = Right;
@@ -1254,10 +1250,10 @@ class selectorSyntax0 extends SyntaxAcceptor {
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode BaseExpr = UNode.TypeNodeAt(ArrayBaseExprOffset, Gamma, TypeInfo, 0);
 		TypedNode IndexExpr = UNode.TypeNodeAt(ArrayIndexExprOffset, Gamma, Gamma.IntType, 0);
-		if(BaseExpr.IsError()) {
+		if (BaseExpr.IsError()) {
 			return BaseExpr;
 		}
-		if(IndexExpr.IsError()) {
+		if (IndexExpr.IsError()) {
 			return IndexExpr;
 		}
 		//FIXME need check BaseExpr.Typeinfo is subclass of Array
@@ -1289,10 +1285,10 @@ class selectorSyntax1 extends SyntaxAcceptor {
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode BaseExpr = UNode.TypeNodeAt(MemberBaseExprOffset, Gamma, TypeInfo, 0);
 		TypedNode IndexExpr = UNode.TypeNodeAt(MemberIndexExprOffset, Gamma, Gamma.IntType, 0);
-		if(BaseExpr.IsError()) {
+		if (BaseExpr.IsError()) {
 			return BaseExpr;
 		}
-		if(IndexExpr.IsError()) {
+		if (IndexExpr.IsError()) {
 			return IndexExpr;
 		}
 		//FIXME need check BaseExpr.Typeinfo is subclass of Array
@@ -1336,7 +1332,7 @@ class newExpressionSyntax0 extends SyntaxAcceptor {
 		KonohaArray ParamList = (KonohaArray) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		UNode.SetAtToken(NewTypeOffset, TypeToken);
-		for(int i = 0; i < ParamList.size(); i++) {
+		for (int i = 0; i < ParamList.size(); i++) {
 			UntypedNode Param = (UntypedNode) ParamList.get(i);
 			UNode.SetAtNode(NewParamOffset + i, Param);
 		}
@@ -1368,7 +1364,7 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			UntypedNode Node = this.CreateNodeWithSyntax(Parser, OperatorToken, "$logicalOrExpression");
 			UntypedNode Right = (UntypedNode) Parser.Get(Index, NodeSize);
 			Node.SetAtNode(0, Left);
@@ -1376,7 +1372,7 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 			Left = Node;
 			Index = Index + 1;
 		}
-		if(NodeSize > 0) {
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, Left);
 		}
 		return EndIdx;
@@ -1385,11 +1381,11 @@ class logicalOrExpressionSyntax0 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode LeftNode = UNode.TypeNodeAt(OrLeftExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(LeftNode.IsError()) {
+		if (LeftNode.IsError()) {
 			return LeftNode;
 		}
 		TypedNode RightNode = UNode.TypeNodeAt(OrRightExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(RightNode.IsError()) {
+		if (RightNode.IsError()) {
 			return RightNode;
 		}
 
@@ -1409,7 +1405,7 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 		int Index = 0;
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		while(Index < NodeSize) {
+		while (Index < NodeSize) {
 			UntypedNode Node = this.CreateNodeWithSyntax(Parser, OperatorToken, "$logicalOrExpression");
 			UntypedNode Right = (UntypedNode) Parser.Get(Index, NodeSize);
 			Node.SetAtNode(0, Left);
@@ -1417,7 +1413,7 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 			Left = Node;
 			Index = Index + 1;
 		}
-		if(NodeSize > 0) {
+		if (NodeSize > 0) {
 			Parser.ReAssign(NodeSize, Left);
 		}
 		return EndIdx;
@@ -1426,11 +1422,11 @@ class logicalAndExpressionSyntax0 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode LeftNode = UNode.TypeNodeAt(AndLeftExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(LeftNode.IsError()) {
+		if (LeftNode.IsError()) {
 			return LeftNode;
 		}
 		TypedNode RightNode = UNode.TypeNodeAt(AndRightExprOffset, Gamma, Gamma.BooleanType, 0);
-		if(RightNode.IsError()) {
+		if (RightNode.IsError()) {
 			return RightNode;
 		}
 
