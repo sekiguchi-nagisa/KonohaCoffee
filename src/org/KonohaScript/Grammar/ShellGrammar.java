@@ -245,7 +245,6 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
 
-		NameSpace.DefineSymbol("Process", NameSpace.LookupHostLangType(KonohaProcess.class));
 		new KonohaProcessDef().MakeDefinition(NameSpace);
 	}
 }

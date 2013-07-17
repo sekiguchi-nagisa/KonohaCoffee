@@ -47,7 +47,7 @@ public class KonohaProcess {
 		monitor.setProcess(kProc);
 		monitor.throwException();
 	}
-	
+
 	public KonohaProcess(String command) {
 		this.cmdNameBuilder = new StringBuilder();
 		this.commandList = new ArrayList<String>();
@@ -196,7 +196,7 @@ public class KonohaProcess {
 	public int getRet() {
 		return this.proc.exitValue();
 	}
-	
+
 	public void kill() {
 		try {
 			// get target pid
@@ -229,19 +229,19 @@ public class KonohaProcess {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getLogFilePath() {
 		return this.logFilePath;
 	}
-	
+
 	public String getCmdName() {
 		return this.cmdNameBuilder.toString();
 	}
-	
+
 	public void setError(String message) {
 		this.errorMessage = message;
 	}
-	
+
 	public String getError() {
 		return this.errorMessage;
 	}
@@ -307,15 +307,15 @@ class StreamSetter extends Thread {
 
 class KonohaProcessMonitor {
 	private ArrayList<KonohaProcess> procList;
-	
+
 	public KonohaProcessMonitor() {
 		this.procList = new ArrayList<KonohaProcess>();
 	}
-	
+
 	public void setProcess(KonohaProcess kproc) {
 		this.procList.add(kproc);
 	}
-	
+
 	public void throwException() throws Exception {
 		int size = procList.size();
 		for(int i = 0; i < size; i++) {
@@ -328,20 +328,20 @@ class KonohaProcessMonitor {
 					String message = targetProc.getCmdName();
 					Stack<String[]> syscallStack = parseTraceLog(logFilePath);
 					deleteLogFile(logFilePath);
-					throw createException(message, syscallStack.peek());	
+					throw createException(message, syscallStack.peek());
 				}			
 				deleteLogFile(logFilePath);
 			}
 		}
 	}
-	
+
 	private void deleteLogFile(String logFilePath) {
 		new File(logFilePath).delete();
 	}
 
 	private Stack<String[]> parseTraceLog(String logFilePath) {
 		try {
-			Stack<String[]> syscallStack = new Stack<String[]>(); 
+			Stack<String[]> syscallStack = new Stack<String[]>();
 			BufferedReader br = new BufferedReader(new FileReader(logFilePath));
 			
 			String regex1 = "^[1-9][0-9]* .+(.+) *= *-[1-9].+";
@@ -375,7 +375,7 @@ class KonohaProcessMonitor {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private String[] parseSyscall(String syscallLine) {
 		int p = 0;
 		int openBracketCount = 0;
@@ -395,7 +395,7 @@ class KonohaProcessMonitor {
 				break;
 			case ')':
 				if(openBracketCount == ++closeBracketCount) {
-					parsedSyscallTemp[p++] = new String(sBuilder.toString());	
+					parsedSyscallTemp[p++] = new String(sBuilder.toString());
 					sBuilder = new StringBuilder();
 					openBracketCount = closeBracketCount = 0;
 				}
@@ -419,7 +419,7 @@ class KonohaProcessMonitor {
 //		System.out.println();
 		return parsedSyscall;
 	}
-	
+
 	private Exception createException(String message, String[] syscall) throws Exception {
 		try {
 			return ErrNo.valueOf(syscall[2]).toException(message, syscall[0], syscall[1]);
@@ -433,7 +433,7 @@ class KonohaProcessMonitor {
 // shell Exception definition
 class NotPermittedException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public NotPermittedException(String message) {
 		super(message);
 	}
@@ -441,7 +441,7 @@ class NotPermittedException extends Exception {
 
 class TooManyLinkException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public TooManyLinkException(String message) {
 		super(message);
 	}
@@ -449,7 +449,7 @@ class TooManyLinkException extends Exception {
 
 class TooLongNameException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public TooLongNameException(String message) {
 		super(message);
 	}
@@ -457,7 +457,7 @@ class TooLongNameException extends Exception {
 
 class NotFoundException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public NotFoundException(String message) {
 		super(message);
 	}
@@ -465,7 +465,7 @@ class NotFoundException extends Exception {
 
 class NetworkTimeoutException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public NetworkTimeoutException(String message) {
 		super(message);
 	}
@@ -473,7 +473,7 @@ class NetworkTimeoutException extends Exception {
 
 class InterruptedBySignalException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public InterruptedBySignalException(String message) {
 		super(message);
 	}
@@ -481,7 +481,7 @@ class InterruptedBySignalException extends Exception {
 
 class UnreachableException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public UnreachableException(String message) {
 		super(message);
 	}
@@ -489,7 +489,7 @@ class UnreachableException extends Exception {
 
 class ConnectRefusedException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public ConnectRefusedException(String message) {
 		super(message);
 	}
@@ -497,7 +497,7 @@ class ConnectRefusedException extends Exception {
 
 class NoFreeSpaceException	extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public NoFreeSpaceException(String message) {
 		super(message);
 	}
@@ -505,7 +505,7 @@ class NoFreeSpaceException	extends Exception {
 
 class ReadOnlyException extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	public ReadOnlyException(String message) {
 		super(message);
 	}
@@ -677,7 +677,7 @@ enum ErrNo {
 	EWOULDBLOCK, 
 	EXDEV, 
 	EXFULL;
-	
+
 	public Exception toException(String message, String syscallName, String param) {
 		return new Exception(this.toString() + " is not yet implemented!!");
 	}
