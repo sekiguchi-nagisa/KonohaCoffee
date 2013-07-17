@@ -867,7 +867,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		if(FinallyIdx == FinallyBlockIdx) { // skiped
 			UNode.SetAtNode(FinallyBlock, UntypedNode.NewNullNode(UNode.NodeNameSpace, TokenList, FinallyBlockIdx));
 		} else {
-			return UNode.MatchKeyword(FinallyBlock, "$block", TokenList, FinallyBlockIdx, EndIdx, ParseOption);
+			return UNode.MatchPattern(FinallyBlock, "$block", TokenList, FinallyBlockIdx, EndIdx, ParseOption);
 		}
 		return FinallyBlockIdx;
 	}
