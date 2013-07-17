@@ -307,12 +307,21 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 
 	@Override
 	public boolean VisitLet(LetNode Node) {
-		Node.ValueNode.Evaluate(this);
+		if(Node.ValueNode != null){
+			Node.ValueNode.Evaluate(this);
+		}
 		this.VisitList(Node.BlockNode);
 		this.AddLocalVarIfNotDefined(Node.TypeInfo, Node.VarToken.ParsedText);
 		String Block = this.pop();
-		String Right = this.pop();
-		this.push((this.UseLetKeyword ? "let " : "var ") + Node.VarToken.ParsedText + " = " + Right + Block);
+		if(Block.length() > 0){
+			Block = ", " + Block;
+		}
+		if(Node.ValueNode != null){
+			String Right = this.pop();
+			this.push((this.UseLetKeyword ? "let " : "var ") + Node.VarToken.ParsedText + " = " + Right + Block);
+		}else{
+			this.push((this.UseLetKeyword ? "let " : "var ") + Node.VarToken.ParsedText + Block);
+		}
 		return true;
 	}
 
@@ -427,9 +436,9 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		this.VisitBlock(Node.TryBlock);
 		for(int i = 0; i < Node.CatchBlock.size(); i++) {
 			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
-			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
+			LetNode Exception = (LetNode) Node.TargetException.get(i);
 			this.VisitBlock(Block);
-			this.VisitList(Exception);
+			this.push(Exception.VarToken.ParsedText);
 		}
 		this.VisitBlock(Node.FinallyBlock);
 

@@ -842,21 +842,23 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	public final static int	TryBlock		= 0;
 	public final static int	FinallyBlock	= 1;
 	public final static int	TargetExceptionsBaseIdx	= 2;
-	public final static int	CatchBlocksBaseIdx		= 3;
-
+	public final static int	TargetVarNamesBaseIdx	= 3;
+	public final static int	CatchBlocksBaseIdx		= 4;
 
 	public int ParseTry(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
 		int CatchIdx = UNode.MatchPattern(TryBlock, "$block", TokenList, BeginIdx + 1, EndIdx, ParseOption);
 		int CatchExprIdx = CatchIdx;
 		int CatchBlockIdx = CatchIdx;
-		for(int i = 0;; i += 2){
+		for(int i = 0;; i += 3){
 			CatchIdx = UntypedNode.SkipIndent(TokenList, CatchIdx, EndIdx, ParseOption | SkipIndent);
 			CatchExprIdx = UNode.MatchKeyword(-1, "catch", TokenList, CatchIdx, EndIdx, AllowEmpty);
 			if(CatchIdx == CatchExprIdx) { // skiped
 				break;
 			} else {
 				CatchBlockIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, CatchExprIdx, EndIdx, AllowEmpty);
-				CatchBlockIdx = UNode.MatchPattern(TargetExceptionsBaseIdx + i, "$expression", TokenList, CatchBlockIdx, EndIdx, ParseOption);
+				//CatchBlockIdx = UNode.MatchPattern(TargetExceptionsBaseIdx + i, "$expression", TokenList, CatchBlockIdx, EndIdx, ParseOption);
+				CatchBlockIdx = UNode.MatchSyntax(TargetExceptionsBaseIdx + i, "$Type", TokenList, CatchBlockIdx, EndIdx, ParseOption);
+				CatchBlockIdx = UNode.MatchSyntax(TargetVarNamesBaseIdx + i, "$Symbol", TokenList, CatchBlockIdx, EndIdx, ParseOption);
 				CatchBlockIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, CatchBlockIdx, EndIdx, AllowEmpty);
 				CatchIdx = UNode.MatchPattern(CatchBlocksBaseIdx + i, "$block", TokenList, CatchBlockIdx, EndIdx, ParseOption);
 			}
@@ -881,10 +883,13 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		TypedNode FinallyBlockNode = IsFinallyEmpty ? null : UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
 		TryNode TypedTryNode = new TryNode(TryBlockNode.TypeInfo, TryBlockNode, FinallyBlockNode);
 
-		int NumberOfCatchBlocks = (UNode.NodeList.size() - TargetExceptionsBaseIdx) / 2;
+		int NumberOfCatchBlocks = (UNode.NodeList.size() - TargetExceptionsBaseIdx) / 3;
 		for(int i = 0; i < NumberOfCatchBlocks; i++) {
-			TypedNode TargetExceptionNode = UNode.TypeNodeAt(TargetExceptionsBaseIdx + 2 * i, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
-			TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocksBaseIdx + 2 * i, Gamma, Gamma.VoidType, TypeCheckPolicy_AllowEmpty);
+			KonohaType VarType = UNode.GetTokenType(TargetExceptionsBaseIdx + 3 * i, null);
+			KonohaToken VarToken = UNode.GetAtToken(TargetVarNamesBaseIdx + 3 * i);
+			TypedNode TargetExceptionNode = new LetNode(VarType, VarToken, null, null);
+			//		UNode.TypeNodeAt(TargetExceptionsBaseIdx + 3 * i, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
+			TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocksBaseIdx + 3 * i, Gamma, Gamma.VoidType, TypeCheckPolicy_AllowEmpty);
 			TypedTryNode.addCatchBlock(TargetExceptionNode, CatchBlockNode);
 		}
 
