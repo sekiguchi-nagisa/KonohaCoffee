@@ -119,7 +119,8 @@ public class KonohaShell {
 	}
 
 	public static void main(String[] origArgs) {
-		String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
+//		String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
+		String DefaultBuilder = "org.KonohaScript.CodeGen.JVMCodeGenerator";
 		KonohaShell shell = new KonohaShell(DefaultBuilder);
 		String[] args = shell.ProcessOptions(origArgs);
 		if(args == null) {
