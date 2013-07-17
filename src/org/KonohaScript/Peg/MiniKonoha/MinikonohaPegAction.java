@@ -192,8 +192,6 @@ class functionDefinitionSyntax0 extends SyntaxAcceptor {
 			KonohaMethod Method = (KonohaMethod) Def.DefInfo;
 			UntypedNode Body = UNode.GetAtNode(FunctionBodyOffset);
 			Method.ParsedTree = Body;
-			//FIXME(ide) TypeCheck for FunctionBody is called when this method are called first time.
-			Method.DoCompilation();
 			return FuncNode;
 		}
 		return null;
@@ -636,6 +634,41 @@ class statementSyntax7 extends SyntaxAcceptor {
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("statementSyntax7", NodeSize);
+		/* do nothing */
+		return EndIdx;
+	}
+
+	@Override
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
+		return null;
+	}
+}
+
+//action: <Symbol:$returnStatement>
+class statementSyntax8 extends SyntaxAcceptor {
+
+	@Override
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+		this.Report("statementSyntax8", NodeSize);
+		/* do nothing */
+		return EndIdx;
+	}
+
+	@Override
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
+		return null;
+	}
+}
+
+//action: <Symbol:";">
+class EmptyStatementSyntax0 extends SyntaxAcceptor {
+	static final EmptyStatementSyntax0	Instance	= new EmptyStatementSyntax0();
+
+	@Override
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+		this.Report("EmptyStatementSyntax0", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}

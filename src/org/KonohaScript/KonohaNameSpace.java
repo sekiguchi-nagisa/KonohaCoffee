@@ -284,7 +284,7 @@ public final class KonohaNameSpace implements KonohaConst {
 		TokenList BufferList = this.Tokenize(text, uline);
 		int next = BufferList.size();
 		this.PreProcess(BufferList, 0, next, BufferList);
-		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty);
+		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty | MetaPattern);
 		System.out.println("untyped tree: " + UNode);
 		while(UNode != null) {
 			TypeEnv Gamma = new TypeEnv(this, null);

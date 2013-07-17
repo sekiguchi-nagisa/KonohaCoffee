@@ -672,7 +672,8 @@ class typeSyntax extends SyntaxPattern {
  * [$statement: [ <Symbol:$block> ] [ <Symbol:$variableDeclaration> ] [
  * <Symbol:$expressionStatement> ] [ <Symbol:$ifStatement> ] [
  * <Symbol:$whileStatement> ] [ <Symbol:$breakStatement> ] [
- * <Symbol:$continueStatement> ] [ <Symbol:$returnStatement> ] ]
+ * <Symbol:$continueStatement> ] [ <Symbol:$returnStatement> ] [
+ * <Symbol:$EmptyStatement> ] ]
  */
 class statementSyntax extends SyntaxPattern {
 	statementSyntax() {
@@ -681,6 +682,7 @@ class statementSyntax extends SyntaxPattern {
 
 	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
+		Parser.AddSyntax(NameSpace, this, new EmptyStatementSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new returnStatementSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new whileStatementSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new continueStatementSyntax(), false);
@@ -755,6 +757,14 @@ class statementSyntax extends SyntaxPattern {
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor8	= new statementSyntax8();
+
+	int action8(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
+		this.Report("Accept $statement");
+		Parser.PushThunk(this.Acceptor8, BeginIdx, NodeSize);
+		return Parser.Cursor;
+	}
+
 	@Override
 	public int Match(PegParser Parser, TokenList TokenList) {
 		int NodeSize = 0;
@@ -800,6 +810,11 @@ class statementSyntax extends SyntaxPattern {
 		if(Parser.Match("$returnStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action7("$statement", Parser, pos0, NodeSize);
+		}
+		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
+		if(Parser.Match("$EmptyStatement", TokenList) >= 0) {
+			NodeSize = NodeSize + 1;
+			return this.action8("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
 		return this.Fail("$statement", Parser);
@@ -1284,6 +1299,41 @@ class returnStatementSyntax extends SyntaxPattern {
 }
 
 /*
+ * [$EmptyStatement: [ <Symbol:";"> ] ]
+ */
+class EmptyStatementSyntax extends SyntaxPattern {
+	EmptyStatementSyntax() {
+		super("$EmptyStatement");
+	}
+
+	@Override
+	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
+	}
+
+	public SyntaxAcceptor	Acceptor0	= new EmptyStatementSyntax0();
+
+	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
+		this.Report("Accept $EmptyStatement");
+		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
+		return Parser.Cursor;
+	}
+
+	@Override
+	public int Match(PegParser Parser, TokenList TokenList) {
+		int NodeSize = 0;
+		int pos0 = Parser.Cursor;
+		int thunkpos0 = Parser.ThunkPos;
+		int NodeSize0 = NodeSize;
+		this.Report("Enter $EmptyStatement");
+		if(Parser.MatchToken("$SemiColon", TokenList, Parser.Cursor) >= 0) {
+			return this.action0("$EmptyStatement", Parser, pos0, NodeSize);
+		}
+		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $EmptyStatement 0");
+		return this.Fail("$EmptyStatement", Parser);
+	}
+}
+
+/*
  * [$expressionStatement: [ <Symbol:$expression> <Symbol:";"> ] ]
  */
 class expressionStatementSyntax extends SyntaxPattern {
@@ -1660,8 +1710,8 @@ class selectorSyntax extends SyntaxPattern {
 }
 
 /*
- * [$newExpression: [ <Symbol:$memberExpression> ] [ <Symbol:"new">
- * <Symbol:$type> <Symbol:$ParameterList> ] ]
+ * [$newExpression: [ <Symbol:"new"> <Symbol:$type> <Symbol:$ParameterList> ] [
+ * <Symbol:$memberExpression> ] ]
  */
 class newExpressionSyntax extends SyntaxPattern {
 	newExpressionSyntax() {

@@ -46,6 +46,7 @@ $statement <- $block
 / $breakStatement
 / $continueStatement
 / $returnStatement
+/ $EmptyStatement
 
 $variable <- $identifier
 
@@ -69,6 +70,8 @@ $continueStatement <- "continue" ";"
 
 $returnStatement <- "return" ";"
 / "return" $expression ";"
+
+$EmptyStatement <- ";"
 
 $expressionStatement <- $expression ";"
 
