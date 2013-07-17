@@ -20,15 +20,13 @@ public class NativeMethodInvoker extends KonohaMethodInvoker {
 
 	@Override
 	public Object Invoke(Object[] Args) {
-		int ParamSize = this.Param.GetParamSize();
+		int ParamSize = this.Param != null ? this.Param.GetParamSize() : 0;
 		try {
 			Method MethodRef = this.GetMethodRef();
 			if(this.IsStaticInvocation()) {
 				switch (ParamSize) {
 				case 0:
-					return MethodRef.invoke(null, Args[0]);
-				case 1:
-					return MethodRef.invoke(null, Args[0], Args[1]);
+					return MethodRef.invoke(null);
 				default:
 					return MethodRef.invoke(null, Args); // FIXME
 				}

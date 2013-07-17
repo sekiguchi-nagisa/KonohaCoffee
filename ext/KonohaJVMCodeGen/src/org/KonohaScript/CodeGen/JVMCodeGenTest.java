@@ -36,9 +36,8 @@ public class JVMCodeGenTest extends KTestCase {
 		ParamData1[0] = IntTy;
 		KonohaParam Param1 = new KonohaParam(1, ParamData1, ArgData1);
 		KonohaMethod func1 = new KonohaMethod(0, VoidTy, "testReturnConst", Param1, null);
-		Builder.Prepare(func1);
 		TypedNode Block = new ReturnNode(IntTy, new ConstNode(IntTy, null, 1));
-		Builder.Compile(Block);
+		Builder.Compile(Block, func1);
 	}
 
 	public static void testAddOne(JVMCodeGenerator Builder) {
@@ -61,7 +60,6 @@ public class JVMCodeGenTest extends KTestCase {
 
 		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, IntTy, "n"));
-		Builder.Prepare(func1, Params);
 
 		TypedNode Block = new ReturnNode(IntTy, new ApplyNode(
 				VoidTy,
@@ -69,7 +67,7 @@ public class JVMCodeGenTest extends KTestCase {
 				intAdd,
 				new LocalNode(IntTy, null, "n"),
 				new ConstNode(IntTy, null, 1)));
-		Builder.Compile(Block);
+		Builder.Compile(Block, func1, Params);
 	}
 
 	public static void testIf(JVMCodeGenerator Builder) {
@@ -92,14 +90,13 @@ public class JVMCodeGenTest extends KTestCase {
 
 		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, IntTy, "n"));
-		Builder.Prepare(func1, Params);
 
 		TypedNode Block = new IfNode(VoidTy,
 		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
 		/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
 		/* else */new ReturnNode(IntTy, new ConstNode(IntTy, null, 2))).Next(
 		/* */new ReturnNode(IntTy, new ConstNode(IntTy, null, 3)));
-		Builder.Compile(Block);
+		Builder.Compile(Block, func1, Params);
 	}
 
 	public static void testFibo(JVMCodeGenerator Builder) {
@@ -136,8 +133,7 @@ public class JVMCodeGenTest extends KTestCase {
 				new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 2))))));
 		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, IntTy, "n"));
-		Builder.Prepare(Fibo, Params);
-		Builder.Compile(Block2);
+		Builder.Compile(Block2, Fibo, Params);
 	}
 
 	public static void testTry(JVMCodeGenerator Builder) {
@@ -146,7 +142,6 @@ public class JVMCodeGenTest extends KTestCase {
 		ParamData1[0] = IntTy;
 		KonohaParam Param1 = new KonohaParam(1, ParamData1, ArgData1);
 		KonohaMethod func1 = new KonohaMethod(0, VoidTy, "testTry", Param1, null);
-		Builder.Prepare(func1);
 		
 		// binary op definition
 		String[] ArgData2 = new String[1];
@@ -169,7 +164,7 @@ public class JVMCodeGenTest extends KTestCase {
 		tryBlock.addCatchBlock(exceptionBlock, catchBlock);
 		TryNode Block = tryBlock;
 		
-		Builder.Compile(Block);
+		Builder.Compile(Block, func1);
 	}
 
 	JVMCodeGenerator	Builder;
