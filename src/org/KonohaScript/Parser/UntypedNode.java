@@ -179,11 +179,13 @@ public class UntypedNode implements KonohaConst {
 		Integer EndIdxRef = EndIdx2;
 		// KonohaToken.DumpTokenList(SourceList);
 		UntypedNode UNode2 = PegParser.Parse(SourceList, 0, EndIdx2, EndIdxRef);
-		if(UNode2 == null) {
+		if(EndIdxRef == -1) {
 			return NoMatch;
 		}
 		EndIdx = TokenConverter.GetComposedListIndex(TokenList, BeginIdx, EndIdx, EndIdxRef.intValue());
-		this.Copy(UNode2);
+		if(UNode2 != null) {
+			this.Copy(UNode2);
+		}
 		return EndIdx;
 	}
 

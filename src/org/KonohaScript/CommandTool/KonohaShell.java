@@ -43,6 +43,9 @@ public class KonohaShell {
 	}
 
 	boolean ProcessSource(String Source) {
+		if(!Source.endsWith("}") && !Source.endsWith(";")) {
+			Source = Source + ";";
+		}
 		this.ShellContext.Eval(Source, 0);
 		return true;
 	}
@@ -57,12 +60,10 @@ public class KonohaShell {
 			fi.close();
 			String source = new String(b);
 			return this.ProcessSource(source);
-		}
-		catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -76,7 +77,7 @@ public class KonohaShell {
 	String[] ProcessOptions(String[] origArgs) {
 		KonohaArray Args = new KonohaArray();
 		KonohaArray ImportedArgs = new KonohaArray();
-		
+
 		this.IsInteractiveMode = true;
 		for(int i = 0; i < origArgs.length; i++) {
 			String arg = origArgs[i];
@@ -91,27 +92,21 @@ public class KonohaShell {
 				this.ShellContext.DefaultNameSpace.LoadBuilder(BuilderName);
 			} else if(arg.startsWith("-I")) {
 				String importFileName = arg.substring("-I".length());
-				if(importFileName.startsWith("~")) {
-					String fullFilePath = 
-							System.getProperty("user.home") + importFileName.substring("~".length());
-					ImportedArgs.add(fullFilePath);
-				} else {
-					ImportedArgs.add(importFileName);
-				}
+				ImportedArgs.add(new File(importFileName).getAbsolutePath());
 			} else {
 				this.IsInteractiveMode = false;
 				Args.add(arg);
 			}
 		}
-		
+
 		int argsSize = Args.size();
 		int imprtedArgsSize = ImportedArgs.size();
-		
+
 		String[] newArgs = new String[argsSize + imprtedArgsSize];
 		for(int i = 0; i < imprtedArgsSize; i++) {
 			newArgs[i] = (String) ImportedArgs.get(i);
 		}
-		
+
 		for(int i = 0; i < argsSize; i++) {
 			newArgs[i + imprtedArgsSize] = (String) Args.get(i);
 		}
@@ -183,8 +178,8 @@ public class KonohaShell {
 					continue statement;
 				}
 				source = source + line + "\n";
-				level = level + Count("(", ")", line);
-				level = level + Count("{", "}", line);
+				level = level + KonohaShell.Count("(", ")", line);
+				level = level + KonohaShell.Count("{", "}", line);
 				if(level == 0) {
 					break;
 				}

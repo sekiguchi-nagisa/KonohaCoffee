@@ -36,7 +36,10 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 		int Index = 0;
 		KonohaArray List = new KonohaArray();
 		while(Index < NodeSize) {
-			List.add(Parser.Get(Index, NodeSize));
+			Object Stmt = Parser.Get(Index, NodeSize);
+			if(Stmt != null) {
+				List.add(Stmt);
+			}
 			Index = Index + 1;
 		}
 		for(int i = 0; i < List.size() - 1; i++) {
@@ -45,7 +48,11 @@ class SourceCodeSyntax0 extends SyntaxAcceptor {
 			Current.LinkNode(Next);
 		}
 
-		Parser.ReAssign(NodeSize, List.get(0));
+		Object Ret = null;
+		if(List.size() > 0) {
+			Ret = List.get(0);
+		}
+		Parser.ReAssign(NodeSize, Ret);
 		return EndIdx;
 	}
 
@@ -669,7 +676,7 @@ class EmptyStatementSyntax0 extends SyntaxAcceptor {
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("EmptyStatementSyntax0", NodeSize);
-		/* do nothing */
+		Parser.ReAssign(NodeSize, null);
 		return EndIdx;
 	}
 
