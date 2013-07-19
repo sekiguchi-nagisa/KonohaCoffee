@@ -144,9 +144,9 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
 		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-				Callee,
-				MethodName,
-				null));
+			Callee,
+			MethodName,
+			null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -255,7 +255,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public int PreProcess(TokenList TokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-				.Do(TokenList, BeginIdx, EndIdx, BufferList);
+		.Do(TokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {
@@ -290,7 +290,7 @@ public final class KonohaNameSpace implements KonohaConst {
 			TypeEnv Gamma = new TypeEnv(this, null);
 			TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
 			KonohaBuilder Builder = this.GetBuilder();
-			ResultValue = Builder.EvalAtTopLevel(TNode, this.GetGlobalObject());
+			ResultValue = Builder.EvalAtTopLevel(this, TNode, this.GetGlobalObject());
 			UNode = UNode.NextNode;
 		}
 		return ResultValue;

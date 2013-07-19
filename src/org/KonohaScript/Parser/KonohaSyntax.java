@@ -31,6 +31,7 @@ import org.KonohaScript.KonohaFunc;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
@@ -136,8 +137,10 @@ public final class KonohaSyntax implements KonohaConst {
 		}
 		TypedNode Node = null;
 		try {
-			System.err.println("Syntax " + UNode.Syntax);
-			System.err.println("Syntax.TypeMethod " + UNode.Syntax.TypeMethod.getName());
+			if(KonohaDebug.DebugPrint) {
+				System.err.println("Syntax " + UNode.Syntax);
+				System.err.println("Syntax.TypeMethod " + UNode.Syntax.TypeMethod.getName());
+			}
 			Node = (TypedNode) UNode.Syntax.TypeMethod.invoke(UNode.Syntax.TypeObject, Gamma, UNode, TypeInfo);
 		}
 		catch (IllegalArgumentException e) {

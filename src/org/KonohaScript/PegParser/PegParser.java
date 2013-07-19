@@ -95,7 +95,7 @@ public class PegParser {
 			KonohaToken Token = TokenList.get(Index);
 			KonohaSyntax Syntax = Token.ResolvedSyntax;
 			if(Syntax == null) {
-				System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
+				//System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
 			}
 			//System.out.println("Token:" + Token.ParsedText + "// Expected:" + SyntaxName);
 			if(SyntaxName.equals(Syntax.SyntaxName)) {

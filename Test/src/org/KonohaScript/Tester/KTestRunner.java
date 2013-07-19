@@ -4,8 +4,8 @@ import org.KonohaScript.CodeGen.ASTInterpreterTest;
 import org.KonohaScript.CodeGen.LeafJSCodeGenTest;
 import org.KonohaScript.CodeGen.ShellTest;
 import org.KonohaScript.Grammar.KonohaProcessTest;
-import org.KonohaScript.CodeGen.JVMCodeGenTest;
 import org.KonohaScript.CodeGen.LLVMCodeGenTest;
+import org.KonohaScript.CodeGen.JVM.JVMCodeGenTest;
 import org.KonohaScript.Peg.KonohaClass.KonohaClassGrammarTest;
 import org.KonohaScript.Peg.MiniKonoha.MiniKonohaGrammerTest;
 public class KTestRunner extends KTestRunnerBase {

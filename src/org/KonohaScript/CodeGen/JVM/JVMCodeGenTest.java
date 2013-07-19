@@ -1,4 +1,4 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.CodeGen.JVM;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -7,6 +7,7 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.CodeGen.Param;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -37,7 +38,7 @@ public class JVMCodeGenTest extends KTestCase {
 		KonohaParam Param1 = new KonohaParam(1, ParamData1, ArgData1);
 		KonohaMethod func1 = new KonohaMethod(0, VoidTy, "testReturnConst", Param1, null);
 		TypedNode Block = new ReturnNode(IntTy, new ConstNode(IntTy, null, 1));
-		Builder.Compile(Block, func1);
+		Builder.Compile(KonohaContext.DefaultNameSpace, Block, func1);
 	}
 
 	public static void testAddOne(JVMCodeGenerator Builder) {
@@ -62,12 +63,12 @@ public class JVMCodeGenTest extends KTestCase {
 		Params.add(new Param(0, IntTy, "n"));
 
 		TypedNode Block = new ReturnNode(IntTy, new ApplyNode(
-				VoidTy,
-				null,
-				intAdd,
-				new LocalNode(IntTy, null, "n"),
-				new ConstNode(IntTy, null, 1)));
-		Builder.Compile(Block, func1, Params);
+			VoidTy,
+			null,
+			intAdd,
+			new LocalNode(IntTy, null, "n"),
+			new ConstNode(IntTy, null, 1)));
+		Builder.Compile(KonohaContext.DefaultNameSpace, Block, func1, Params);
 	}
 
 	public static void testIf(JVMCodeGenerator Builder) {
@@ -92,11 +93,11 @@ public class JVMCodeGenTest extends KTestCase {
 		Params.add(new Param(0, IntTy, "n"));
 
 		TypedNode Block = new IfNode(VoidTy,
-		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
-		/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
-		/* else */new ReturnNode(IntTy, new ConstNode(IntTy, null, 2))).Next(
-		/* */new ReturnNode(IntTy, new ConstNode(IntTy, null, 3)));
-		Builder.Compile(Block, func1, Params);
+			/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
+			/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
+			/* else */new ReturnNode(IntTy, new ConstNode(IntTy, null, 2))).Next(
+				/* */new ReturnNode(IntTy, new ConstNode(IntTy, null, 3)));
+		Builder.Compile(KonohaContext.DefaultNameSpace, Block, func1, Params);
 	}
 
 	public static void testFibo(JVMCodeGenerator Builder) {
@@ -119,21 +120,21 @@ public class JVMCodeGenTest extends KTestCase {
 		KonohaMethod intLt = new KonohaMethod(0, BooleanTy, "<", Param3, null);
 
 		TypedNode Block2 = new IfNode(VoidTy,
-		/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
-		/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
-		/* else */null).Next(new ReturnNode(IntTy, new ApplyNode(IntTy, null, intAdd, new ApplyNode(IntTy, null, Fibo,
-		/*new LocalNode(VoidTy, null, "this"),*/
-		new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 1))), new ApplyNode(
-				IntTy,
-				null,
-				Fibo, /*new LocalNode(
+			/* cond */new ApplyNode(BooleanTy, null, intLt, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 3)),
+			/* then */new ReturnNode(IntTy, new ConstNode(IntTy, null, 1)),
+			/* else */null).Next(new ReturnNode(IntTy, new ApplyNode(IntTy, null, intAdd, new ApplyNode(IntTy, null, Fibo,
+				/*new LocalNode(VoidTy, null, "this"),*/
+				new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 1))), new ApplyNode(
+					IntTy,
+					null,
+					Fibo, /*new LocalNode(
 						VoidTy,
 						null,
 						"this"),*/
-				new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 2))))));
+					new ApplyNode(IntTy, null, intSub, new LocalNode(IntTy, null, "n"), new ConstNode(IntTy, null, 2))))));
 		KonohaArray Params = new KonohaArray();
 		Params.add(new Param(0, IntTy, "n"));
-		Builder.Compile(Block2, Fibo, Params);
+		Builder.Compile(KonohaContext.DefaultNameSpace, Block2, Fibo, Params);
 	}
 
 	public static void testTry(JVMCodeGenerator Builder) {
@@ -142,7 +143,7 @@ public class JVMCodeGenTest extends KTestCase {
 		ParamData1[0] = IntTy;
 		KonohaParam Param1 = new KonohaParam(1, ParamData1, ArgData1);
 		KonohaMethod func1 = new KonohaMethod(0, VoidTy, "testTry", Param1, null);
-		
+
 		// binary op definition
 		String[] ArgData2 = new String[1];
 		ArgData2[0] = "x";
@@ -150,21 +151,21 @@ public class JVMCodeGenTest extends KTestCase {
 		ParamData2[0] = IntTy;
 		ParamData2[1] = IntTy;
 		KonohaParam Param2 = new KonohaParam(2, ParamData2, ArgData2);
-		
+
 		KonohaMethod intDiv = new KonohaMethod(0, IntTy, "/", Param2, null);
-		
+
 		// try-finally block
-		TryNode tryBlock = new TryNode(VoidTy, 
-				new ApplyNode(IntTy, null, intDiv, new ConstNode(IntTy, null, 10), new ConstNode(IntTy, null, 0)), 
-				new ReturnNode(IntTy, new ConstNode(IntTy, null, 5)));
-		
+		TryNode tryBlock = new TryNode(VoidTy,
+			new ApplyNode(IntTy, null, intDiv, new ConstNode(IntTy, null, 10), new ConstNode(IntTy, null, 0)),
+			new ReturnNode(IntTy, new ConstNode(IntTy, null, 5)));
+
 		// add catch block
 		TypedNode exceptionBlock = new ConstNode(StringTy, null, "Exception");
 		TypedNode catchBlock = new ReturnNode(IntTy, new ConstNode(IntTy, null, 10));
 		tryBlock.addCatchBlock(exceptionBlock, catchBlock);
 		TryNode Block = tryBlock;
-		
-		Builder.Compile(Block, func1);
+
+		Builder.Compile(KonohaContext.DefaultNameSpace, Block, func1);
 	}
 
 	JVMCodeGenerator	Builder;
@@ -193,7 +194,7 @@ public class JVMCodeGenTest extends KTestCase {
 		try {
 			this.Builder.OutputClassFile("Script", "./bin/org/KonohaScript/CodeGen/");
 			ClassLoader cl = new TestClassLoader();
-			Class<?> c = cl.loadClass("org.KonohaScript.CodeGen.Script");
+			Class<?> c = cl.loadClass("org.KonohaScript.CodeGen.JVM.Script");
 
 			Object ret1 = c.getMethod("testReturnConst").invoke(null);
 			System.out.println(ret1);
@@ -209,7 +210,7 @@ public class JVMCodeGenTest extends KTestCase {
 			Object ret4 = c.getMethod("testFibo", int.class).invoke(null, 10);
 			System.out.println(ret4);
 			this.AssertEqual(((Integer) ret4).intValue(), 55);
-			
+
 			Object ret5 = c.getMethod("testTry").invoke(null);
 			System.out.println(ret5);
 			this.AssertEqual(((Integer) ret5).intValue(), 10);
@@ -242,9 +243,9 @@ public class JVMCodeGenTest extends KTestCase {
 		}
 	}
 
-//	public static void main(String[] args) {
-//		JVMCodeGenTest jvmTest = new JVMCodeGenTest();
-//		jvmTest.Init();
-//		jvmTest.Test();
-//	}
+	//	public static void main(String[] args) {
+	//		JVMCodeGenTest jvmTest = new JVMCodeGenTest();
+	//		jvmTest.Init();
+	//		jvmTest.Test();
+	//	}
 }

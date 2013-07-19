@@ -14,18 +14,11 @@
 			target="1.6" source="1.6" includeantruntime="false">
 			<classpath path="third-party/asm-all-4.0.jar" />
 			<classpath path="third-party/jllvm.jar" />
+			<classpath path="ext/asm-all-4.0.jar" />
 			<include name="**/*.java" />
 			<exclude name="**/*Test.java" />
 			<exclude name="**/*TestBase.java" />
 			<exclude name="**/Tester/*.java" />
-		</javac>
-		<mkdir dir="bin/KonohaJVMCodeGen" />
-		<javac srcdir="ext/KonohaJVMCodeGen/" destdir="bin/KonohaJVMCodeGen" debug="on"
-			target="1.6" source="1.6" includeantruntime="false">
-			<include name="**/*.java" />
-			<exclude name="**/*Test.java" />
-			<classpath path="ext/KonohaJVMCodeGen/asm-all-4.0.jar" />
-			<classpath path="bin/konoha" />
 		</javac>
 		<mkdir dir="bin/KonohaLLVMCodeGen" />
 		<javac srcdir="ext/KonohaLLVMCodeGen/" destdir="bin/KonohaLLVMCodeGen" debug="on"
@@ -60,10 +53,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.KonohaScript.CommandTool.KonohaShell" />
 			</manifest>
-		</jar>
-		<jar jarfile="KonohaJVMCodeGen.jar">
-			<fileset dir="bin/KonohaJVMCodeGen" includes="**/*.class" />
-			<zipfileset src="ext/KonohaJVMCodeGen/asm-all-4.0.jar" />
+			<zipfileset src="ext/asm-all-4.0.jar" />
 		</jar>
 		<jar jarfile="KonohaLLVMCodeGen.jar">
 			<fileset dir="bin/KonohaLLVMCodeGen" includes="**/*.class" />
@@ -83,7 +73,6 @@
 	<target name="clean">
 		<delete dir="bin" />
 		<delete file="konoha.jar" />
-		<delete file="KonohaJVMCodeGen.jar" />
 		<delete file="KonohaLLVMCodeGen.jar" />
 		<delete file="MiniKonoha.Peg.jar" />
 		<delete file="Konoha.CGrammar.jar" />
@@ -98,7 +87,6 @@
 			target="1.6" source="1.6" includeantruntime="false">
 			<classpath path="bin/konoha" />
 			<classpath path="bin/test" />
-			<classpath path="bin/KonohaJVMCodeGen" />
 			<classpath path="bin/KonohaLLVMCodeGen" />
 			<classpath path="bin/MiniKonoha.Peg" />
 			<classpath path="bin/Konoha.CGrammar" />
@@ -115,7 +103,6 @@
 		<jar jarfile="konoha-test.jar">
 			<fileset dir="bin/test" includes="**/*.class" />
 			<zipfileset src="konoha.jar" />
-			<zipfileset src="KonohaJVMCodeGen.jar" />
 			<zipfileset src="KonohaLLVMCodeGen.jar" />
 			<zipfileset src="MiniKonoha.Peg.jar" />
 			<zipfileset src="Konoha.CGrammar.jar" />

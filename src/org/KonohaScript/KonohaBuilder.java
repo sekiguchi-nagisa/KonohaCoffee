@@ -28,9 +28,9 @@ import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public interface KonohaBuilder {
-	Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject);
+	Object EvalAtTopLevel(KonohaNameSpace NameSpace, TypedNode Node, KonohaObject GlobalObject);
 
-	KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method);
+	KonohaMethodInvoker Build(KonohaNameSpace NameSpace, TypedNode Node, KonohaMethod Method);
 
 }
 
@@ -45,12 +45,12 @@ class DefaultKonohaBuilder implements KonohaBuilder {
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
+	public Object EvalAtTopLevel(KonohaNameSpace NameSpace, TypedNode Node, KonohaObject GlobalObject) {
 		return null; // return value of eval
 	}
 
 	@Override
-	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
+	public KonohaMethodInvoker Build(KonohaNameSpace NameSpace, TypedNode Node, KonohaMethod Method) {
 		return new DefaultKonohaMethodInvoker(Method.Param, null);
 	}
 

@@ -139,7 +139,7 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 		int ParamSize = (UNode.NodeList.size() - MethodParamOffset) / 2;
 		KonohaType[] ParamData = new KonohaType[ParamSize + 1];
 		String[] ArgNames = new String[ParamSize];
-		ParamData[0] = UNode.GetTokenType(MethodClassOffset, Gamma.VarType);
+		ParamData[0] = UNode.GetTokenType(MethodReturnTypeOffset, Gamma.VarType);
 		for(int i = 0; i < ParamSize; i = i + 1) {
 			KonohaType ParamType = UNode.GetTokenType(MethodParamOffset + 2 * i, Gamma.VarType);
 			String ParamName = UNode.GetTokenString(MethodParamOffset + 2 * i + 1, "");

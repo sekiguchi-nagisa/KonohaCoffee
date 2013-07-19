@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaSymbol;
 import org.KonohaScript.KonohaType;
@@ -444,7 +445,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
+	public Object EvalAtTopLevel(KonohaNameSpace NameSpace, TypedNode Node, KonohaObject GlobalObject) {
 		Object Ret = this.Eval(Node, null, GlobalObject);
 		if(Ret == null) {
 			Ret = "";
@@ -454,7 +455,7 @@ public class ASTInterpreter extends CodeGenerator implements KonohaBuilder {
 	}
 
 	@Override
-	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
+	public KonohaMethodInvoker Build(KonohaNameSpace NameSpace, TypedNode Node, KonohaMethod Method) {
 		this.Prepare(Method);
 		return this.Compile(Node);
 	}

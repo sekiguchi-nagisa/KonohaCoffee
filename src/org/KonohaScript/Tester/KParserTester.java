@@ -24,7 +24,7 @@ public abstract class KParserTester extends KTestCase {
 		TypeEnv Gamma = new TypeEnv(NameSpace, null);
 		TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
 		KonohaBuilder Builder = NameSpace.GetBuilder();
-		Object ResultValue = Builder.EvalAtTopLevel(TNode, NameSpace.GetGlobalObject());
+		Object ResultValue = Builder.EvalAtTopLevel(NameSpace, TNode, NameSpace.GetGlobalObject());
 
 		return ResultValue;
 	}

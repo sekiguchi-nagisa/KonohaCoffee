@@ -1,21 +1,47 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.CodeGen.JVM;
 
 import java.util.HashMap;
 
+import org.KonohaScript.KonohaClass;
 import org.KonohaScript.KonohaMethod;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.SyntaxTree.*;
+import org.KonohaScript.CodeGen.CodeGenerator;
+import org.KonohaScript.CodeGen.Local;
+import org.KonohaScript.SyntaxTree.AndNode;
+import org.KonohaScript.SyntaxTree.ApplyNode;
+import org.KonohaScript.SyntaxTree.AssignNode;
+import org.KonohaScript.SyntaxTree.ConstNode;
+import org.KonohaScript.SyntaxTree.DefineNode;
+import org.KonohaScript.SyntaxTree.ErrorNode;
+import org.KonohaScript.SyntaxTree.FunctionNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
+import org.KonohaScript.SyntaxTree.IfNode;
+import org.KonohaScript.SyntaxTree.JumpNode;
+import org.KonohaScript.SyntaxTree.LabelNode;
+import org.KonohaScript.SyntaxTree.LetNode;
+import org.KonohaScript.SyntaxTree.LocalNode;
+import org.KonohaScript.SyntaxTree.LoopNode;
+import org.KonohaScript.SyntaxTree.NewNode;
+import org.KonohaScript.SyntaxTree.NullNode;
+import org.KonohaScript.SyntaxTree.OrNode;
+import org.KonohaScript.SyntaxTree.ReturnNode;
+import org.KonohaScript.SyntaxTree.SwitchNode;
+import org.KonohaScript.SyntaxTree.ThrowNode;
+import org.KonohaScript.SyntaxTree.TryNode;
+import org.KonohaScript.SyntaxTree.TypedNode;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 class JVMBuilder extends CodeGenerator implements Opcodes {
-	
+
 	MethodVisitor					methodVisitor;
 	Stack							stack;
 	HashMap<String, BinaryOperator>	binaryOperatorMap;
 	HashMap<String, String>			methodDescriptorMap;
-	
+	KonohaNameSpace					NameSpace;
+
 	public JVMBuilder(KonohaMethod mi, MethodVisitor mv) {
 		super(mi);
 		this.methodVisitor = mv;
@@ -138,7 +164,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 				JVMBuilder.this.stack.pop();
 				JVMBuilder.this.stack.push();
 				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPGT, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true 
+				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
 				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
 				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
 				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
@@ -266,7 +292,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		}
 		return false;
 	}
-	
+
 	void BinaryOp(String opName) {
 		this.binaryOperatorMap.get(opName).codeGen();
 	}
@@ -276,10 +302,16 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		String methodDescriptor = this.getMethodDescriptor(className, methodName);
 		this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 	}
-		@Override
+
+	@Override
 	public boolean VisitDefine(DefineNode Node) {
-		KonohaMethod m = (KonohaMethod)Node.DefInfo;
-		m.DoCompilation();
+		if(Node.DefInfo instanceof KonohaClass) {
+			KonohaClass c = (KonohaClass) Node.DefInfo;
+			c.MakeDefinition(this.NameSpace);
+		} else if(Node.DefInfo instanceof KonohaMethod) {
+			KonohaMethod m = (KonohaMethod) Node.DefInfo;
+			m.DoCompilation();
+		}
 		return true;
 	}
 
@@ -369,7 +401,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	public boolean VisitLet(LetNode Node) {
 		// TODO Auto-generated method stub
 		Node.ValueNode.Evaluate(this);
-		VisitList(Node.BlockNode);
+		this.VisitList(Node.BlockNode);
 
 		return true;
 	}
@@ -415,7 +447,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		// TODO Auto-generated method stub
 		Node.CondExpr.Evaluate(this);
 		Node.IterationExpr.Evaluate(this);
-		VisitList(Node.LoopBody);
+		this.VisitList(Node.LoopBody);
 		return true;
 	}
 
@@ -458,19 +490,19 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Label endTryLabel = new Label();
 		Label finallyLabel = new Label();
 		Label catchLabel[] = new Label[catchSize];
-		
+
 		// prepare
 		for(int i = 0; i < catchSize; i++) {	//TODO: add exception class name
 			catchLabel[i] = new Label();
 			mv.visitTryCatchBlock(beginTryLabel, endTryLabel, catchLabel[i], null);
 		}
-		
+
 		// try block
 		mv.visitLabel(beginTryLabel);
 		this.VisitList(Node.TryBlock);
 		mv.visitLabel(endTryLabel);
 		mv.visitJumpInsn(GOTO, finallyLabel);
-		
+
 		// catch block
 		for(int i = 0; i < catchSize; i++) {	//TODO: add exception class name
 			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
@@ -479,7 +511,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			this.VisitList(Block);
 			mv.visitJumpInsn(GOTO, finallyLabel);
 		}
-		
+
 		// finally block
 		mv.visitLabel(finallyLabel);
 		this.VisitList(Node.FinallyBlock);
@@ -505,12 +537,12 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	public void VisitEnd() {
 		int maxStack = this.stack.getMaxStackSize();
 		int maxLocal = this.LocalVals.size();
-		methodVisitor.visitMaxs(maxStack, maxLocal);
-		methodVisitor.visitEnd();
+		this.methodVisitor.visitMaxs(maxStack, maxLocal);
+		this.methodVisitor.visitEnd();
 	}
 
 }

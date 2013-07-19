@@ -1,18 +1,25 @@
-package org.KonohaScript.CodeGen;
+package org.KonohaScript.CodeGen.JVM;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.NativeMethodInvoker;
+import org.KonohaScript.CodeGen.Local;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.ObjectModel.KonohaObject;
-import org.KonohaScript.SyntaxTree.*;
+import org.KonohaScript.SyntaxTree.TypedNode;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -34,24 +41,24 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 
 		public void accept(ClassVisitor cv) {
-			cv.visit(V1_6, ACC_PUBLIC, name, null, "java/lang/Object", null);
-			for(MethodNode m : methods.values()) {
+			cv.visit(V1_6, ACC_PUBLIC, this.name, null, "java/lang/Object", null);
+			for(MethodNode m : this.methods.values()) {
 				m.accept(cv);
 			}
 		}
 
 		public MethodNode getMethodNode(String name) {
-			return methods.get(name);
+			return this.methods.get(name);
 		}
 	}
 
 	class KonohaClassLoader extends ClassLoader {
 		@Override public Class<?> findClass(String name) {
-			byte[] b = generateBytecode(name);
-			return defineClass(name, b, 0, b.length);
+			byte[] b = JVMCodeGenerator.this.generateBytecode(name);
+			return this.defineClass(name, b, 0, b.length);
 		}
 	}
-	
+
 	public JVMCodeGenerator() {
 		this.initTypeDescriptorMap();
 	}
@@ -61,7 +68,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		this.typeDescriptorMap.put("Boolean", Type.getType(boolean.class).getDescriptor());
 		this.typeDescriptorMap.put("Integer", Type.getType(int.class).getDescriptor());
 		this.typeDescriptorMap.put("Object", Type.getType(Object.class).getDescriptor());
-		// TODO: other class	
+		// TODO: other class
 	}
 
 	private String getTypeDescriptor(KonohaType type) {
@@ -106,36 +113,36 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		return classWriter.toByteArray();
 	}
 
-	public KonohaMethodInvoker Compile(TypedNode Block, KonohaMethod MethodInfo) {
-		return Compile(Block, MethodInfo, null);
+	public KonohaMethodInvoker Compile(KonohaNameSpace NameSpace, TypedNode Block, KonohaMethod MethodInfo) {
+		return this.Compile(NameSpace, Block, MethodInfo, null);
 	}
 
-	public KonohaMethodInvoker Compile(TypedNode Block, KonohaMethod MethodInfo, KonohaArray params) {
+	public KonohaMethodInvoker Compile(KonohaNameSpace NameSpace, TypedNode Block, KonohaMethod MethodInfo, KonohaArray params) {
 		String className;
 		String methodName;
 		String methodDescriptor;
 		KonohaParam param;
 		boolean is_eval = false;
 		if(MethodInfo != null && MethodInfo.MethodName.length() > 0) {
-//			className = MethodInfo.ClassInfo.ShortClassName;
+			// className = MethodInfo.ClassInfo.ShortClassName;
 			className = "Script";
 			methodName = MethodInfo.MethodName;
 			methodDescriptor = this.getMethodDescriptor(MethodInfo);
 			param = MethodInfo.Param;
 		} else {
 			className = "Script";
-			methodName = "__eval" + (evalCount++);
+			methodName = "__eval" + (this.evalCount++);
 			methodDescriptor = "()Ljava/lang/Object;";
 			is_eval = true;
 			param = null;
 		}
-		
-		KClassNode cn = classMap.get(className);
+
+		KClassNode cn = this.classMap.get(className);
 		if(cn == null) {
 			cn = new KClassNode(className);
-			classMap.put(cn.name, cn);
+			this.classMap.put(cn.name, cn);
 		}
-		
+
 		MethodNode mn = null;
 		for(MethodNode m : cn.methods.values()) {
 			if(m.name.equals(methodName) && m.desc.equals(methodDescriptor)) {
@@ -149,8 +156,8 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			mn.instructions.clear();
 		}
 		mn.visitCode();
-		
-		JVMBuilder b = new JVMBuilder(null, mn);
+
+		JVMBuilder b = new JVMBuilder(MethodInfo, mn);
 		if(params != null) {
 			for(int i=0; i<params.size(); i++) {
 				Local local = (Local)params.get(i);
@@ -167,14 +174,16 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			}
 			mn.visitInsn(ARETURN);
 		}
-		
+
 		cn.methods.put(methodName, mn);
-		
-//		try { this.OutputClassFile("Script", "."); }
-//		catch(Exception e) { e.printStackTrace(); }
-		
+
+		//		try { this.OutputClassFile("Script", "."); }
+		//		catch(Exception e) { e.printStackTrace(); }
+
 		Class<?> c = new KonohaClassLoader().findClass(className);
-		for(Method m : c.getMethods()) {
+		Method[] MethodList = c.getMethods();
+		for(int i = 0; i < MethodList.length; i++) {
+			Method m = MethodList[i];
 			if(m.getName().equals(methodName)) {
 				KonohaMethodInvoker mtd = new NativeMethodInvoker(param, m);
 				return mtd;
@@ -184,14 +193,26 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
-		KonohaMethodInvoker Invoker = this.Compile(Node, null);
+	public Object EvalAtTopLevel(KonohaNameSpace NameSpace, TypedNode Node, KonohaObject GlobalObject) {
+		KonohaMethodInvoker Invoker = this.Compile(NameSpace, Node, null);
 		return Invoker.Invoke(null);
 	}
 
 	@Override
-	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
-		return this.Compile(Node, Method);
+	public KonohaMethodInvoker Build(KonohaNameSpace NameSpace, TypedNode Node, KonohaMethod Method) {
+		KonohaArray Param = null;
+		if(Method != null) {
+			Param = new KonohaArray();
+			KonohaParam P = Method.Param;
+			Param.add(new Local(0, Method.ClassInfo, "this"));
+			for(int i = 0; i < P.GetParamSize(); i++) {
+				KonohaType Type = P.Types[i + 1];
+				String Arg = P.ArgNames[i];
+				Local l = new Local(i + 1, Type, Arg);
+				Param.add(l);
+			}
+		}
+		return this.Compile(NameSpace, Node, Method, Param);
 	}
 
 }

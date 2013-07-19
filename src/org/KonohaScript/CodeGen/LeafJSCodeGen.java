@@ -6,6 +6,7 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaParam;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
@@ -92,7 +93,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	Local AddLocal(KonohaType Type, String Name) {
+	public Local AddLocal(KonohaType Type, String Name) {
 		this.AddLocalVariableRenameRule(Name);
 		return super.AddLocal(Type, Name);
 	};
@@ -487,8 +488,8 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public Object EvalAtTopLevel(TypedNode Node, KonohaObject GlobalObject) {
-		Object Ret = this.Build(Node, null).CompiledCode;
+	public Object EvalAtTopLevel(KonohaNameSpace NameSpace, TypedNode Node, KonohaObject GlobalObject) {
+		Object Ret = this.Build(NameSpace, Node, null).CompiledCode;
 		if(Ret == null) {
 			Ret = "";
 		}
@@ -499,7 +500,7 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 	}
 
 	@Override
-	public KonohaMethodInvoker Build(TypedNode Node, KonohaMethod Method) {
+	public KonohaMethodInvoker Build(KonohaNameSpace NameSpace, TypedNode Node, KonohaMethod Method) {
 		this.Prepare(Method);
 		return this.Compile(Node);
 	}

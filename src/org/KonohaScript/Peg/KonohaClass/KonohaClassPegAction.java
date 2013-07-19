@@ -2,7 +2,6 @@ package org.KonohaScript.Peg.KonohaClass;
 
 import org.KonohaScript.KonohaClass;
 import org.KonohaScript.KonohaType;
-import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
@@ -24,15 +23,11 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 		int Index = 0;
 		UntypedNode ClassName = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		KonohaArray Block = (KonohaArray) Parser.Get(Index, NodeSize);
+		UntypedNode Block = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		UNode.SetAtToken(ClassNameOffset, ClassName.KeyToken);
 		UNode.SetAtNode(ClassParentNameOffset, null);
-		if(Block.size() > 0) {
-			UNode.SetAtNode(ClassBlockOffset, (UntypedNode) Block.get(0));
-		} else {
-			UNode.SetAtNode(ClassBlockOffset, null);
-		}
+		UNode.SetAtNode(ClassBlockOffset, Block);
 		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
 	}

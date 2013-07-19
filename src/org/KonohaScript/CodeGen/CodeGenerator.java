@@ -8,10 +8,10 @@ import org.KonohaScript.SyntaxTree.NodeVisitor;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public abstract class CodeGenerator extends NodeVisitor {
-	KonohaArray		LocalVals;
+	protected KonohaArray	LocalVals;
 	KonohaMethod	MethodInfo;
 
-	CodeGenerator(KonohaMethod MethodInfo) {
+	public CodeGenerator(KonohaMethod MethodInfo) {
 		this.LocalVals = new KonohaArray();
 		this.MethodInfo = MethodInfo;
 	}
@@ -20,7 +20,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 		return null;
 	}
 
-	Local FindLocalVariable(String Name) {
+	protected Local FindLocalVariable(String Name) {
 		for(int i = 0; i < this.LocalVals.size(); i++) {
 			Local l = (Local) this.LocalVals.get(i);
 			if(l.Name.compareTo(Name) == 0) {
@@ -37,7 +37,7 @@ public abstract class CodeGenerator extends NodeVisitor {
 		return null;
 	}
 
-	Local AddLocal(KonohaType Type, String Name) {
+	public Local AddLocal(KonohaType Type, String Name) {
 		Local local = new Local(this.LocalVals.size(), Type, Name);
 		this.LocalVals.add(local);
 		return local;

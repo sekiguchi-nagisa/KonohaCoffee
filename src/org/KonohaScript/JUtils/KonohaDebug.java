@@ -1,7 +1,8 @@
 package org.KonohaScript.JUtils;
 
 public final class KonohaDebug {
-	public final static boolean	UseBuiltInTest	= true;
+	static final public boolean	UseBuiltInTest	= true;
+	static final public boolean	DebugPrint		= false;
 
 	public static void P(String msg) {
 		System.out.println("DEBUG: " + msg);

@@ -36,17 +36,19 @@ public class KonohaShell {
 
 	Konoha	ShellContext;
 	boolean	IsInteractiveMode;
+	Object	LastEvaled;
 
 	public KonohaShell(String DefaultBuilder) {
 		this.ShellContext = new Konoha(new MiniKonohaGrammar(), DefaultBuilder);
 		this.IsInteractiveMode = false;
+		this.LastEvaled = null;
 	}
 
 	boolean ProcessSource(String Source) {
 		if(!Source.endsWith("}") && !Source.endsWith(";")) {
 			Source = Source + ";";
 		}
-		this.ShellContext.Eval(Source, 0);
+		this.LastEvaled = this.ShellContext.Eval(Source, 0);
 		return true;
 	}
 
@@ -114,8 +116,8 @@ public class KonohaShell {
 	}
 
 	public static void main(String[] origArgs) {
-//		String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
-		String DefaultBuilder = "org.KonohaScript.CodeGen.JVMCodeGenerator";
+		//String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
+		String DefaultBuilder = "org.KonohaScript.CodeGen.JVM.JVMCodeGenerator";
 		KonohaShell shell = new KonohaShell(DefaultBuilder);
 		String[] args = shell.ProcessOptions(origArgs);
 		if(args == null) {
@@ -187,6 +189,9 @@ public class KonohaShell {
 			}
 			if(this.ProcessSource(source) == false) {
 				break;
+			}
+			if(this.LastEvaled != null) {
+				console.println(this.LastEvaled.toString());
 			}
 		}
 	}

@@ -124,7 +124,7 @@ public class MiniKonohaPegGrammar extends KonohaGrammar implements KonohaConst {
 		new KonohaSingleSymbolSyntax().LoadDefaultSyntax(NameSpace);
 		NameSpace.AddTokenFunc(" \t\n", this, "WhiteSpaceToken");
 		NameSpace.AddTokenFunc("Aa", this, "SymbolToken");
-		NameSpace.DefineSyntax("$Symbol", KonohaConst.Term, this, "Symbol");
+		//NameSpace.DefineSyntax("$Symbol", KonohaConst.Term, this, "Symbol");
 
 		new KonohaIntegerSyntax().LoadDefaultSyntax(NameSpace);
 		new KonohaStringSyntax().LoadDefaultSyntax(NameSpace);

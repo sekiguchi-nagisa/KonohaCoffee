@@ -34,7 +34,6 @@ import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class KonohaMethod extends KonohaDef implements KonohaConst {
-
 	public KonohaType			ClassInfo;
 	public String				MethodName;
 	int							MethodSymbolId;
@@ -143,7 +142,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		TypeEnv Gamma = new TypeEnv(this.LazyNameSpace, this);
 		TypedNode TNode = TypeEnv.TypeCheck(Gamma, UNode, Gamma.VoidType, DefaultTypeCheckPolicy);
 		KonohaBuilder Builder = this.LazyNameSpace.GetBuilder();
-		this.MethodInvoker = Builder.Build(TNode, this);
+		this.MethodInvoker = Builder.Build(NS, TNode, this);
 	}
 
 }
