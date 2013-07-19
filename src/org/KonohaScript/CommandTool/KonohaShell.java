@@ -135,29 +135,16 @@ public class KonohaShell {
 
 	static int Count(String begin, String terminator, String source) {
 		int level = 0;
-		int start = source.indexOf(begin);
-		if(start >= 0) {
-			int i = start;
-			while(i < source.length()) {
+		int length = source.length();
+		int Begin = begin.charAt(0);
+		int End = terminator.charAt(0);
+		for(int i = 0; i < length; i++) {
+			int ch = source.charAt(i);
+			if(ch == Begin) {
 				level = level + 1;
-				// System.out.println("start = " + start + ",i = " + i +":inc");
-				i = source.indexOf(begin, i + 1);
-				if(i < 0) {
-					break;
-				}
 			}
-		}
-
-		int end = source.indexOf(terminator);
-		if(end >= 0) {
-			int i = end;
-			while(i < source.length()) {
+			if(ch == End) {
 				level = level - 1;
-				// System.out.println("end = " + end + ",i = " + i + ":dec");
-				i = source.indexOf(end, i + 1);
-				if(i < 0) {
-					break;
-				}
 			}
 		}
 		return level;

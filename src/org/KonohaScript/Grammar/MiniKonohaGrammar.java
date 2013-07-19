@@ -313,9 +313,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		// case: Symbol is GlobalVariable
 		if(UNode.KeyToken.ParsedText.equals("global")) {
 			return new ConstNode(
-					UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
-					UNode.KeyToken,
-					UNode.NodeNameSpace.GetGlobalObject());
+				UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
+				UNode.KeyToken,
+				UNode.NodeNameSpace.GetGlobalObject());
 		}
 		// case: Symbol is undefined name
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
@@ -401,7 +401,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		TokenList GroupList = GroupToken.GetGroupList();
 		UNode.AppendTokenList(",", GroupList, 1, GroupList.size() - 1, 0/* ParseOption */);
 
-		UntypedNode methodNode = UNodeFromToken(UNode.NodeNameSpace, MethodToken);
+		UntypedNode methodNode = this.UNodeFromToken(UNode.NodeNameSpace, MethodToken);
 		UNode.SetAtNode(MethodCallName, methodNode);
 
 		UNode.Syntax = UNode.NodeNameSpace.GetSyntax("$MethodCall");
@@ -436,7 +436,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, TypedNode BaseNode, KonohaType TypeInfo) {
 		KonohaArray NodeList = UNode.NodeList;
-		int ParamSize = ParamSizeFromNodeList(NodeList);
+		int ParamSize = this.ParamSizeFromNodeList(NodeList);
 		KonohaToken KeyToken = UNode.KeyToken;
 		KonohaMethod Method = null;
 		Method = Gamma.GammaNameSpace.LookupMethod(KeyToken.ParsedText, ParamSize);
@@ -454,10 +454,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	private TypedNode TypeMethodEachParam(TypeEnv Gamma, KonohaType BaseType, ApplyNode WorkingNode, KonohaArray NodeList) {
 		KonohaMethod Method = WorkingNode.Method;
-		int ParamSize = ParamSizeFromNodeList(NodeList);
+		int ParamSize = this.ParamSizeFromNodeList(NodeList);
 		for(int ParamIdx = 0; ParamIdx < ParamSize; ParamIdx++) {
 			KonohaType ParamType = Method.GetParamType(BaseType, ParamIdx);
-			UntypedNode UntypedParamNode = GetUntypedParamNodeFromNodeList(NodeList, ParamIdx);
+			UntypedNode UntypedParamNode = this.GetUntypedParamNodeFromNodeList(NodeList, ParamIdx);
 			TypedNode ParamNode;
 			if(UntypedParamNode != null) {
 				ParamNode = TypeEnv.TypeCheck(Gamma, UntypedParamNode, ParamType, DefaultTypeCheckPolicy);
@@ -739,12 +739,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		}
 		KonohaParam Param = new KonohaParam(ParamSize + 1, ParamData, ArgNames);
 		KonohaMethod NewMethod = new KonohaMethod(
-				0,
-				BaseType,
-				MethodName,
-				Param,
-				UNode.NodeNameSpace,
-				UNode.GetTokenList(MethodDeclBlock));
+			0,
+			BaseType,
+			MethodName,
+			Param,
+			UNode.NodeNameSpace,
+			UNode.GetTokenList(MethodDeclBlock));
 		BaseType.DefineNewMethod(NewMethod);
 		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}
@@ -932,10 +932,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineSyntax("/", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
 		NameSpace.DefineSyntax("%", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
 
-		NameSpace.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator",
-				"MethodCall");
-		NameSpace.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator",
-				"MethodCall");
+		NameSpace
+				.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
+		NameSpace
+				.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
 
 		NameSpace.DefineSyntax("<", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
 		NameSpace.DefineSyntax("<=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
@@ -969,7 +969,6 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
 		NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");
-
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
 

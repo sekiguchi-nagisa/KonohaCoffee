@@ -939,8 +939,8 @@ class whileStatementSyntax0 extends SyntaxAcceptor {
 		Index = Index + 1;
 		UntypedNode Body = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		UNode.SetAtNode(0, Cond);
-		UNode.SetAtNode(1, Body);
+		UNode.SetAtNode(WhileCondOffset, Cond);
+		UNode.SetAtNode(WhileBodyOffset, Body);
 
 		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
