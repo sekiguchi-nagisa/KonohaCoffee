@@ -1571,7 +1571,7 @@ class memberExpressionSyntax extends SyntaxPattern {
 
 /*
  * [$primary: [ <Symbol:"this"> ] [ <Symbol:$literal> ] [ <Symbol:$identifier> ]
- * [ <Symbol:"("> <Symbol:$expression> <Symbol:")"> ] ]
+ * [ <Symbol:$type> ] [ <Symbol:"("> <Symbol:$expression> <Symbol:")"> ] ]
  */
 class primarySyntax extends SyntaxPattern {
 	primarySyntax() {
@@ -1581,6 +1581,7 @@ class primarySyntax extends SyntaxPattern {
 	@Override
 	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
+		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new literalSyntax(), false);
 		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
@@ -1617,6 +1618,14 @@ class primarySyntax extends SyntaxPattern {
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor4	= new primarySyntax4();
+
+	int action4(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
+		this.Report("Accept $primary");
+		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
+		return Parser.Cursor;
+	}
+
 	@Override
 	public int Match(PegParser Parser, TokenList TokenList) {
 		int NodeSize = 0;
@@ -1638,11 +1647,16 @@ class primarySyntax extends SyntaxPattern {
 			return this.action2("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
+		if(Parser.Match("$type", TokenList) >= 0) {
+			NodeSize = NodeSize + 1;
+			return this.action3("$primary", Parser, pos0, NodeSize);
+		}
+		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
 		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-					return this.action3("$primary", Parser, pos0, NodeSize);
+					return this.action4("$primary", Parser, pos0, NodeSize);
 				}
 			}
 		}

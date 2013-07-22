@@ -255,7 +255,6 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		// add other binary operator
 	}
 
-
 	String getMethodDescriptor(String className, String methodName) {
 		return this.methodDescriptorMap.get(className + "." + methodName);
 	}
@@ -355,6 +354,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Node.BaseNode.Evaluate(this);
 		return true;
 	}
+
 	@Override
 	public boolean VisitApply(ApplyNode Node) {
 		for(int i = 0; i < Node.Params.size(); i++) {
@@ -492,7 +492,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Label catchLabel[] = new Label[catchSize];
 
 		// prepare
-		for(int i = 0; i < catchSize; i++) {	//TODO: add exception class name
+		for(int i = 0; i < catchSize; i++) { //TODO: add exception class name
 			catchLabel[i] = new Label();
 			mv.visitTryCatchBlock(beginTryLabel, endTryLabel, catchLabel[i], null);
 		}
@@ -504,7 +504,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		mv.visitJumpInsn(GOTO, finallyLabel);
 
 		// catch block
-		for(int i = 0; i < catchSize; i++) {	//TODO: add exception class name
+		for(int i = 0; i < catchSize; i++) { //TODO: add exception class name
 			TypedNode Block = (TypedNode) Node.CatchBlock.get(i);
 			TypedNode Exception = (TypedNode) Node.TargetException.get(i);
 			mv.visitLabel(catchLabel[i]);

@@ -26,34 +26,35 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
-public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
+class KClassNode implements Opcodes {
+	final String					name;
+	final Map<String, MethodNode>	methods	= new HashMap<String, MethodNode>();
 
-	private final Map<String, KClassNode> classMap = new HashMap<String, KClassNode>();
-	private final Map<String, String> typeDescriptorMap = new HashMap<String, String>();
-	private int evalCount = 0;
+	public KClassNode(String name) {
+		this.name = name;
+	}
 
-	static class KClassNode {
-		final String name;
-		final Map<String, MethodNode> methods = new HashMap<String, MethodNode>();
-
-		public KClassNode(String name) {
-			this.name = name;
-		}
-
-		public void accept(ClassVisitor cv) {
-			cv.visit(V1_6, ACC_PUBLIC, this.name, null, "java/lang/Object", null);
-			for(MethodNode m : this.methods.values()) {
-				m.accept(cv);
-			}
-		}
-
-		public MethodNode getMethodNode(String name) {
-			return this.methods.get(name);
+	public void accept(ClassVisitor cv) {
+		cv.visit(V1_6, ACC_PUBLIC, this.name, null, "java/lang/Object", null);
+		for(MethodNode m : this.methods.values()) {
+			m.accept(cv);
 		}
 	}
 
+	public MethodNode getMethodNode(String name) {
+		return this.methods.get(name);
+	}
+}
+
+public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
+
+	private final Map<String, KClassNode>	classMap			= new HashMap<String, KClassNode>();
+	private final Map<String, String>		typeDescriptorMap	= new HashMap<String, String>();
+	private int								evalCount			= 0;
+
 	class KonohaClassLoader extends ClassLoader {
-		@Override public Class<?> findClass(String name) {
+		@Override
+		public Class<?> findClass(String name) {
 			byte[] b = JVMCodeGenerator.this.generateBytecode(name);
 			return this.defineClass(name, b, 0, b.length);
 		}
@@ -85,8 +86,9 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		paramTypes.remove(0);
 		StringBuilder signature = new StringBuilder();
 		signature.append("(");
-		for(KonohaType param : paramTypes) {
-			signature.append(this.getTypeDescriptor(param));
+		for(int i = 0; i < paramTypes.size(); i++) {
+			KonohaType ParamType = paramTypes.get(i);
+			signature.append(this.getTypeDescriptor(ParamType));
 		}
 		signature.append(")");
 		signature.append(this.getTypeDescriptor(returnType));
@@ -124,8 +126,8 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		KonohaParam param;
 		boolean is_eval = false;
 		if(MethodInfo != null && MethodInfo.MethodName.length() > 0) {
-			// className = MethodInfo.ClassInfo.ShortClassName;
-			className = "Script";
+			className = MethodInfo.ClassInfo.ShortClassName;
+			//className = "Script";
 			methodName = MethodInfo.MethodName;
 			methodDescriptor = this.getMethodDescriptor(MethodInfo);
 			param = MethodInfo.Param;
@@ -159,8 +161,8 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 
 		JVMBuilder b = new JVMBuilder(MethodInfo, mn);
 		if(params != null) {
-			for(int i=0; i<params.size(); i++) {
-				Local local = (Local)params.get(i);
+			for(int i = 0; i < params.size(); i++) {
+				Local local = (Local) params.get(i);
 				b.AddLocal(local.TypeInfo, local.Name);
 			}
 		}

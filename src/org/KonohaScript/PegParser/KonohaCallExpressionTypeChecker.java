@@ -27,7 +27,7 @@ public class KonohaCallExpressionTypeChecker {
 		}
 		TypedNode Reciver = null;
 		String MethodName = null;
-		if(UNode.NodeList.size() < CallMethodNameOffset) {
+		if(UNode.NodeList.size() > CallMethodNameOffset) {
 			MethodName = UNode.GetTokenString(CallMethodNameOffset, null);
 		}
 		if(MethodName != null) {
@@ -67,7 +67,7 @@ public class KonohaCallExpressionTypeChecker {
 			KonohaMethod Method = (KonohaMethod) ((ConstNode) ANode.Params.get(1)).ConstValue;
 			MethodName = Method.MethodName;
 		}
-		return TypeFindingMethod(Gamma, UNode, TypeInfo, Reciver, MethodName);
+		return KonohaCallExpressionTypeChecker.TypeFindingMethod(Gamma, UNode, TypeInfo, Reciver, MethodName);
 	}
 
 	static TypedNode TypeFindingMethod(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo, TypedNode Reciver,
@@ -81,7 +81,7 @@ public class KonohaCallExpressionTypeChecker {
 		if(Method != null) {
 			ApplyNode CallNode = new ApplyNode(Method.GetReturnType(ReciverType), KeyToken, Method);
 			CallNode.Append(Reciver);
-			return TypeMethodEachParam(Gamma, ReciverType, CallNode, NodeList, ParamSize);
+			return KonohaCallExpressionTypeChecker.TypeMethodEachParam(Gamma, ReciverType, CallNode, NodeList, ParamSize);
 		}
 		return Gamma.NewErrorNode(KeyToken, "undefined method: " + MethodName + " in " + ReciverType.ShortClassName);
 	}
@@ -98,8 +98,9 @@ public class KonohaCallExpressionTypeChecker {
 			} else {
 				ParamNode = Gamma.GetDefaultTypedNode(ParamType);
 			}
-			if(ParamNode.IsError())
+			if(ParamNode.IsError()) {
 				return ParamNode;
+			}
 			CallNode.Append(ParamNode);
 		}
 		return CallNode;
