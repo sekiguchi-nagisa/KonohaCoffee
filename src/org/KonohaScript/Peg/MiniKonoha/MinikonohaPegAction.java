@@ -1333,6 +1333,9 @@ class selectorSyntax1 extends SyntaxAcceptor {
 		}
 		//FIXME need check BaseExpr.Typeinfo is subclass of Array
 		KonohaMethod Method = BaseExpr.TypeInfo.LookupMethod("get", 1);
+		if(Method == null) {
+			Method = BaseExpr.TypeInfo.LookupMethod("GetField", 1);
+		}
 		ApplyNode TNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
 		TNode.Append(BaseExpr);
 		TNode.Append(IndexExpr);

@@ -25,9 +25,8 @@
 package org.KonohaScript;
 
 import org.KonohaScript.JUtils.HostLang;
-import org.KonohaScript.JUtils.KonohaConst;
 
-public class KonohaClass extends KonohaDef implements KonohaConst {
+public class KonohaClass extends KonohaDef {
 	public KonohaType	ClassInfo;
 
 	@HostLang

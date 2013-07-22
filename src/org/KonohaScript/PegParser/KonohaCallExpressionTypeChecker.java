@@ -14,6 +14,8 @@ import org.KonohaScript.SyntaxTree.LocalNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
 public class KonohaCallExpressionTypeChecker {
+	// CallExpression (CallParamater)
+	// CallExpression CallMethodName CallParamater
 	public static final int	CallExpressionOffset	= SyntaxAcceptor.ListOffset;
 	public static final int	CallMethodNameOffset	= CallExpressionOffset + 1;
 	public static final int	CallParameterOffset		= CallExpressionOffset + 2;
@@ -24,7 +26,10 @@ public class KonohaCallExpressionTypeChecker {
 			return MemberExpr;
 		}
 		TypedNode Reciver = null;
-		String MethodName = UNode.GetTokenString(CallMethodNameOffset, null);
+		String MethodName = null;
+		if(UNode.NodeList.size() < CallMethodNameOffset) {
+			MethodName = UNode.GetTokenString(CallMethodNameOffset, null);
+		}
 		if(MethodName != null) {
 			// case: 1 + 10 => MemberExpr=(TypedNode)
 			Reciver = MemberExpr;
@@ -54,6 +59,13 @@ public class KonohaCallExpressionTypeChecker {
 			GetterNode GNode = (GetterNode) MemberExpr;
 			Reciver = GNode.BaseNode;
 			MethodName = GNode.GetFieldName();
+		} else if(MemberExpr instanceof ApplyNode) {
+			// SomeInstance.MethodName(2) => MemberExpr=(ApplyNode:Method SomeInstance Param[0])
+			// SomeInstance.FieldName(2) => MemberExpr=(ApplyNode:Method SomeInstance Param[0])
+			ApplyNode ANode = (ApplyNode) MemberExpr;
+			Reciver = (TypedNode) ANode.Params.get(0);
+			KonohaMethod Method = (KonohaMethod) ((ConstNode) ANode.Params.get(1)).ConstValue;
+			MethodName = Method.MethodName;
 		}
 		return TypeFindingMethod(Gamma, UNode, TypeInfo, Reciver, MethodName);
 	}

@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.KonohaScript.Konoha;
 import org.KonohaScript.KonohaBuilder;
+import org.KonohaScript.KonohaClass;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
 import org.KonohaScript.KonohaNameSpace;
@@ -198,12 +199,24 @@ public class LeafJSCodeGen extends SourceCodeGen implements KonohaBuilder {
 		return ret;
 	}
 
+	final String	JSExtends	= "var __extends = this.__extends || function (d, b) {\n"
+			+ "function __() { this.constructor = d; }\n" + "__.prototype = b.prototype;\n"
+			+ "    d.prototype = new __();\n" + "};";
+
 	@Override
 	public boolean VisitDefine(DefineNode Node) {
 		if(Node.DefInfo instanceof KonohaMethod) {
 			KonohaMethod Mtd = (KonohaMethod) Node.DefInfo;
 			Mtd.DoCompilation();
 			this.push((String) Mtd.MethodInvoker.CompiledCode);
+		} else if(Node.DefInfo instanceof KonohaClass) {
+			KonohaClass ClassInfo = (KonohaClass) Node.DefInfo;
+			String ClassName = ClassInfo.ClassInfo.ShortClassName;
+			String ClassDef = "var " + ClassName + " = (function(_super) {\n";
+			ClassDef += "    __extends(" + ClassName + ", _super);\n";
+			ClassDef += "    return " + ClassName + ";";
+			ClassDef += "})(" + ""/*FIXME: ParentClassName*/+ ");";
+			this.push(ClassDef);
 		} else {
 			throw new NotSupportedCodeError();
 		}
