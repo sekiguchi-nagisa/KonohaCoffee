@@ -598,10 +598,10 @@ class typeSyntax extends SyntaxPattern {
 
 /*
  * [$statement: [ <Symbol:$block> ] [ <Symbol:$variableDeclaration> ] [
- * <Symbol:$expressionStatement> ] [ <Symbol:$ifStatement> ] [
- * <Symbol:$whileStatement> ] [ <Symbol:$breakStatement> ] [
- * <Symbol:$continueStatement> ] [ <Symbol:$returnStatement> ] [
- * <Symbol:$EmptyStatement> ] ]
+ * <Symbol:$ifStatement> ] [ <Symbol:$whileStatement> ] [
+ * <Symbol:$breakStatement> ] [ <Symbol:$continueStatement> ] [
+ * <Symbol:$returnStatement> ] [ <Symbol:$EmptyStatement> ] [
+ * <Symbol:$expressionStatement> ] ]
  */
 class statementSyntax extends SyntaxPattern {
 	statementSyntax() {
@@ -697,37 +697,37 @@ class statementSyntax extends SyntaxPattern {
 			return this.action1("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$expressionStatement", TokenList) >= 0) {
+		if(Parser.Match("$ifStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action2("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$ifStatement", TokenList) >= 0) {
+		if(Parser.Match("$whileStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action3("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$whileStatement", TokenList) >= 0) {
+		if(Parser.Match("$breakStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action4("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$breakStatement", TokenList) >= 0) {
+		if(Parser.Match("$continueStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action5("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$continueStatement", TokenList) >= 0) {
+		if(Parser.Match("$returnStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action6("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$returnStatement", TokenList) >= 0) {
+		if(Parser.Match("$EmptyStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action7("$statement", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $statement 0");
-		if(Parser.Match("$EmptyStatement", TokenList) >= 0) {
+		if(Parser.Match("$expressionStatement", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action8("$statement", Parser, pos0, NodeSize);
 		}

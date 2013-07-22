@@ -9,6 +9,7 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.CodeGenerator;
 import org.KonohaScript.CodeGen.Local;
 import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -34,6 +35,41 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+
+class LabelStack {
+	KonohaArray	LabelNames;
+	KonohaArray	Labels;
+
+	LabelStack() {
+		this.LabelNames = new KonohaArray();
+		this.Labels = new KonohaArray();
+	}
+
+	void AddLabel(String Name, Label Label) {
+		this.LabelNames.add(Name);
+		this.Labels.add(Label);
+	}
+
+	Label FindLabel(String Name) {
+		for(int i = this.LabelNames.size() - 1; i >= 0; i--) {
+			String LName = (String) this.LabelNames.get(i);
+			if(LName.equals(Name)) {
+				return (Label) this.Labels.get(i);
+			}
+		}
+		return null;
+	}
+
+	void RemoveLabel(String Name) {
+		for(int i = this.LabelNames.size() - 1; i >= 0; i--) {
+			String LName = (String) this.LabelNames.get(i);
+			if(LName.equals(Name)) {
+				this.LabelNames.remove(i);
+				this.Labels.remove(i);
+			}
+		}
+	}
+}
 
 class Stack {
 	private int	stackTop		= 0;
@@ -109,6 +145,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	MethodVisitor					methodVisitor;
 	Stack							stack;
+	LabelStack						LabelStack;
 	HashMap<String, BinaryOperator>	binaryOperatorMap;
 	KonohaNameSpace					NameSpace;
 	TypeResolver					TypeResolver;
@@ -118,6 +155,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		this.methodVisitor = mv;
 		this.initBinaryOpcodeMap();
 		this.stack = new Stack();
+		this.LabelStack = new LabelStack();
 		this.TypeResolver = TypeResolver;
 	}
 
@@ -348,10 +386,30 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitLoop(LoopNode Node) {
-		// TODO Auto-generated method stub
+		MethodVisitor mv = this.methodVisitor;
+		Label HEAD = new Label();
+		Label END = new Label();
+
+		this.LabelStack.AddLabel("break", END);
+		this.LabelStack.AddLabel("continue", HEAD);
+
+		mv.visitLabel(HEAD);
+
 		Node.CondExpr.Evaluate(this);
-		Node.IterationExpr.Evaluate(this);
+
+		mv.visitInsn(ICONST_1); // true
+		mv.visitJumpInsn(IF_ICMPNE, END); // condition
+		this.stack.pop();
+		this.stack.pop();
+		this.stack.push();
 		this.VisitList(Node.LoopBody);
+		if(Node.IterationExpr != null) {
+			Node.IterationExpr.Evaluate(this);
+		}
+		mv.visitJumpInsn(GOTO, HEAD);
+		mv.visitLabel(END);
+		this.LabelStack.RemoveLabel("break");
+		this.LabelStack.RemoveLabel("continue");
 		return true;
 	}
 
@@ -377,13 +435,20 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitLabel(LabelNode Node) {
-		// TODO Auto-generated method stub
-		return false;
+		String LabelName = Node.Label;
+		Label Label = new Label();
+		this.LabelStack.AddLabel(LabelName, Label);
+		return true;
 	}
 
 	@Override
 	public boolean VisitJump(JumpNode Node) {
-		// TODO Auto-generated method stub
+		String LabelName = Node.Label;
+		Label label = this.LabelStack.FindLabel(LabelName);
+		if(label == null) {
+			throw new RuntimeException("Cannot find " + LabelName + " label.");
+		}
+		this.methodVisitor.visitJumpInsn(GOTO, label);
 		return false;
 	}
 

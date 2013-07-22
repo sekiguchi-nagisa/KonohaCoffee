@@ -166,8 +166,11 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		mn.visitEnd();
 		cn.methods.put(methodName, mn);
 
-		//		try { this.OutputClassFile("Script", "."); }
-		//		catch(Exception e) { e.printStackTrace(); }
+		try {
+			this.OutputClassFile("global", ".");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		Class<?> c = new KonohaClassLoader().findClass(this, className);
 		Method[] MethodList = c.getMethods();

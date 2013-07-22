@@ -21,6 +21,7 @@ import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LetNode;
 import org.KonohaScript.SyntaxTree.LocalNode;
+import org.KonohaScript.SyntaxTree.LoopNode;
 import org.KonohaScript.SyntaxTree.NewNode;
 import org.KonohaScript.SyntaxTree.NullNode;
 import org.KonohaScript.SyntaxTree.OrNode;
@@ -552,7 +553,7 @@ class statementSyntax1 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$expressionStatement>
+// action: <Symbol:$ifStatement>
 class statementSyntax2 extends SyntaxAcceptor {
 
 	@Override
@@ -569,7 +570,7 @@ class statementSyntax2 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$ifStatement>
+// action: <Symbol:$whileStatement>
 class statementSyntax3 extends SyntaxAcceptor {
 
 	@Override
@@ -586,7 +587,7 @@ class statementSyntax3 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$whileStatement>
+// action: <Symbol:$breakStatement>
 class statementSyntax4 extends SyntaxAcceptor {
 
 	@Override
@@ -603,7 +604,7 @@ class statementSyntax4 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$breakStatement>
+// action: <Symbol:$continueStatement>
 class statementSyntax5 extends SyntaxAcceptor {
 
 	@Override
@@ -620,7 +621,7 @@ class statementSyntax5 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$continueStatement>
+// action: <Symbol:$returnStatement>
 class statementSyntax6 extends SyntaxAcceptor {
 
 	@Override
@@ -637,7 +638,7 @@ class statementSyntax6 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:$returnStatement>
+//action: <Symbol:$returnStatement>
 class statementSyntax7 extends SyntaxAcceptor {
 
 	@Override
@@ -654,7 +655,7 @@ class statementSyntax7 extends SyntaxAcceptor {
 	}
 }
 
-//action: <Symbol:$returnStatement>
+//action: <Symbol:$expressionStatement>
 class statementSyntax8 extends SyntaxAcceptor {
 
 	@Override
@@ -952,11 +953,9 @@ class whileStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		TypedNode Cond = UNode.TypeNodeAt(WhileCondOffset, Gamma, TypeInfo, 0);
-		// FIXME (ide) push "break" and "continue" label
-		TypedNode Body = UNode.TypeNodeAt(WhileCondOffset, Gamma, TypeInfo, 0);
-		// FIXME (ide) pop "break" and "continue" label
-		return null;
+		TypedNode CondNode = UNode.TypeNodeAt(WhileCondOffset, Gamma, TypeInfo, 0);
+		TypedNode BodyNode = UNode.TypeNodeAt(WhileBodyOffset, Gamma, TypeInfo, 0);
+		return new LoopNode(BodyNode.TypeInfo, CondNode, BodyNode, null);
 	}
 }
 
@@ -973,6 +972,7 @@ class breakStatementSyntax0 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+
 		// FIXME (ide) find "break" label from parent node to check this expression is valid or not
 		return new JumpNode(TypeInfo, "break");
 	}

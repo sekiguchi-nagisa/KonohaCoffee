@@ -40,13 +40,13 @@ $type <- $Type
 
 $statement <- $block
 / $variableDeclaration
-/ $expressionStatement
 / $ifStatement
 / $whileStatement
 / $breakStatement
 / $continueStatement
 / $returnStatement
 / $EmptyStatement
+/ $expressionStatement
 
 $variable <- $identifier
 
