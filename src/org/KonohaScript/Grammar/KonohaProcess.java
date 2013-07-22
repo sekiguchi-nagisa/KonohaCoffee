@@ -51,6 +51,8 @@ public class KonohaProcess {
 	public KonohaProcess(String command) {
 		this.cmdNameBuilder = new StringBuilder();
 		this.commandList = new ArrayList<String>();
+		
+		initTrace();
 		setArgument(command);
 	}
 
@@ -59,6 +61,11 @@ public class KonohaProcess {
 		this.commandList = new ArrayList<String>();
 		this.enableSyscallTrace = enableSyscallTrace;
 		
+		initTrace();
+		setArgument(command);
+	}
+	
+	private void initTrace() {
 		if(this.enableSyscallTrace) {
 			String currentLogdirPath = createLogDirectory();
 			String logNameHeader = createLogNameHeader();
@@ -68,8 +75,7 @@ public class KonohaProcess {
 			for(int i = 0; i < straceCmd.length; i++) {
 				this.commandList.add(straceCmd[i]);
 			}
-		}
-		setArgument(command);
+		}		
 	}
 
 	private String createLogDirectory() {
@@ -322,16 +328,21 @@ class KonohaProcessMonitor {
 			KonohaProcess targetProc = procList.get(i);
 			targetProc.waitFor();
 			
+			String message = targetProc.getCmdName();
 			String logFilePath = targetProc.getLogFilePath();
 			if(logFilePath != null) {
 				if(targetProc.getRet() != 0) {
-					String message = targetProc.getCmdName();
 					Stack<String[]> syscallStack = parseTraceLog(logFilePath);
 					deleteLogFile(logFilePath);
 					throw createException(message, syscallStack.peek());
 				}			
-				deleteLogFile(logFilePath);
+				deleteLogFile(logFilePath);				
+			} else {
+				if(targetProc.getRet() != 0) {
+					throw new Exception(message);
+				}
 			}
+			
 		}
 	}
 
@@ -361,7 +372,7 @@ class KonohaProcessMonitor {
 				m2 = p2.matcher(line);
 				if(m1.find() && !m2.find()) {
 					m3 = p3.matcher(line);
-					syscallStack.push(parseSyscall(m3.replaceAll("$5")));
+					syscallStack.push(parseLine(m3.replaceAll("$5")));
 				}
 			}
 			br.close();
@@ -376,7 +387,7 @@ class KonohaProcessMonitor {
 		}
 	}
 
-	private String[] parseSyscall(String syscallLine) {
+	private String[] parseLine(String syscallLine) {
 		int p = 0;
 		int openBracketCount = 0;
 		int closeBracketCount = 0;
