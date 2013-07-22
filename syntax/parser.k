@@ -351,8 +351,7 @@ void emitRule(IO aio, IO sio, Syntax[] syntaxList) {
 	}
 }
 
-void emitChild(ParserGenerator G, Syntax syn) {
-	Map[String] m = new Map[String]();
+void emitChild(Map[String] m, ParserGenerator G, Syntax syn) {
 	Array[Element] a = [];
 	for (int i=0; i < syn.rules.getsize(); i = i + 1) {
 		Array[Element] subrules = syn.rules.get(i);
@@ -383,15 +382,30 @@ void emitChild(ParserGenerator G, Syntax syn) {
 			}
 		}
 	}
-	String[] keys = m.keys();
-	G.io.emit(1, "public void Init(KonohaNameSpace NameSpace, PegParser Parser) {");
-	for (int i=0; i < keys.getsize(); i = i + 1) {
-		String name = keys.get(i);
-		G.io.emit(2, "Parser.AddSyntax(NameSpace, this, new ${name}(), false);");
-	}
-	G.io.emit(1, "}");
 }
 
+void emitGrammar(IO gio, Syntax[] syntaxList) {
+	ParserGenerator G = new ParserGenerator(gio);
+	Map[String] m = new Map[String]();
+	for(int i = 0; i < syntaxList.getsize(); i = i + 1) {
+		Syntax syn = syntaxList.get(i);
+		emitChild(m, G, syn);
+	}
+	String[] keys = m.keys();
+
+	String TopLevelSyntax = syntaxList.get(0).Name.replace("$", "");
+	G.io.emit(G.level, "final class ${TopLevelSyntax}Grammar extends KonohaGrammar {");
+	G.io.emit(G.level+1, "@Override");
+	G.io.emit(G.level+1, "public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {");
+	for (int i=0; i < keys.getsize(); i = i + 1) {
+		String name = keys.get(i);
+		G.io.emit(G.level+2, "Parser.AddSyntax(new ${name}(), false);");
+	}
+	G.io.emit(G.level+2, "NameSpace.AddPatternSyntax(null, new SourceCodeSyntax(), true);");
+
+	G.io.emit(G.level+1, "}");
+	G.io.emit(G.level, "}");
+}
 
 
 void emitActionEpiloge(Element[] subrules, ParserGenerator G) {
@@ -469,7 +483,6 @@ void emitSyntax(IO aio, IO sio, Syntax syn) {
 	G.io.emit(G.level+1, "${func}Syntax() {");
 	G.io.emit(G.level+2, "super(\"${syn.name}\");");
 	G.io.emit(G.level+1, "}");
-	emitChild(G, syn);
 	G.level = G.level + 1;
 	for (int i=0; i < syn.rules.getsize(); i = i + 1) {
 		G.io.emit(G.level, "public SyntaxAcceptor Acceptor${i} = new ${func}Syntax${i}();");
@@ -510,11 +523,14 @@ void main() {
 	String peg = args.get(1);
 	String actionFile = peg + ".action.java";
 	String syntaxFile = peg + ".syntax.java";
+	String grammarFile = peg + ".grammar.java";
 	actionFile = f(actionFile);
 	syntaxFile = f(syntaxFile);
+	grammarFile = f(grammarFile);
 	String filename = f(peg).split(".").get(0);
 	System.p("OutputFile(1):" + actionFile);
 	System.p("OutputFile(2):" + syntaxFile);
+	System.p("OutputFile(3):" + grammarFile);
 
 	String[] file = readFile(peg).split("\n");
 	Syntax[] syntaxList = [];
@@ -560,6 +576,7 @@ void main() {
 	}
 	IO aio = new IO(new File(actionFile, "w"));
 	IO sio = new IO(new File(syntaxFile, "w"));
+	IO gio = new IO(new File(grammarFile, "w"));
 
 	sio.emit(0, "package org.KonohaScript.Peg.${filename};");
 	sio.emit(0, "");
@@ -579,7 +596,12 @@ void main() {
 	aio.emit(0, "import org.KonohaScript.SyntaxTree.TypedNode;");
 	aio.emit(0, "");
 
+	gio.emit(0, "package org.KonohaScript.Peg.${filename};");
+	gio.emit(0, "import org.KonohaScript.PegParser.PegParser;");
+	gio.emit(0, "");
+
 	emitRule(aio, sio, syntaxList);
+	emitGrammar(gio, syntaxList);
 
 	aio.close();
 	sio.close();

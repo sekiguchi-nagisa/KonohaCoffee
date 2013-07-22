@@ -313,9 +313,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		// case: Symbol is GlobalVariable
 		if(UNode.KeyToken.ParsedText.equals("global")) {
 			return new ConstNode(
-				UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
-				UNode.KeyToken,
-				UNode.NodeNameSpace.GetGlobalObject());
+					UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
+					UNode.KeyToken,
+					UNode.NodeNameSpace.GetGlobalObject());
 		}
 		// case: Symbol is undefined name
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
@@ -346,7 +346,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 	}
 
 	public final static int	MethodCallBaseClass	= 0;
-	public final static int	MethodCallName	= 1;
+	public final static int	MethodCallName		= 1;
 	public final static int	MethodCallParam		= 2;
 
 	private UntypedNode UNodeFromToken(KonohaNameSpace NS, KonohaToken Token) {
@@ -358,7 +358,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	/**
 	 * $Symbol [ "." $Symbol ] () => [(reciever:$Symbol), method@0, (...)]
-	 *
+	 * 
 	 * @return
 	 */
 	public int ParseMethodCall(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
@@ -427,10 +427,11 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		return null;
 	}
 
-	private int ParamSizeFromNodeList(KonohaArray NodeList){
+	private int ParamSizeFromNodeList(KonohaArray NodeList) {
 		return NodeList.size() - 2;
 	}
-	private UntypedNode GetUntypedParamNodeFromNodeList(KonohaArray NodeList, int ParamIndex){
+
+	private UntypedNode GetUntypedParamNodeFromNodeList(KonohaArray NodeList, int ParamIndex) {
 		return (UntypedNode) NodeList.get(ParamIndex + 2);
 	}
 
@@ -709,6 +710,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int SymbolIdx = BeginIdx + 1;
 		int ParamIdx = UNode.MatchSyntax(MethodDeclName, "$Symbol", TokenList, SymbolIdx, EndIdx, ParseOption);
 		int BlockIdx = UNode.MatchSyntax(-1, "()", TokenList, ParamIdx, EndIdx, ParseOption);
+		if(BlockIdx == NoMatch) {
+			return NoMatch;
+		}
 		int NextIdx = UNode.MatchSyntax(MethodDeclBlock, "{}", TokenList, BlockIdx, EndIdx, ParseOption);
 		if(NextIdx != NoMatch) {
 			KonohaToken GroupToken = TokenList.get(ParamIdx);
@@ -739,12 +743,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		}
 		KonohaParam Param = new KonohaParam(ParamSize + 1, ParamData, ArgNames);
 		KonohaMethod NewMethod = new KonohaMethod(
-			0,
-			BaseType,
-			MethodName,
-			Param,
-			UNode.NodeNameSpace,
-			UNode.GetTokenList(MethodDeclBlock));
+				0,
+				BaseType,
+				MethodName,
+				Param,
+				UNode.NodeNameSpace,
+				UNode.GetTokenList(MethodDeclBlock));
 		BaseType.DefineNewMethod(NewMethod);
 		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}
@@ -833,14 +837,15 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public TypedNode TypeWhile(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode CondNode = UNode.TypeNodeAt(LoopCond, Gamma, Gamma.BooleanType, 0);
-		if(CondNode.IsError())
+		if(CondNode.IsError()) {
 			return CondNode;
+		}
 		TypedNode BodyNode = UNode.TypeNodeAt(LoopBody, Gamma, TypeInfo, 0);
 		return new LoopNode(BodyNode.TypeInfo, CondNode, BodyNode, null);
 	}
 
-	public final static int	TryBlock		= 0;
-	public final static int	FinallyBlock	= 1;
+	public final static int	TryBlock				= 0;
+	public final static int	FinallyBlock			= 1;
 	public final static int	TargetExceptionsBaseIdx	= 2;
 	public final static int	TargetVarNamesBaseIdx	= 3;
 	public final static int	CatchBlocksBaseIdx		= 4;
@@ -849,7 +854,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		int CatchIdx = UNode.MatchPattern(TryBlock, "$block", TokenList, BeginIdx + 1, EndIdx, ParseOption);
 		int CatchExprIdx = CatchIdx;
 		int CatchBlockIdx = CatchIdx;
-		for(int i = 0;; i += 3){
+		for(int i = 0;; i += 3) {
 			CatchIdx = UntypedNode.SkipIndent(TokenList, CatchIdx, EndIdx, ParseOption | SkipIndent);
 			CatchExprIdx = UNode.MatchKeyword(-1, "catch", TokenList, CatchIdx, EndIdx, AllowEmpty);
 			if(CatchIdx == CatchExprIdx) { // skiped
@@ -857,8 +862,10 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			} else {
 				CatchBlockIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, CatchExprIdx, EndIdx, AllowEmpty);
 				//CatchBlockIdx = UNode.MatchPattern(TargetExceptionsBaseIdx + i, "$expression", TokenList, CatchBlockIdx, EndIdx, ParseOption);
-				CatchBlockIdx = UNode.MatchSyntax(TargetExceptionsBaseIdx + i, "$Type", TokenList, CatchBlockIdx, EndIdx, ParseOption);
-				CatchBlockIdx = UNode.MatchSyntax(TargetVarNamesBaseIdx + i, "$Symbol", TokenList, CatchBlockIdx, EndIdx, ParseOption);
+				CatchBlockIdx = UNode.MatchSyntax(TargetExceptionsBaseIdx + i, "$Type", TokenList, CatchBlockIdx, EndIdx,
+						ParseOption);
+				CatchBlockIdx = UNode.MatchSyntax(TargetVarNamesBaseIdx + i, "$Symbol", TokenList, CatchBlockIdx, EndIdx,
+						ParseOption);
 				CatchBlockIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, CatchBlockIdx, EndIdx, AllowEmpty);
 				CatchIdx = UNode.MatchPattern(CatchBlocksBaseIdx + i, "$block", TokenList, CatchBlockIdx, EndIdx, ParseOption);
 			}
@@ -876,8 +883,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 	public TypedNode TypeTry(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		TypedNode TryBlockNode = UNode.TypeNodeAt(TryBlock, Gamma, Gamma.BooleanType, 0);
-		if(TryBlockNode.IsError())
+		if(TryBlockNode.IsError()) {
 			return TryBlockNode;
+		}
 
 		boolean IsFinallyEmpty = UNode.GetAtNode(FinallyBlock).IsEmptyNode();
 		TypedNode FinallyBlockNode = IsFinallyEmpty ? null : UNode.TypeNodeAt(FinallyBlock, Gamma, TypeInfo, 0);
@@ -889,7 +897,8 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			KonohaToken VarToken = UNode.GetAtToken(TargetVarNamesBaseIdx + 3 * i);
 			TypedNode TargetExceptionNode = new LetNode(VarType, VarToken, null, null);
 			//		UNode.TypeNodeAt(TargetExceptionsBaseIdx + 3 * i, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
-			TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocksBaseIdx + 3 * i, Gamma, Gamma.VoidType, TypeCheckPolicy_AllowEmpty);
+			TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocksBaseIdx + 3 * i, Gamma, Gamma.VoidType,
+					TypeCheckPolicy_AllowEmpty);
 			TypedTryNode.addCatchBlock(TargetExceptionNode, CatchBlockNode);
 		}
 
@@ -928,47 +937,47 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		NameSpace.DefineMacro("|", this, "MergeOperatorMacro");
 		// ns.AddSymbol(symbol, constValue);
 
-		NameSpace.DefineSyntax("*", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("/", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("%", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
-
-		NameSpace
-				.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
-		NameSpace
-				.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
-
-		NameSpace.DefineSyntax("<", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("<=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax(">", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax(">=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
-
-		NameSpace.DefineSyntax("==", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
-		NameSpace.DefineSyntax("!=", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
-
-		NameSpace.DefineSyntax("=", BinaryOperator | Precedence_CStyleAssign | LeftJoin, this, "UNUSED", "Assign");
-
-		NameSpace.DefineSyntax("&&", BinaryOperator | Precedence_CStyleAND, this, "UNUSED", "AndOperator");
-		NameSpace.DefineSyntax("||", BinaryOperator | Precedence_CStyleOR, this, "UNUSED", "OrOperator");
-		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
-		NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
+		//		NameSpace.DefineSyntax("*", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("/", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("%", BinaryOperator | Precedence_CStyleMUL, this, "UNUSED", "MethodCall");
+		//
+		//		NameSpace
+		//				.DefineSyntax("+", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
+		//		NameSpace
+		//				.DefineSyntax("-", UniaryOperator | BinaryOperator | Precedence_CStyleADD, this, "UniaryOperator", "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("<", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("<=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax(">", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax(">=", BinaryOperator | Precedence_CStyleCOMPARE, this, "UNUSED", "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("==", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
+		//		NameSpace.DefineSyntax("!=", BinaryOperator | Precedence_CStyleEquals, this, "UNUSED", "MethodCall");
+		//
+		//		NameSpace.DefineSyntax("=", BinaryOperator | Precedence_CStyleAssign | LeftJoin, this, "UNUSED", "Assign");
+		//
+		//		NameSpace.DefineSyntax("&&", BinaryOperator | Precedence_CStyleAND, this, "UNUSED", "AndOperator");
+		//		NameSpace.DefineSyntax("||", BinaryOperator | Precedence_CStyleOR, this, "UNUSED", "OrOperator");
+		//		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
+		//		NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
 
 		NameSpace.DefineSyntax("$Const", Term, this, "Const");
 		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
-		NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
+		//NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
 
 		NameSpace.DefineSyntax("$MethodCall", Precedence_CStyleSuffixCall, this, "MethodCall");
 		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
 		NameSpace.DefineSyntax("$New", Term, this, "New");
 
-		NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
-		NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
+		//NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
+		//NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
 		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StringLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
 
 		NameSpace.DefineSyntax("{}", Statement, this, "Block");
 
-		NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
-		NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");
+		//NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
+		//NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");
 		NameSpace.DefineSyntax("if", Statement, this, "If");
 		NameSpace.DefineSyntax("return", Statement, this, "Return");
 

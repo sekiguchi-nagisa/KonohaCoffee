@@ -1,38 +1,34 @@
 package org.KonohaScript.Peg.KonohaClass;
 
-import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.SyntaxPattern;
 
 /*
-[$ClassDefinition:
-	[
-		<Symbol:"class">
-		<Symbol:$#Symbol>
-		<Symbol:$#block>
-	]
-	[
-		<Symbol:"class">
-		<Symbol:$#Symbol>
-		<Symbol:"extends">
-		<Symbol:$#type>
-	]
-]
-*/
+ [$ClassDefinition:
+ [
+ <Symbol:"class">
+ <Symbol:$#Symbol>
+ <Symbol:$#block>
+ ]
+ [
+ <Symbol:"class">
+ <Symbol:$#Symbol>
+ <Symbol:"extends">
+ <Symbol:$#type>
+ ]
+ ]
+ */
 class ClassDefinitionSyntax extends SyntaxPattern {
 	ClassDefinitionSyntax() {
 		super("$ClassDefinition");
 	}
 
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new ClassDefinitionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ClassDefinition");
+		this.Report("Accept $ClassDefinition");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -40,7 +36,7 @@ class ClassDefinitionSyntax extends SyntaxPattern {
 	public SyntaxAcceptor	Acceptor1	= new ClassDefinitionSyntax1();
 
 	int action1(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $ClassDefinition");
+		this.Report("Accept $ClassDefinition");
 		Parser.PushThunk(this.Acceptor1, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -51,13 +47,13 @@ class ClassDefinitionSyntax extends SyntaxPattern {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $ClassDefinition");
+		this.Report("Enter $ClassDefinition");
 		if(Parser.MatchToken("class", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$Symbol", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.Match("$block", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
-					return action0("$ClassDefinition", Parser, pos0, NodeSize);
+					return this.action0("$ClassDefinition", Parser, pos0, NodeSize);
 				}
 			}
 		}
@@ -68,36 +64,28 @@ class ClassDefinitionSyntax extends SyntaxPattern {
 				if(Parser.MatchToken("extends", TokenList, Parser.Cursor) >= 0) {
 					if(Parser.Match("$type", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
-						return action1("$ClassDefinition", Parser, pos0, NodeSize);
+						return this.action1("$ClassDefinition", Parser, pos0, NodeSize);
 					}
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ClassDefinition 0");
-		return Fail("$ClassDefinition", Parser);
+		return this.Fail("$ClassDefinition", Parser);
 	}
 }
 
 /*
-[$TopLevelDefinition:
-	[
-		<Symbol:$ClassDefinition>
-	]
-]
-*/
+ * [$TopLevelDefinition: [ <Symbol:$ClassDefinition> ] ]
+ */
 class TopLevelDefinitionSyntax extends SyntaxPattern {
 	TopLevelDefinitionSyntax() {
 		super("$TopLevelDefinition");
 	}
 
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ClassDefinitionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new TopLevelDefinitionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
-		Report("Accept $TopLevelDefinition");
+		this.Report("Accept $TopLevelDefinition");
 		Parser.PushThunk(this.Acceptor0, BeginIdx, NodeSize);
 		return Parser.Cursor;
 	}
@@ -108,12 +96,12 @@ class TopLevelDefinitionSyntax extends SyntaxPattern {
 		int pos0 = Parser.Cursor;
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
-		Report("Enter $TopLevelDefinition");
+		this.Report("Enter $TopLevelDefinition");
 		if(Parser.Match("$ClassDefinition", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
-			return action0("$TopLevelDefinition", Parser, pos0, NodeSize);
+			return this.action0("$TopLevelDefinition", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $TopLevelDefinition 0");
-		return Fail("$TopLevelDefinition", Parser);
+		return this.Fail("$TopLevelDefinition", Parser);
 	}
 }

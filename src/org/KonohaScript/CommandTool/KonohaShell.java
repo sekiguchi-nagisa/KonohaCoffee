@@ -45,9 +45,9 @@ public class KonohaShell {
 	}
 
 	boolean ProcessSource(String Source) {
-		if(!Source.endsWith("}") && !Source.endsWith(";")) {
-			Source = Source + ";";
-		}
+		//		if(!Source.endsWith("}") && !Source.endsWith(";")) {
+		//			Source = Source + ";";
+		//		}
 		this.LastEvaled = this.ShellContext.Eval(Source, 0);
 		return true;
 	}

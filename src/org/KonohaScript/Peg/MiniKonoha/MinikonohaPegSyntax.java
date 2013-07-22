@@ -1,6 +1,5 @@
 package org.KonohaScript.Peg.MiniKonoha;
 
-import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
@@ -16,11 +15,6 @@ import org.KonohaScript.PegParser.SyntaxPattern;
 class SourceCodeSyntax extends SyntaxPattern {
 	SourceCodeSyntax() {
 		super("$SourceCode");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new TopLevelDefinitionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new SourceCodeSyntax0();
@@ -55,12 +49,6 @@ class SourceCodeSyntax extends SyntaxPattern {
 class TopLevelDefinitionSyntax extends SyntaxPattern {
 	TopLevelDefinitionSyntax() {
 		super("$TopLevelDefinition");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new functionDefinitionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new statementSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new TopLevelDefinitionSyntax0();
@@ -109,13 +97,6 @@ class functionSignatureSyntax extends SyntaxPattern {
 		super("$functionSignature");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new ParamDeclListSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new functionSignatureSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -154,11 +135,6 @@ class functionBodySyntax extends SyntaxPattern {
 		super("$functionBody");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new functionBodySyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -190,12 +166,6 @@ class functionBodySyntax extends SyntaxPattern {
 class functionDefinitionSyntax extends SyntaxPattern {
 	functionDefinitionSyntax() {
 		super("$functionDefinition");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new functionSignatureSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new functionBodySyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new functionDefinitionSyntax0();
@@ -249,11 +219,6 @@ class ParamDeclListSyntax extends SyntaxPattern {
 		super("$ParamDeclList");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ParamDeclsSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new ParamDeclListSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -305,11 +270,6 @@ class ParamDeclsSyntax extends SyntaxPattern {
 		super("$ParamDecls");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ParamDeclSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new ParamDeclsSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -350,12 +310,6 @@ class ParamDeclSyntax extends SyntaxPattern {
 		super("$ParamDecl");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new ParamDeclSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -390,11 +344,6 @@ class ParamDeclSyntax extends SyntaxPattern {
 class ParameterListSyntax extends SyntaxPattern {
 	ParameterListSyntax() {
 		super("$ParameterList");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ParametersSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new ParameterListSyntax0();
@@ -448,11 +397,6 @@ class ParametersSyntax extends SyntaxPattern {
 		super("$Parameters");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ParameterSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new ParametersSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -493,11 +437,6 @@ class ParameterSyntax extends SyntaxPattern {
 		super("$Parameter");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new ParameterSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -529,12 +468,6 @@ class ParameterSyntax extends SyntaxPattern {
 class literalSyntax extends SyntaxPattern {
 	literalSyntax() {
 		super("$literal");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new stringLiteralSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new intLiteralSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new literalSyntax0();
@@ -619,11 +552,6 @@ class typeSyntax extends SyntaxPattern {
 		super("$type");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new TypeTokenSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new typeSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -678,19 +606,6 @@ class typeSyntax extends SyntaxPattern {
 class statementSyntax extends SyntaxPattern {
 	statementSyntax() {
 		super("$statement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new EmptyStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new returnStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new whileStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new continueStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new breakStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new expressionStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new ifStatementSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new variableDeclarationSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new statementSyntax0();
@@ -829,11 +744,6 @@ class variableSyntax extends SyntaxPattern {
 		super("$variable");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new variableSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -864,10 +774,6 @@ class variableSyntax extends SyntaxPattern {
 class EQSyntax extends SyntaxPattern {
 	EQSyntax() {
 		super("$EQ");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new EQSyntax0();
@@ -901,15 +807,6 @@ class EQSyntax extends SyntaxPattern {
 class variableDeclarationSyntax extends SyntaxPattern {
 	variableDeclarationSyntax() {
 		super("$variableDeclaration");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new variableSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new EQSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new variableDeclarationSyntax0();
@@ -973,11 +870,6 @@ class statementsSyntax extends SyntaxPattern {
 		super("$statements");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new statementSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new statementsSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1009,11 +901,6 @@ class statementsSyntax extends SyntaxPattern {
 class blockSyntax extends SyntaxPattern {
 	blockSyntax() {
 		super("$block");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new statementsSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new blockSyntax0();
@@ -1052,12 +939,6 @@ class blockSyntax extends SyntaxPattern {
 class ifStatementSyntax extends SyntaxPattern {
 	ifStatementSyntax() {
 		super("$ifStatement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new ifStatementSyntax0();
@@ -1129,12 +1010,6 @@ class whileStatementSyntax extends SyntaxPattern {
 		super("$whileStatement");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new blockSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new whileStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1176,10 +1051,6 @@ class breakStatementSyntax extends SyntaxPattern {
 		super("$breakStatement");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new breakStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1211,10 +1082,6 @@ class breakStatementSyntax extends SyntaxPattern {
 class continueStatementSyntax extends SyntaxPattern {
 	continueStatementSyntax() {
 		super("$continueStatement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new continueStatementSyntax0();
@@ -1249,11 +1116,6 @@ class continueStatementSyntax extends SyntaxPattern {
 class returnStatementSyntax extends SyntaxPattern {
 	returnStatementSyntax() {
 		super("$returnStatement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new returnStatementSyntax0();
@@ -1306,10 +1168,6 @@ class EmptyStatementSyntax extends SyntaxPattern {
 		super("$EmptyStatement");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new EmptyStatementSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1339,11 +1197,6 @@ class EmptyStatementSyntax extends SyntaxPattern {
 class expressionStatementSyntax extends SyntaxPattern {
 	expressionStatementSyntax() {
 		super("$expressionStatement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new expressionStatementSyntax0();
@@ -1379,14 +1232,6 @@ class expressionStatementSyntax extends SyntaxPattern {
 class expressionSyntax extends SyntaxPattern {
 	expressionSyntax() {
 		super("$expression");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new logicalOrExpressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new leftHandSideExpressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new EQSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new expressionSyntax0();
@@ -1441,12 +1286,6 @@ class leftHandSideExpressionSyntax extends SyntaxPattern {
 		super("$leftHandSideExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new newExpressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new callExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new leftHandSideExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1492,12 +1331,6 @@ class callExpressionSyntax extends SyntaxPattern {
 		super("$callExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ParameterListSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new memberExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new callExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1533,12 +1366,6 @@ class memberExpressionSyntax extends SyntaxPattern {
 		super("$memberExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new primarySyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new selectorSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new memberExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1571,18 +1398,11 @@ class memberExpressionSyntax extends SyntaxPattern {
 
 /*
  * [$primary: [ <Symbol:"this"> ] [ <Symbol:$literal> ] [ <Symbol:$identifier> ]
- * [ <Symbol:"("> <Symbol:$expression> <Symbol:")"> ] ]
+ * [ <Symbol:$type> ] [ <Symbol:"("> <Symbol:$expression> <Symbol:")"> ] ]
  */
 class primarySyntax extends SyntaxPattern {
 	primarySyntax() {
 		super("$primary");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new literalSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new primarySyntax0();
@@ -1617,6 +1437,14 @@ class primarySyntax extends SyntaxPattern {
 		return Parser.Cursor;
 	}
 
+	public SyntaxAcceptor	Acceptor4	= new primarySyntax4();
+
+	int action4(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
+		this.Report("Accept $primary");
+		Parser.PushThunk(this.Acceptor4, BeginIdx, NodeSize);
+		return Parser.Cursor;
+	}
+
 	@Override
 	public int Match(PegParser Parser, TokenList TokenList) {
 		int NodeSize = 0;
@@ -1638,11 +1466,16 @@ class primarySyntax extends SyntaxPattern {
 			return this.action2("$primary", Parser, pos0, NodeSize);
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
+		if(Parser.Match("$type", TokenList) >= 0) {
+			NodeSize = NodeSize + 1;
+			return this.action3("$primary", Parser, pos0, NodeSize);
+		}
+		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $primary 0");
 		if(Parser.MatchToken("$LBrace", TokenList, Parser.Cursor) >= 0) {
 			if(Parser.Match("$expression", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
 				if(Parser.MatchToken("$RBrace", TokenList, Parser.Cursor) >= 0) {
-					return this.action3("$primary", Parser, pos0, NodeSize);
+					return this.action4("$primary", Parser, pos0, NodeSize);
 				}
 			}
 		}
@@ -1658,12 +1491,6 @@ class primarySyntax extends SyntaxPattern {
 class selectorSyntax extends SyntaxPattern {
 	selectorSyntax() {
 		super("$selector");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new identifierSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new expressionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new selectorSyntax0();
@@ -1718,13 +1545,6 @@ class newExpressionSyntax extends SyntaxPattern {
 		super("$newExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new typeSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new ParameterListSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new memberExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new newExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1776,11 +1596,6 @@ class logicalOrExpressionSyntax extends SyntaxPattern {
 		super("$logicalOrExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new logicalAndExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new logicalOrExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -1820,11 +1635,6 @@ class logicalOrExpressionSyntax extends SyntaxPattern {
 class logicalAndExpressionSyntax extends SyntaxPattern {
 	logicalAndExpressionSyntax() {
 		super("$logicalAndExpression");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new relationExpressionSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new logicalAndExpressionSyntax0();
@@ -1867,12 +1677,6 @@ class logicalAndExpressionSyntax extends SyntaxPattern {
 class relationExpressionSyntax extends SyntaxPattern {
 	relationExpressionSyntax() {
 		super("$relationExpression");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new additiveExpressionSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new relationOperatorSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new relationExpressionSyntax0();
@@ -1926,10 +1730,6 @@ class relationExpressionSyntax extends SyntaxPattern {
 class relationOperatorSyntax extends SyntaxPattern {
 	relationOperatorSyntax() {
 		super("$relationOperator");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new relationOperatorSyntax0();
@@ -2032,10 +1832,6 @@ class shiftOperatorSyntax extends SyntaxPattern {
 		super("$shiftOperator");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new shiftOperatorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -2083,10 +1879,6 @@ class additiveOperatorSyntax extends SyntaxPattern {
 		super("$additiveOperator");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new additiveOperatorSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -2129,10 +1921,6 @@ class additiveOperatorSyntax extends SyntaxPattern {
 class multiplicativeOperatorSyntax extends SyntaxPattern {
 	multiplicativeOperatorSyntax() {
 		super("$multiplicativeOperator");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new multiplicativeOperatorSyntax0();
@@ -2192,12 +1980,6 @@ class additiveExpressionSyntax extends SyntaxPattern {
 		super("$additiveExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new additiveOperatorSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new multiplicativeExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new additiveExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -2241,12 +2023,6 @@ class multiplicativeExpressionSyntax extends SyntaxPattern {
 		super("$multiplicativeExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new multiplicativeOperatorSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new unaryExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new multiplicativeExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -2288,11 +2064,6 @@ class unaryExpressionSyntax extends SyntaxPattern {
 		super("$unaryExpression");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new leftHandSideExpressionSyntax(), false);
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new unaryExpressionSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -2323,11 +2094,6 @@ class unaryExpressionSyntax extends SyntaxPattern {
 class identifierSyntax extends SyntaxPattern {
 	identifierSyntax() {
 		super("$identifier");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new SymbolSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new identifierSyntax0();

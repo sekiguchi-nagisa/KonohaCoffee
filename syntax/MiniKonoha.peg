@@ -88,6 +88,7 @@ $memberExpression <- $primary $selector*
 $primary <- "this"
 / $literal
 / $identifier
+/ $type
 / "(" $expression ")"
 
 $selector <- "[" $expression "]"

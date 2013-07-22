@@ -4,7 +4,6 @@ import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;
-import org.KonohaScript.Parser.KonohaGrammar;
 import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.UntypedNode;
@@ -167,38 +166,55 @@ public class PegParser {
 		return this.SyntaxTable.get(Syntax.Name) != null;
 	}
 
-	public void AddSyntax(KonohaNameSpace NameSpace, KonohaGrammar ParentGrammer, KonohaGrammar Grammer, boolean TopLevel) {
-		SyntaxPattern Parent = (SyntaxPattern) ParentGrammer;
-		SyntaxPattern NewGrammer = (SyntaxPattern) Grammer;
-		this.AddSyntax(Parent, NewGrammer, TopLevel);
+	public void AddSyntax(SyntaxPattern NewGrammer, boolean TopLevel) {
+		this.AddSyntax(null, NewGrammer, TopLevel);
 	}
 
-	void AddSyntax(SyntaxPattern ParentSyntax, SyntaxPattern Syntax, boolean TopLevelSyntax) {
+	public void AddSyntax(SyntaxPattern ParentSyntax, SyntaxPattern Syntax, boolean TopLevelSyntax) {
 		if(TopLevelSyntax) {
 			this.RootSyntax = Syntax;
 			this.EntryPoints.add(Syntax);
 		}
 		if(!this.AlreadyRegistered(Syntax)) {
 			this.SyntaxTable.put(Syntax.Name, Syntax);
-			this.NameSpace.DefineSyntax(Syntax.Name, 0, Syntax, "UNUSED", "PegParser");
+			if(!(Syntax instanceof KonohaSyntaxPattern)) {
+				this.NameSpace.AddSyntax(Syntax.Name, 0, Syntax, "UNUSED", "PegParser");
+			}
 			Syntax.Init(this.NameSpace, this);
-
+		} else {
+			this.MergeSyntax(Syntax);
 		}
+	}
+
+	void MergeSyntax(SyntaxPattern NewSyntax) {
+		Object Entry = this.SyntaxTable.get(NewSyntax.Name);
+
+		if(Entry instanceof KonohaArray) {
+			KonohaArray List = (KonohaArray) Entry;
+			for(int i = 0; i < List.size(); i++) {
+				SyntaxPattern Syntax = (SyntaxPattern) List.get(i);
+				if(Syntax.equals(NewSyntax)) {
+					return;
+				}
+			}
+			List.add(NewSyntax);
+		} else {
+			SyntaxPattern OldSyntax = (SyntaxPattern) Entry;
+			if(OldSyntax.equals(NewSyntax)) {
+				return;
+			}
+
+			KonohaArray List = new KonohaArray();
+			List.add(Entry);
+			List.add(NewSyntax);
+			this.SyntaxTable.put(NewSyntax.Name, List);
+		}
+		NewSyntax.Init(this.NameSpace, this);
 	}
 
 	public void MixSyntax(SyntaxPattern ParentSyntax, SyntaxPattern Syntax, boolean TopLevelSyntax) {
 		if(this.AlreadyRegistered(ParentSyntax)) {
-			Object Parent = this.SyntaxTable.get(ParentSyntax.Name);
-			ParentSyntax.Init(this.NameSpace, this);
-			if(Parent instanceof KonohaArray) {
-				KonohaArray List = (KonohaArray) Parent;
-				List.add(ParentSyntax);
-			} else {
-				KonohaArray List = new KonohaArray();
-				List.add(Parent);
-				List.add(ParentSyntax);
-				this.SyntaxTable.put(ParentSyntax.Name, List);
-			}
+			this.MergeSyntax(ParentSyntax);
 		} else {
 			this.AddSyntax(ParentSyntax, Syntax, TopLevelSyntax);
 		}

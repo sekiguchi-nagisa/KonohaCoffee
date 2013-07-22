@@ -35,6 +35,7 @@ import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.LexicalConverter;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
+import org.KonohaScript.PegParser.KonohaSyntaxPattern;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxPattern;
 import org.KonohaScript.SyntaxTree.TypedNode;
@@ -144,9 +145,9 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
 		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-			Callee,
-			MethodName,
-			null));
+				Callee,
+				MethodName,
+				null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -198,6 +199,12 @@ public final class KonohaNameSpace implements KonohaConst {
 		this.DefineSymbol(Key, Syntax);
 	}
 
+	public KonohaSyntax AddSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
+		KonohaSyntax Syntax = new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod);
+		this.AddSyntax(Syntax, false);
+		return Syntax;
+	}
+
 	//	public void DefineSyntaxPattern(String SyntaxName, int flag, KonohaGrammar Grammar, KonohaGrammar Parent, boolean TopLevel) {
 	//		//KonohaSyntax Syntax = new KonohaSyntax(SyntaxName, MetaPattern, Grammar, "ParsePattern", "TypePattern");
 	//		//this.AddSyntax(Syntax, TopLevel);
@@ -212,7 +219,11 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String ParseMethod, String TypeMethod) {
-		this.AddSyntax(new KonohaSyntax(SyntaxName, flag, Callee, "Parse" + ParseMethod, "Type" + TypeMethod), false);
+		KonohaSyntax Syntax = this.AddSyntax(SyntaxName, flag, Callee, ParseMethod, TypeMethod);
+		KonohaFunc ParseFunc = new KonohaFunc(Callee, Syntax.ParseMethod, null);
+		KonohaFunc TypeFunc = new KonohaFunc(Callee, Syntax.TypeMethod, null);
+		KonohaSyntaxPattern SyntaxPattern = new KonohaSyntaxPattern(Syntax.SyntaxName, ParseFunc, TypeFunc);
+		this.PegParser.AddSyntax(SyntaxPattern, false);
 	}
 
 	// Global Object
@@ -255,7 +266,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public int PreProcess(TokenList TokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-		.Do(TokenList, BeginIdx, EndIdx, BufferList);
+				.Do(TokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {
@@ -344,7 +355,7 @@ public final class KonohaNameSpace implements KonohaConst {
 	}
 
 	public void AddPatternSyntax(SyntaxPattern Parent, SyntaxPattern Syntax, boolean TopLevel) {
-		this.PegParser.AddSyntax(this, Parent, Syntax, TopLevel);
+		this.PegParser.AddSyntax(Syntax, TopLevel);
 	}
 
 	public void MergePatternSyntax(SyntaxPattern Parent, SyntaxPattern NewSyntax, boolean TopLevel) {

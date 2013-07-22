@@ -1,6 +1,5 @@
 package org.KonohaScript.Peg.Exception;
 
-import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.PegParser.PegParser;
 import org.KonohaScript.PegParser.SyntaxAcceptor;
@@ -29,12 +28,6 @@ import org.KonohaScript.PegParser.SyntaxPattern;
 class ExceptionStatementSyntax extends SyntaxPattern {
 	ExceptionStatementSyntax() {
 		super("$ExceptionStatement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new CatchBlocksSyntax(), false);
-		Parser.AddSyntax(NameSpace, this, new FinallySyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new ExceptionStatementSyntax0();
@@ -120,10 +113,6 @@ class CatchBlocksSyntax extends SyntaxPattern {
 		super("$CatchBlocks");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new CatchBlocksSyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -168,10 +157,6 @@ class FinallySyntax extends SyntaxPattern {
 		super("$Finally");
 	}
 
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-	}
-
 	public SyntaxAcceptor	Acceptor0	= new FinallySyntax0();
 
 	int action0(String SyntaxName, PegParser Parser, int BeginIdx, int NodeSize) {
@@ -204,11 +189,6 @@ class FinallySyntax extends SyntaxPattern {
 class statementSyntax extends SyntaxPattern {
 	statementSyntax() {
 		super("$statement");
-	}
-
-	@Override
-	public void Init(KonohaNameSpace NameSpace, PegParser Parser) {
-		Parser.AddSyntax(NameSpace, this, new ExceptionStatementSyntax(), false);
 	}
 
 	public SyntaxAcceptor	Acceptor0	= new statementSyntax0();

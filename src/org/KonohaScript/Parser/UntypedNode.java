@@ -163,7 +163,10 @@ public class UntypedNode implements KonohaConst {
 
 	public static UntypedNode NewNullNode(KonohaNameSpace ns, TokenList TokenList, int BeginIdx) {
 		KonohaToken EmptyToken = new KonohaToken("");
-		EmptyToken.uline = TokenList.get(BeginIdx - 1).uline;
+		EmptyToken.uline = 0;
+		if(TokenList.size() > BeginIdx && BeginIdx > 0) {
+			EmptyToken.uline = TokenList.get(BeginIdx - 1).uline;
+		}
 		EmptyToken.ResolvedSyntax = KonohaSyntax.EmptySyntax;
 		return new UntypedNode(ns, EmptyToken);
 	}

@@ -477,14 +477,16 @@ class typeSyntax0 extends SyntaxAcceptor {
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("typeSyntax0", NodeSize);
-		/* do nothing */
+		int Index = 0;
+		KonohaToken BaseTypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
+		Parser.Push(this.CreateNodeWithSyntax(Parser, BaseTypeToken, "$type"));
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		/* do nothing */
-		return null;
+		// FIXME (ide) Is ResolvedObject KonohaType object?
+		return new NullNode((KonohaType) UNode.KeyToken.ResolvedObject);
 	}
 }
 
@@ -504,15 +506,14 @@ class typeSyntax1 extends SyntaxAcceptor {
 			//BaseTypeToken = ;
 			i = i - 1;
 		}
-		Parser.ReAssign(NodeSize, BaseTypeToken);
-
+		Parser.Push(this.CreateNodeWithSyntax(Parser, BaseTypeToken, "$type"));
 		return EndIdx;
 	}
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		/* do nothing */
-		return null;
+		// FIXME (ide) Is ResolvedObject KonohaType object?
+		return new NullNode((KonohaType) UNode.KeyToken.ResolvedObject);
 	}
 }
 
@@ -769,13 +770,15 @@ class variableDeclarationSyntax1 extends SyntaxAcceptor {
 		int Index = 0;
 		KonohaToken VarType = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		KonohaToken VarName = (KonohaToken) Parser.Get(Index, NodeSize);
+		UntypedNode VarName = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		KonohaToken VarExpr = (KonohaToken) Parser.Get(Index, NodeSize);
+		KonohaToken EqualOp = (KonohaToken) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		UNode.SetAtToken(Index, VarType);
-		UNode.SetAtToken(Index, VarName);
-		UNode.SetAtToken(Index, VarExpr);
+		UntypedNode VarExpr = (UntypedNode) Parser.Get(Index, NodeSize);
+		Index = Index + 1;
+		UNode.SetAtToken(VarDeclTypeOffset, VarType);
+		UNode.SetAtToken(VarDeclNameOffset, VarName.KeyToken);
+		UNode.SetAtNode(VarDeclExprOffset, VarExpr);
 
 		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
@@ -1253,12 +1256,30 @@ class primarySyntax2 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:"(">, <Symbol:$expression>, <Symbol:")">
+//action: <Symbol:$type>
 class primarySyntax3 extends SyntaxAcceptor {
+	static final primarySyntax3	Instance	= new primarySyntax3();
 
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
 		this.Report("primarySyntax3", NodeSize);
+		/* do nothing */
+		return EndIdx;
+	}
+
+	@Override
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		/* do nothing */
+		return null;
+	}
+}
+
+// action: <Symbol:"(">, <Symbol:$expression>, <Symbol:")">
+class primarySyntax4 extends SyntaxAcceptor {
+
+	@Override
+	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
+		this.Report("primarySyntax4", NodeSize);
 		/* do nothing */
 		return EndIdx;
 	}
