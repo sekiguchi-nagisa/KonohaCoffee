@@ -25,9 +25,9 @@
 package org.KonohaScript;
 
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
-import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
+import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.Parser.KonohaGrammar;
 
 //class KKeyIdMap {
@@ -124,32 +124,30 @@ import org.KonohaScript.Parser.KonohaGrammar;
 //
 //}
 
-public final class Konoha implements KonohaConst {
+public final class Konoha {
 
-	public KonohaNameSpace	RootNameSpace;
-	public KonohaNameSpace	DefaultNameSpace;
-	//	SymbolTable				SymbolTable;
+	public KonohaNameSpace		RootNameSpace;
+	public KonohaNameSpace		DefaultNameSpace;
 
-	public final KonohaType	VoidType;
-	public final KonohaType	ObjectType;
-	public final KonohaType	BooleanType;
-	public final KonohaType	IntType;
-	public final KonohaType	StringType;
-	public final KonohaType	VarType;
+	public final KonohaType		VoidType;
+	public final KonohaType		NativeObjectType;
+	public final KonohaType		ObjectType;
+	public final KonohaType		BooleanType;
+	public final KonohaType		IntType;
+	public final KonohaType		StringType;
+	public final KonohaType		VarType;
 
-	final KonohaArray		EmptyList;
-	final KonohaMap			ClassNameMap;
+	public final KonohaArray	EmptyList;
+	final KonohaMap				ClassNameMap;
 
 	public Konoha(KonohaGrammar Grammar, String BuilderClassName) {
-		//		this.SymbolTable = new SymbolTable();
-		//		this.SymbolTable.Init(this);
-
 		this.EmptyList = new KonohaArray();
 		this.ClassNameMap = new KonohaMap();
 		this.RootNameSpace = new KonohaNameSpace(this, null);
 
 		this.VoidType = this.RootNameSpace.LookupHostLangType(Void.class);
-		this.ObjectType = this.RootNameSpace.LookupHostLangType(Object.class);
+		this.NativeObjectType = this.RootNameSpace.LookupHostLangType(Object.class);
+		this.ObjectType = this.RootNameSpace.LookupHostLangType(KonohaObject.class);
 		this.BooleanType = this.RootNameSpace.LookupHostLangType(Boolean.class);
 		this.IntType = this.RootNameSpace.LookupHostLangType(Integer.class);
 		this.StringType = this.RootNameSpace.LookupHostLangType(String.class);
@@ -177,12 +175,6 @@ public final class Konoha implements KonohaConst {
 
 	public Object Eval(String text, long uline) {
 		return this.DefaultNameSpace.Eval(text, uline);
-	}
-
-	public void Load(String FileName) {
-		// TODO (kkuramitsu)
-		// System.out.println("Eval: " + text);
-		// DefaultNameSpace.Tokenize(text, uline);
 	}
 
 	public static void main(String[] argc) {

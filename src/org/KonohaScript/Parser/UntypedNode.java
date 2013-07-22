@@ -196,6 +196,15 @@ public class UntypedNode implements KonohaConst {
 		this.KeyToken = Source.KeyToken;
 		this.NodeList = Source.NodeList;
 		this.Syntax = Source.Syntax;
+		this.Parent = Source.Parent;
+		this.PreviousNode = Source.PreviousNode;
+		this.NextNode = Source.NextNode;
+		if(this.PreviousNode != null) {
+			this.PreviousNode.NextNode = this;
+		}
+		if(this.NextNode != null) {
+			this.NextNode.PreviousNode = this;
+		}
 	}
 
 	public int ParseByKeyToken(KonohaToken KeyToken, TokenList TokenList, int BeginIdx, int EndIdx) {

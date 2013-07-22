@@ -205,15 +205,6 @@ public final class KonohaNameSpace implements KonohaConst {
 		return Syntax;
 	}
 
-	//	public void DefineSyntaxPattern(String SyntaxName, int flag, KonohaGrammar Grammar, KonohaGrammar Parent, boolean TopLevel) {
-	//		//KonohaSyntax Syntax = new KonohaSyntax(SyntaxName, MetaPattern, Grammar, "ParsePattern", "TypePattern");
-	//		//this.AddSyntax(Syntax, TopLevel);
-	//		if(this.PegParser == null) {
-	//			this.PegParser = new PegParser(this);
-	//		}
-	//		this.PegParser.AddSyntax(this, Parent, Grammar, TopLevel);
-	//	}
-
 	public void DefineSyntax(String SyntaxName, int flag, Object Callee, String MethodName) {
 		this.DefineSyntax(SyntaxName, flag, Callee, MethodName, MethodName);
 	}

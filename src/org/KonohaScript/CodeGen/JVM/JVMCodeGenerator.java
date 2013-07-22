@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +21,6 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
 class KClassNode implements Opcodes {
@@ -46,54 +43,27 @@ class KClassNode implements Opcodes {
 	}
 }
 
-public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
-
-	private final Map<String, KClassNode>	classMap			= new HashMap<String, KClassNode>();
-	private final Map<String, String>		typeDescriptorMap	= new HashMap<String, String>();
-	private int								evalCount			= 0;
-
-	class KonohaClassLoader extends ClassLoader {
-		@Override
-		public Class<?> findClass(String name) {
-			byte[] b = JVMCodeGenerator.this.generateBytecode(name);
-			return this.defineClass(name, b, 0, b.length);
-		}
+class KonohaClassLoader extends ClassLoader {
+	public Class<?> findClass(JVMCodeGenerator Gen, String name) {
+		byte[] b = Gen.generateBytecode(name);
+		return this.defineClass(name, b, 0, b.length);
 	}
+}
+
+public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
+	private final TypeResolver	TypeResolver;
+	private int					evalCount	= 0;
 
 	public JVMCodeGenerator() {
-		this.initTypeDescriptorMap();
-	}
-
-	private void initTypeDescriptorMap() {
-		this.typeDescriptorMap.put("global", Type.getType(KonohaObject.class).getDescriptor());
-		this.typeDescriptorMap.put("Void", Type.getType(void.class).getDescriptor());
-		this.typeDescriptorMap.put("Boolean", Type.getType(boolean.class).getDescriptor());
-		this.typeDescriptorMap.put("Integer", Type.getType(int.class).getDescriptor());
-		this.typeDescriptorMap.put("Object", Type.getType(Object.class).getDescriptor());
-		// TODO: other class
+		this.TypeResolver = new TypeResolver();
 	}
 
 	private String getTypeDescriptor(KonohaType type) {
-		String descriptor;
-		if((descriptor = this.typeDescriptorMap.get(type.ShortClassName)) != null) {
-			return descriptor;
-		}
-		return "L" + type.ShortClassName + ";"; // FIXME
+		return this.TypeResolver.GetJavaTypeDescriptor(type);
 	}
 
-	String getMethodDescriptor(KonohaMethod method) {
-		KonohaType returnType = method.GetReturnType(null);
-		ArrayList<KonohaType> paramTypes = new ArrayList<KonohaType>(Arrays.asList(method.Param.Types));
-		paramTypes.remove(0);
-		StringBuilder signature = new StringBuilder();
-		signature.append("(");
-		for(int i = 0; i < paramTypes.size(); i++) {
-			KonohaType ParamType = paramTypes.get(i);
-			signature.append(this.getTypeDescriptor(ParamType));
-		}
-		signature.append(")");
-		signature.append(this.getTypeDescriptor(returnType));
-		return signature.toString();
+	String getMethodDescriptor(KonohaMethod Method) {
+		return this.TypeResolver.GetJavaMethodDescriptor(Method);
 	}
 
 	public void OutputClassFile(String className, String dir) throws IOException {
@@ -110,9 +80,11 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 	}
 
-	private byte[] generateBytecode(String className) {
+	public byte[] generateBytecode(String className) {
 		ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-		this.classMap.get(className).accept(classWriter);
+		KClassNode CNode = this.TypeResolver.FindClassNode(className);
+		CNode.accept(classWriter);
+		classWriter.visitEnd();
 		return classWriter.toByteArray();
 	}
 
@@ -149,10 +121,10 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			params.add(new Local(0, GlobalType, "this"));
 		}
 
-		KClassNode cn = this.classMap.get(className);
+		KClassNode cn = this.TypeResolver.FindClassNode(className);
 		if(cn == null) {
 			cn = new KClassNode(className);
-			this.classMap.put(cn.name, cn);
+			this.TypeResolver.StoreClassNode(cn);
 		}
 
 		MethodNode mn = null;
@@ -173,7 +145,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 		mn.visitCode();
 
-		JVMBuilder b = new JVMBuilder(MethodInfo, mn);
+		JVMBuilder b = new JVMBuilder(MethodInfo, mn, this.TypeResolver);
 		if(params != null) {
 			for(int i = 0; i < params.size(); i++) {
 				Local local = (Local) params.get(i);
@@ -192,13 +164,12 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 
 		mn.visitEnd();
-
 		cn.methods.put(methodName, mn);
 
 		//		try { this.OutputClassFile("Script", "."); }
 		//		catch(Exception e) { e.printStackTrace(); }
 
-		Class<?> c = new KonohaClassLoader().findClass(className);
+		Class<?> c = new KonohaClassLoader().findClass(this, className);
 		Method[] MethodList = c.getMethods();
 		for(int i = 0; i < MethodList.length; i++) {
 			Method m = MethodList[i];

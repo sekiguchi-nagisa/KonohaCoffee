@@ -8,6 +8,7 @@ import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.CodeGen.CodeGenerator;
 import org.KonohaScript.CodeGen.Local;
+import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
 import org.KonohaScript.SyntaxTree.AssignNode;
@@ -34,211 +35,105 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+class Stack {
+	private int	stackTop		= 0;
+	private int	maxStackSize	= 0;
+
+	public int getStackTop() {
+		return this.stackTop;
+	}
+
+	public void setStackTop(int stackTop) {
+		this.stackTop = stackTop;
+	}
+
+	public int getMaxStackSize() {
+		return this.maxStackSize;
+	}
+
+	public void setMaxStackSize(int maxStackSize) {
+		this.maxStackSize = maxStackSize;
+	}
+
+	public void push() {
+		int st = this.getStackTop() + 1;
+		this.setStackTop(st);
+		if(st > this.getMaxStackSize()) {
+			this.setMaxStackSize(st);
+		}
+	}
+
+	public void pop() {
+		this.setStackTop(this.getStackTop() - 1);
+	}
+}
+
+class BinaryOperator {
+	int	OpCode;
+
+	public BinaryOperator(int OpCode) {
+		this.OpCode = OpCode;
+	}
+
+	void CodeGen(Stack stack, MethodVisitor visitor) {
+		stack.pop();
+		stack.pop();
+		stack.push();
+		visitor.visitInsn(this.OpCode);
+	}
+}
+
+class RelationalBinaryOperator extends BinaryOperator implements Opcodes {
+
+	public RelationalBinaryOperator(int OpCode) {
+		super(OpCode);
+	}
+
+	@Override
+	void CodeGen(Stack stack, MethodVisitor visitor) {
+		stack.pop();
+		stack.pop();
+		stack.push();
+		Label FALSE = new Label();
+		Label END = new Label();
+		visitor.visitJumpInsn(this.OpCode, FALSE); // condition
+		visitor.visitInsn(ICONST_1); // true
+		visitor.visitJumpInsn(GOTO, END);
+		visitor.visitLabel(FALSE);
+		visitor.visitInsn(ICONST_0); // false
+		visitor.visitLabel(END);
+	}
+}
+
 class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	MethodVisitor					methodVisitor;
 	Stack							stack;
 	HashMap<String, BinaryOperator>	binaryOperatorMap;
-	HashMap<String, String>			methodDescriptorMap;
 	KonohaNameSpace					NameSpace;
+	TypeResolver					TypeResolver;
 
-	public JVMBuilder(KonohaMethod mi, MethodVisitor mv) {
-		super(mi);
+	public JVMBuilder(KonohaMethod method, MethodVisitor mv, TypeResolver TypeResolver) {
+		super(method);
 		this.methodVisitor = mv;
 		this.initBinaryOpcodeMap();
 		this.stack = new Stack();
-		this.methodDescriptorMap = new HashMap<String, String>();
-	}
-
-	static abstract class BinaryOperator {
-		abstract void codeGen();
-	}
-
-	static class Stack {
-		private int	stackTop		= 0;
-		private int	maxStackSize	= 0;
-
-		public int getStackTop() {
-			return this.stackTop;
-		}
-
-		public void setStackTop(int stackTop) {
-			this.stackTop = stackTop;
-		}
-
-		public int getMaxStackSize() {
-			return this.maxStackSize;
-		}
-
-		public void setMaxStackSize(int maxStackSize) {
-			this.maxStackSize = maxStackSize;
-		}
-
-		public void push() {
-			int st = this.getStackTop() + 1;
-			this.setStackTop(st);
-			if(st > this.getMaxStackSize()) {
-				this.setMaxStackSize(st);
-			}
-		}
-
-		public void pop() {
-			this.setStackTop(this.getStackTop() - 1);
-		}
+		this.TypeResolver = TypeResolver;
 	}
 
 	private void initBinaryOpcodeMap() {
-		BinaryOperator opADD = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitInsn(IADD);
-			}
-		};
+		BinaryOperator opADD = new BinaryOperator(IADD);
+		BinaryOperator opSUB = new BinaryOperator(ISUB);
+		BinaryOperator opMUL = new BinaryOperator(IMUL);
+		BinaryOperator opDIV = new BinaryOperator(IDIV);
+		BinaryOperator opREM = new BinaryOperator(IREM);
 
-		BinaryOperator opSUB = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitInsn(ISUB);
-			}
-		};
-
-		BinaryOperator opMUL = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitInsn(IMUL);
-			}
-		};
-
-		BinaryOperator opDIV = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitInsn(IDIV);
-			}
-		};
-
-		BinaryOperator opREM = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitInsn(IREM);
-			}
-		};
-
-		BinaryOperator opLT = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				Label FALSE = new Label();
-				Label END = new Label();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPGE, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
-				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
-				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
-				JVMBuilder.this.methodVisitor.visitLabel(END);
-			}
-		};
-
-		BinaryOperator opLE = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				Label FALSE = new Label();
-				Label END = new Label();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPGT, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
-				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
-				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
-				JVMBuilder.this.methodVisitor.visitLabel(END);
-			}
-		};
-
-		BinaryOperator opGT = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				Label FALSE = new Label();
-				Label END = new Label();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPLE, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
-				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
-				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
-				JVMBuilder.this.methodVisitor.visitLabel(END);
-			}
-		};
-
-		BinaryOperator opGE = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				Label FALSE = new Label();
-				Label END = new Label();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPLT, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
-				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
-				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
-				JVMBuilder.this.methodVisitor.visitLabel(END);
-			}
-		};
-
-		BinaryOperator opEQ = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				Label FALSE = new Label();
-				Label END = new Label();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPNE, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
-				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
-				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
-				JVMBuilder.this.methodVisitor.visitLabel(END);
-			}
-		};
-
-		BinaryOperator opNE = new BinaryOperator() {
-			@Override
-			void codeGen() {
-				Label FALSE = new Label();
-				Label END = new Label();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.pop();
-				JVMBuilder.this.stack.push();
-				JVMBuilder.this.methodVisitor.visitJumpInsn(IF_ICMPEQ, FALSE); // condition
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_1); // true
-				JVMBuilder.this.methodVisitor.visitJumpInsn(GOTO, END);
-				JVMBuilder.this.methodVisitor.visitLabel(FALSE);
-				JVMBuilder.this.methodVisitor.visitInsn(ICONST_0); // false
-				JVMBuilder.this.methodVisitor.visitLabel(END);
-			}
-		};
+		BinaryOperator opLT = new RelationalBinaryOperator(IF_ICMPGE);
+		BinaryOperator opLE = new RelationalBinaryOperator(IF_ICMPGT);
+		BinaryOperator opGT = new RelationalBinaryOperator(IF_ICMPLE);
+		BinaryOperator opGE = new RelationalBinaryOperator(IF_ICMPLT);
+		BinaryOperator opEQ = new RelationalBinaryOperator(IF_ICMPNE);
+		BinaryOperator opNE = new RelationalBinaryOperator(IF_ICMPEQ);
 
 		this.binaryOperatorMap = new HashMap<String, BinaryOperator>();
 		this.binaryOperatorMap.put("+", opADD);
@@ -252,11 +147,11 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		this.binaryOperatorMap.put(">=", opGE);
 		this.binaryOperatorMap.put("==", opEQ);
 		this.binaryOperatorMap.put("!=", opNE);
-		// add other binary operator
+		// FIXME add other binary operator
 	}
 
-	String getMethodDescriptor(String className, String methodName) {
-		return this.methodDescriptorMap.get(className + "." + methodName);
+	String getMethodDescriptor(KonohaMethod Method) {
+		return this.TypeResolver.GetJavaMethodDescriptor(Method);
 	}
 
 	void LoadLocal(Local local) {
@@ -293,12 +188,18 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	}
 
 	void BinaryOp(String opName) {
-		this.binaryOperatorMap.get(opName).codeGen();
+		this.binaryOperatorMap.get(opName).CodeGen(this.stack, this.methodVisitor);
 	}
 
-	void Call(int opcode, String className, String methodName) {
-		String owner = "org/KonohaScript/CodeGen/" + className;
-		String methodDescriptor = this.getMethodDescriptor(className, methodName);
+	void Call(int opcode, KonohaMethod Method) {
+		//String className = Method.ClassInfo.ShortClassName;
+		String methodName = Method.MethodName;
+		Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
+		if(OwnerClass == null) {
+			OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+		}
+		String owner = OwnerClass.getName();
+		String methodDescriptor = this.getMethodDescriptor(Method);
 		this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 	}
 
@@ -365,9 +266,12 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			String opName = Node.Method.MethodName;
 			this.BinaryOp(opName);
 		} else {
-			int opcode = INVOKESTATIC; // support other opcode
+			int opcode = INVOKEVIRTUAL;
+			if(Node.Method.Is(KonohaConst.StaticMethod)) {
+				opcode = INVOKESTATIC;
+			}
 			String methodName = Node.Method.MethodName;
-			this.Call(opcode, "Script", methodName); // TODO support other class method
+			this.Call(opcode, Node.Method);
 		}
 		return true;
 	}
