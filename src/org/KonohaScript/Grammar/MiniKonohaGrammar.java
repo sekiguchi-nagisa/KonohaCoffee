@@ -961,20 +961,20 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		//		NameSpace.DefineSyntax("!", UniaryOperator, this, "UniaryOperator", "MethodCall");
 		//		NameSpace.DefineSyntax(";", Precedence_CStyleDelim, this, null, null);
 
-		NameSpace.DefineSyntax("$Const", Term, this, "Const");
-		NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
+		//NameSpace.DefineSyntax("$Const", Term, this, "Const");
+		//NameSpace.DefineSyntax("$Symbol", Term, this, "Symbol");
 		//NameSpace.DefineSyntax("$Symbol", Term, this, "MethodCall");
 
-		NameSpace.DefineSyntax("$MethodCall", Precedence_CStyleSuffixCall, this, "MethodCall");
-		NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
-		NameSpace.DefineSyntax("$New", Term, this, "New");
+		//NameSpace.DefineSyntax("$MethodCall", Precedence_CStyleSuffixCall, this, "MethodCall");
+		//NameSpace.DefineSyntax("$Member", Precedence_CStyleSuffixCall, this, "Member");
+		//NameSpace.DefineSyntax("$New", Term, this, "New");
 
 		//NameSpace.DefineSyntax("()", Term | Precedence_CStyleSuffixCall, this, "UNUSED");
 		//NameSpace.DefineSyntax("{}", 0, this, "UNUSED");
 		NameSpace.DefineSyntax("$StringLiteral", Term, this, "StringLiteral");
 		NameSpace.DefineSyntax("$IntegerLiteral", Term, this, "IntegerLiteral");
 
-		NameSpace.DefineSyntax("{}", Statement, this, "Block");
+		//NameSpace.DefineSyntax("{}", Statement, this, "Block");
 
 		//NameSpace.DefineSyntax("$Type", Statement, this, "MethodDecl");
 		//NameSpace.DefineSyntax("$Type", Statement, this, "VarDecl");

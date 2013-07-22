@@ -65,6 +65,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 	}
 
 	private void initTypeDescriptorMap() {
+		this.typeDescriptorMap.put("global", Type.getType(KonohaObject.class).getDescriptor());
 		this.typeDescriptorMap.put("Void", Type.getType(void.class).getDescriptor());
 		this.typeDescriptorMap.put("Boolean", Type.getType(boolean.class).getDescriptor());
 		this.typeDescriptorMap.put("Integer", Type.getType(int.class).getDescriptor());
@@ -132,11 +133,20 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			methodDescriptor = this.getMethodDescriptor(MethodInfo);
 			param = MethodInfo.Param;
 		} else {
-			className = "Script";
-			methodName = "__eval" + (this.evalCount++);
-			methodDescriptor = "()Ljava/lang/Object;";
+			KonohaType GlobalType = NameSpace.GetGlobalObject().TypeInfo;
+			className = "global";
+			methodName = "__eval" + this.evalCount;
+			this.evalCount += 1;
+			methodDescriptor = "(" + this.getTypeDescriptor(GlobalType) + ")Ljava/lang/Object;";
 			is_eval = true;
-			param = null;
+			KonohaType[] ParamData = new KonohaType[2];
+			String[] ArgNames = new String[1];
+			ParamData[0] = NameSpace.KonohaContext.ObjectType;
+			ParamData[1] = GlobalType;
+			ArgNames[0] = "this";
+			param = new KonohaParam(1, ParamData, ArgNames);
+			params = new KonohaArray();
+			params.add(new Local(0, GlobalType, "this"));
 		}
 
 		KClassNode cn = this.classMap.get(className);
@@ -153,7 +163,11 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			}
 		}
 		if(mn == null) {
-			mn = new MethodNode(ACC_PUBLIC | ACC_STATIC, methodName, methodDescriptor, null, null);
+			int MethodAttr = ACC_PUBLIC;
+			if(methodName.startsWith("__eval")) {
+				MethodAttr = MethodAttr | ACC_STATIC;
+			}
+			mn = new MethodNode(MethodAttr, methodName, methodDescriptor, null, null);
 		} else {
 			mn.instructions.clear();
 		}
@@ -177,6 +191,8 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			mn.visitInsn(ARETURN);
 		}
 
+		mn.visitEnd();
+
 		cn.methods.put(methodName, mn);
 
 		//		try { this.OutputClassFile("Script", "."); }
@@ -197,7 +213,9 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 	@Override
 	public Object EvalAtTopLevel(KonohaNameSpace NameSpace, TypedNode Node, KonohaObject GlobalObject) {
 		KonohaMethodInvoker Invoker = this.Compile(NameSpace, Node, null);
-		return Invoker.Invoke(null);
+		Object[] Args = new Object[1];
+		Args[0] = GlobalObject;
+		return Invoker.Invoke(Args);
 	}
 
 	@Override

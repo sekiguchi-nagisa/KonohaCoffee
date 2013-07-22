@@ -26,7 +26,17 @@ public class NativeMethodInvoker extends KonohaMethodInvoker {
 			if(this.IsStaticInvocation()) {
 				switch (ParamSize) {
 				case 0:
-					return MethodRef.invoke(null);
+					return MethodRef.invoke(null, Args[0]);
+				case 1:
+					return MethodRef.invoke(null, Args[0], Args[1]);
+				case 2:
+					return MethodRef.invoke(null, Args[0], Args[0], Args[2]);
+				case 3:
+					return MethodRef.invoke(null, Args[0], Args[0], Args[2], Args[3]);
+				case 4:
+					return MethodRef.invoke(null, Args[0], Args[1], Args[2], Args[3], Args[4]);
+				case 5:
+					return MethodRef.invoke(null, Args[0], Args[1], Args[2], Args[3], Args[4], Args[5]);
 				default:
 					return MethodRef.invoke(null, Args); // FIXME
 				}
@@ -36,20 +46,25 @@ public class NativeMethodInvoker extends KonohaMethodInvoker {
 					return MethodRef.invoke(Args[0]);
 				case 1:
 					return MethodRef.invoke(Args[0], Args[1]);
+				case 2:
+					return MethodRef.invoke(Args[0], Args[0], Args[2]);
+				case 3:
+					return MethodRef.invoke(Args[0], Args[0], Args[2], Args[3]);
+				case 4:
+					return MethodRef.invoke(Args[0], Args[1], Args[2], Args[3], Args[4]);
+				case 5:
+					return MethodRef.invoke(Args[0], Args[1], Args[2], Args[3], Args[4], Args[5]);
 				default:
 					return MethodRef.invoke(Args[0], Args); // FIXME
 				}
 			}
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		catch (InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

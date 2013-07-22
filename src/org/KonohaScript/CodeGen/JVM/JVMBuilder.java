@@ -453,8 +453,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitReturn(ReturnNode Node) {
-		//FIXME check Node.Expr null check
-		Node.Expr.Evaluate(this);
+		if(Node.Expr != null) {
+			Node.Expr.Evaluate(this);
+		}
 
 		assert (Node.TypeInfo != null);
 

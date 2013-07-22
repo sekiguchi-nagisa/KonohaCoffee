@@ -111,7 +111,8 @@ class functionSignatureSyntax0 extends SyntaxAcceptor {
 		this.Report("functionSignatureSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$functionSignature");
 		int Index = 0;
-		UNode.SetAtToken(MethodReturnTypeOffset, (KonohaToken) Parser.Get(Index, NodeSize)); // ReturnType
+		UntypedNode ReturnType = (UntypedNode) Parser.Get(Index, NodeSize);
+		UNode.SetAtToken(MethodReturnTypeOffset, ReturnType.KeyToken); // ReturnType
 		UNode.SetAtNode(MethodClassOffset, null); // Receiver
 		Index = Index + 1;
 		UntypedNode MethodName = (UntypedNode) Parser.Get(Index, NodeSize);
@@ -292,10 +293,10 @@ class ParamDeclSyntax0 extends SyntaxAcceptor {
 		this.Report("ParamDeclSyntax0", NodeSize);
 		KonohaArray List = new KonohaArray();
 		int Index = 0;
-		KonohaToken TypeDecl = (KonohaToken) Parser.Get(Index, NodeSize);
+		UntypedNode TypeDecl = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		UntypedNode SymbolDecl = (UntypedNode) Parser.Get(Index, NodeSize);
-		List.add(TypeDecl);
+		List.add(TypeDecl.KeyToken);
 		List.add(SymbolDecl.KeyToken);
 		Parser.ReAssign(NodeSize, List);
 		return EndIdx;
@@ -479,7 +480,7 @@ class typeSyntax0 extends SyntaxAcceptor {
 		this.Report("typeSyntax0", NodeSize);
 		int Index = 0;
 		KonohaToken BaseTypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
-		Parser.Push(this.CreateNodeWithSyntax(Parser, BaseTypeToken, "$type"));
+		Parser.ReAssign(NodeSize, this.CreateNodeWithSyntax(Parser, BaseTypeToken, "$type"));
 		return EndIdx;
 	}
 
@@ -506,7 +507,7 @@ class typeSyntax1 extends SyntaxAcceptor {
 			//BaseTypeToken = ;
 			i = i - 1;
 		}
-		Parser.Push(this.CreateNodeWithSyntax(Parser, BaseTypeToken, "$type"));
+		Parser.ReAssign(NodeSize, this.CreateNodeWithSyntax(Parser, BaseTypeToken, "$type"));
 		return EndIdx;
 	}
 

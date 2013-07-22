@@ -21,10 +21,10 @@ final public class KonohaTypeSyntax extends KonohaGrammar implements KonohaConst
 
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
-		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType);
-		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
-		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
-		NameSpace.DefineSymbol("String", NameSpace.KonohaContext.StringType);
-		NameSpace.DefineSyntax("$Type", KonohaConst.Term, this, "Type");
+		//		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType);
+		//		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
+		//		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
+		//		NameSpace.DefineSymbol("String", NameSpace.KonohaContext.StringType);
+		//		NameSpace.DefineSyntax("$Type", KonohaConst.Term, this, "Type");
 	}
 }

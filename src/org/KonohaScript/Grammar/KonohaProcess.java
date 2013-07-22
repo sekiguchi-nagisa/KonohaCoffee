@@ -64,7 +64,7 @@ public class KonohaProcess {
 		initTrace();
 		setArgument(command);
 	}
-	
+
 	private void initTrace() {
 		if(this.enableSyscallTrace) {
 			String currentLogdirPath = createLogDirectory();
