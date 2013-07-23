@@ -47,7 +47,14 @@ public class KonohaProcess {
 		monitor.setProcess(kProc);
 		monitor.throwException();
 	}
-
+	
+	public KonohaProcess() {
+		this.cmdNameBuilder = new StringBuilder();
+		this.commandList = new ArrayList<String>();
+		
+		initTrace();
+	}
+	
 	public KonohaProcess(String command) {
 		this.cmdNameBuilder = new StringBuilder();
 		this.commandList = new ArrayList<String>();
