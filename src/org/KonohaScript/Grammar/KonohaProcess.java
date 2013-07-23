@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,6 @@ public class KonohaProcess {
 	private ArrayList<String>	commandList;
 	private boolean enableSyscallTrace = false;
 	public boolean isKilled = false;
-	private String errorMessage;
 	private final String logdirPath = "/tmp/strace-log";
 	public String logFilePath = null;
 
@@ -141,14 +141,18 @@ public class KonohaProcess {
 	public void readFromFile(String fileName) {
 		try {
 			FileInputStream fis = new FileInputStream(fileName);
-			StreamSetter stdinSetter = new StreamSetter(fis, this.stdin);
-			stdinSetter.start();
-			stdinSetter.join();
+			new StreamSetter(fis, this.stdin).start();
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		catch (InterruptedException e) {
+	}
+	
+	public void writeToFile(String fileName) {
+		try {
+			FileOutputStream fos = new FileOutputStream(fileName);
+			new StreamSetter(this.stdout, fos);
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -242,14 +246,6 @@ public class KonohaProcess {
 
 	public String getCmdName() {
 		return this.cmdNameBuilder.toString();
-	}
-
-	public void setError(String message) {
-		this.errorMessage = message;
-	}
-
-	public String getError() {
-		return this.errorMessage;
 	}
 }
 

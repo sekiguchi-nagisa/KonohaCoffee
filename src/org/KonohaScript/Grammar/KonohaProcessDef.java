@@ -41,9 +41,9 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
 		ProcessType.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
 
-		// define ReadFromFile()
-		String MN_ReadFromFile = "ReadFromFile";
-		ProcessType.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);
+		// define SetInputFileName()
+		String MN_SetInputFileName = "SetInputFileName";
+		ProcessType.DefineMethod(0, MN_SetInputFileName, void_String_Param, this, MN_SetInputFileName);
 
 		// define GetOut()
 		String MN_GetOut = "GetOut";
@@ -101,8 +101,12 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		Process.pipe(dest);
 	}
 
-	public static void ReadFromFile(KonohaProcess Process, String fileName) {
+	public static void SetInputFileName(KonohaProcess Process, String fileName) {
 		Process.readFromFile(fileName);
+	}
+	
+	public static void SetOutputFileName(KonohaProcess Process, String fileName) {
+		Process.writeToFile(fileName);
 	}
 
 	public static int GetStatus() {
