@@ -242,7 +242,15 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	public TypedNode TypeShell(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		//KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-		return null;
+		UntypedNode subNode = (UntypedNode)UNode.NodeList.get(0);
+		UntypedNode nextNode = UNode.NextNode;
+		UNode.NextNode = subNode.NextNode;
+		UNode = subNode;
+		while(subNode.NextNode != null){
+			subNode = subNode.NextNode;
+		}
+		subNode.NextNode = nextNode;
+		return TypeEnv.TypeCheck(Gamma, UNode, TypeInfo, 0);
 	}
 
 	@Override
@@ -254,5 +262,6 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
 
 		new KonohaProcessDef().MakeDefinition(NameSpace);
+		new KonohaProcessMonitorDef().MakeDefinition(NameSpace);
 	}
 }
