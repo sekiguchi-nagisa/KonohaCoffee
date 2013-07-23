@@ -64,7 +64,7 @@ public class KonohaCallExpressionTypeChecker {
 			// SomeInstance.FieldName(2) => MemberExpr=(ApplyNode:Method SomeInstance Param[0])
 			ApplyNode ANode = (ApplyNode) MemberExpr;
 			Reciver = (TypedNode) ANode.Params.get(0);
-			KonohaMethod Method = (KonohaMethod) ((ConstNode) ANode.Params.get(1)).ConstValue;
+			KonohaMethod Method = ANode.Method;
 			MethodName = Method.MethodName;
 		}
 		return KonohaCallExpressionTypeChecker.TypeFindingMethod(Gamma, UNode, TypeInfo, Reciver, MethodName);

@@ -101,7 +101,6 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 	}
 
 	public boolean Match(String MethodName, int ParamSize) {
-		// FIXME(ide) implement match function with strict rule
 		if(MethodName.equals(this.MethodName)) {
 			if(ParamSize == -1) {
 				return true;
@@ -111,6 +110,18 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 			}
 		}
 		return false;
+	}
+
+	public boolean Match(String MethodName, int ParamSize, KonohaType[] RequestTypes) {
+		if (!this.Match(MethodName, ParamSize)) {
+			return false;
+		}
+		for (int i = 0; i < RequestTypes.length; i++) {
+			if (RequestTypes.equals(this.GetParamType(this.ClassInfo, i)) == false) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@HostLang

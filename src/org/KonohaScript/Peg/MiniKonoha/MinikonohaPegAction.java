@@ -17,6 +17,7 @@ import org.KonohaScript.SyntaxTree.AssignNode;
 import org.KonohaScript.SyntaxTree.ConstNode;
 import org.KonohaScript.SyntaxTree.DefineNode;
 import org.KonohaScript.SyntaxTree.ErrorNode;
+import org.KonohaScript.SyntaxTree.GetterNode;
 import org.KonohaScript.SyntaxTree.IfNode;
 import org.KonohaScript.SyntaxTree.JumpNode;
 import org.KonohaScript.SyntaxTree.LetNode;
@@ -1345,22 +1346,31 @@ class selectorSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		String BaseSyntaxName = UNode.GetAtNode(MemberBaseExprOffset).Syntax.SyntaxName;
 		TypedNode BaseExpr = UNode.TypeNodeAt(MemberBaseExprOffset, Gamma, TypeInfo, 0);
-		TypedNode IndexExpr = UNode.TypeNodeAt(MemberIndexExprOffset, Gamma, Gamma.IntType, 0);
+		UntypedNode FieldExpr = UNode.GetAtNode(MemberIndexExprOffset);
 		if(BaseExpr.IsError()) {
 			return BaseExpr;
 		}
-		if(IndexExpr.IsError()) {
-			return IndexExpr;
+		if (!FieldExpr.Syntax.SyntaxName.equals("$Symbol")) {
+			return Gamma.NewErrorNode(FieldExpr.KeyToken, FieldExpr.KeyToken.ParsedText + " is not member of BaseExpr");
 		}
-		//FIXME need check BaseExpr.Typeinfo is subclass of Array
-		KonohaMethod Method = BaseExpr.TypeInfo.LookupMethod("get", 1);
-		if(Method == null) {
-			Method = BaseExpr.TypeInfo.LookupMethod("GetField", 1);
+		TypedNode TNode;
+		if (BaseSyntaxName.equals("$type")) {
+			// BaseExpr is Type.
+			// e.g. System.p("aaaa");
+			String FieldText = FieldExpr.KeyToken.ParsedText;
+			KonohaMethod Method = BaseExpr.TypeInfo.LookupMethod(FieldText, -1);
+			if (Method == null) {
+				return Gamma.NewErrorNode(FieldExpr.KeyToken,
+					FieldExpr.KeyToken.ParsedText + " is not method name of BaseType");
+			}
+			ApplyNode Apply = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
+			Apply.Append(BaseExpr);
+			TNode = Apply;
+		} else {
+			TNode = new GetterNode(TypeInfo, FieldExpr.KeyToken, BaseExpr);
 		}
-		ApplyNode TNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
-		TNode.Append(BaseExpr);
-		TNode.Append(IndexExpr);
 		return TNode;
 	}
 }
