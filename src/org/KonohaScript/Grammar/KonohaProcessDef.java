@@ -11,12 +11,14 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {
 		KonohaType ProcessType = ns.LookupHostLangType(KonohaProcess.class);
-		KonohaType ProcessMonitorType = ns.LookupHostLangType(KonohaProcessMonitor.class);
 		ns.DefineSymbol("Process", ProcessType);
-		ns.DefineSymbol("ProcessMonitor", ProcessMonitorType);
 
 		// define Constructor
 		String MN_constructor = "New";
+		
+		KonohaParam Process_Param = KonohaParam.ParseOf(ns, "Process");
+		ProcessType.DefineMethod(0, MN_constructor, Process_Param, this, MN_constructor);		
+		
 		KonohaParam Process_String_Param = KonohaParam.ParseOf(ns, "Process String x");
 		ProcessType.DefineMethod(0, MN_constructor, Process_String_Param, this, MN_constructor);
 
@@ -41,9 +43,13 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
 		ProcessType.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
 
-		// define ReadFromFile()
-		String MN_ReadFromFile = "ReadFromFile";
-		ProcessType.DefineMethod(0, MN_ReadFromFile, void_String_Param, this, MN_ReadFromFile);
+		// define SetInputFileName()
+		String MN_SetInputFileName = "SetInputFileName";
+		ProcessType.DefineMethod(0, MN_SetInputFileName, void_String_Param, this, MN_SetInputFileName);
+		
+		// define SetOutputFileName()
+		String MN_SetOutputFileName = "SetOutputFileName";
+		ProcessType.DefineMethod(0, MN_SetOutputFileName, void_String_Param, this, MN_SetOutputFileName);
 
 		// define GetOut()
 		String MN_GetOut = "GetOut";
@@ -63,21 +69,13 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		String MN_GetRetValue = "GetRetValue";
 		KonohaParam int_Param = KonohaParam.ParseOf(ns, "int");
 		ProcessType.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
-
-		// define Constructor
-		KonohaParam ProcessMonitor_Param = KonohaParam.ParseOf(ns, "ProcessMonitor");
-		ProcessMonitorType.DefineMethod(0, MN_constructor, ProcessMonitor_Param, this, MN_constructor);
-
-		// define SetProcess
-		String MN_SetProcess = "SetProcess";
-		ProcessMonitorType.DefineMethod(0, MN_SetProcess, void_Process_Param, this, MN_SetProcess);
-
-		// define ThrowException
-		String MN_ThrowException = "ThrowException";
-		ProcessMonitorType.DefineMethod(0, MN_ThrowException, void_Param, this, MN_ThrowException);
 	}
 
-	public static KonohaProcess New(KonohaProcess Process, String Command) {
+	public static KonohaProcess New() {
+		return new KonohaProcess();
+	}
+	
+	public static KonohaProcess New(String Command) {
 		return new KonohaProcess(Command);
 	}
 
@@ -101,13 +99,12 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		Process.pipe(dest);
 	}
 
-	public static void ReadFromFile(KonohaProcess Process, String fileName) {
+	public static void SetInputFileName(KonohaProcess Process, String fileName) {
 		Process.readFromFile(fileName);
 	}
-
-	public static int GetStatus() {
-		//TODO(sekiguchi)
-		return 0;
+	
+	public static void SetOutputFileName(KonohaProcess Process, String fileName) {
+		Process.writeToFile(fileName);
 	}
 
 	public static String GetOut(KonohaProcess Process) {
@@ -124,18 +121,5 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	public static int GetRetValue(KonohaProcess Process) {
 		return Process.getRet();
-	}
-
-	// KonohaProcessMonitor Binding
-	public static KonohaProcessMonitor New() {
-		return new KonohaProcessMonitor();
-	}
-
-	public static void SetProcess(KonohaProcessMonitor Monitor, KonohaProcess targetProc) {
-		Monitor.setProcess(targetProc);
-	}
-
-	public static void ThrowException(KonohaProcessMonitor Monitor) throws Exception {
-		Monitor.throwException();
 	}
 }

@@ -18,6 +18,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	MiniKonohaGrammar			MiniKonoha			= new MiniKonohaGrammar();
 
 	public static final String	ProcessClassName	= Process.class.getSimpleName();
+	public static final String  MonitorClassName    = "ProcessMonitor";
 
 	// $(ls -la | grep .txt)
 	public int ShellToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
@@ -185,6 +186,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		StringBuilder SourceBuilder = new StringBuilder();
 
 		int n = Commands.size();
+		String monitorName = "monitor";
+		SourceBuilder.append(MonitorClassName + " " + monitorName + " = new " + MonitorClassName + "();\n");
 		for(int i = 0; i < n; i++) {
 			ArrayList<String> Tokens = ShellGrammar.SplitIntoCommandTokens(Commands.get(i));
 			ArrayList<String> Args = ShellGrammar.makeArguments(Tokens);
@@ -192,13 +195,15 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			//SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0) + "\");\n");
 			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "();\n");
 			SourceBuilder.append(procName + ".SetArgument(\"" + Tokens.get(0) + "\");\n");
+			SourceBuilder.append(monitorName + ".SetProcess(" + procName + ");\n");
 			for(String arg : Args) {
 				SourceBuilder.append(procName + ".SetArgument(\"" + arg + "\");\n");
 			}
+			SourceBuilder.append(procName + ".Start();\n");
 			if(i == 0) {
 				String Input = ShellGrammar.FindInputFileName(Tokens);
 				if(Input != null) {
-					SourceBuilder.append(procName + "." + "SetInputFileName(\"" + Input + "\");\n");
+					SourceBuilder.append(procName + ".SetInputFileName(\"" + Input + "\");\n");
 				}
 			}
 			if(i > 0) {
@@ -207,11 +212,14 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			if(i == n - 1) {
 				String Output = ShellGrammar.FindOutputFileName(Tokens);
 				if(Output != null) {
-					SourceBuilder.append(procName + "." + "SetOutputFileName(\"" + Output + "\");\n");
+					SourceBuilder.append(procName + ".SetOutputFileName(\"" + Output + "\");\n"); 
+//				} else {
+//					SourceBuilder.append("System.p(" + procName + ".GetOut())\n");	//FIXME: System.p()
 				}
 			}
-			SourceBuilder.append(procName + ".Fg();\n");
 		}
+		SourceBuilder.append(monitorName + ".ThrowException();\n");
+		
 		System.out.println(SourceBuilder.toString());
 		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
 	}
