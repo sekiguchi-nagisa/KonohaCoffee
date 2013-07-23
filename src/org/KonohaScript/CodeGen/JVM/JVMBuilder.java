@@ -236,7 +236,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		if(OwnerClass == null) {
 			OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
 		}
-		String owner = OwnerClass.getName();
+		String owner = OwnerClass.getSimpleName();
 		String methodDescriptor = this.getMethodDescriptor(Method);
 		this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 	}

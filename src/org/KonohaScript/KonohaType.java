@@ -59,7 +59,8 @@ public class KonohaType {
 		this(KonohaContext, 0, ClassInfo.getSimpleName(), null);
 		this.HostedClassInfo = ClassInfo;
 		// this.ClassFlag = ClassFlag;
-		if(ClassInfo != Object.class) {
+		Class<?> SuperClass = ClassInfo.getSuperclass();
+		if(ClassInfo != Object.class && SuperClass != null) {
 			this.SuperClass = KonohaContext.LookupHostLangType(ClassInfo.getSuperclass());
 		}
 	}
@@ -129,22 +130,27 @@ public class KonohaType {
 		this.AddMethod(Method);
 	}
 
-	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
+	public KonohaMethod FindMethod(String MethodName, int ParamSize) {
 		for(int i = 0; i < this.ClassMethodList.size(); i++) {
 			KonohaMethod Method = (KonohaMethod) this.ClassMethodList.get(i);
 			if(Method.Match(MethodName, ParamSize)) {
 				return Method;
 			}
 		}
+		return null;
+	}
+
+	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
+		KonohaMethod Method = this.FindMethod(MethodName, ParamSize);
 		if(this.SearchSuperMethodClass != null) {
-			KonohaMethod Method = this.SearchSuperMethodClass.LookupMethod(MethodName, ParamSize);
+			Method = this.SearchSuperMethodClass.LookupMethod(MethodName, ParamSize);
 			if(Method != null) {
 				return Method;
 			}
 		}
 		if(this.HostedClassInfo != null) {
 			if(this.CreateMethods(MethodName) > 0) {
-				return this.LookupMethod(MethodName, ParamSize);
+				return this.FindMethod(MethodName, ParamSize);
 			}
 		}
 		return null;

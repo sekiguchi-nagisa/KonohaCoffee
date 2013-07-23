@@ -24,7 +24,7 @@ public class TypeResolver {
 	}
 
 	public String GetJavaTypeDescriptor(KonohaType Type) {
-		String TypeName = Type.ShortClassName;
+		String TypeName = Type.ShortClassName.replace(".", "/");
 		String descriptor;
 		if((descriptor = this.typeDescriptorMap.get(TypeName)) != null) {
 			return descriptor;
