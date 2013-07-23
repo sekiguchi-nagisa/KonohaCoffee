@@ -8,7 +8,7 @@ import org.KonohaScript.JUtils.KonohaConst;
 
 
 public class KonohaProcessMonitorDef extends KonohaDef implements KonohaConst {
-	
+
 	@Override
 	public void MakeDefinition(KonohaNameSpace ns) {
 		KonohaType ProcessMonitorType = ns.LookupHostLangType(KonohaProcessMonitor.class);
@@ -29,7 +29,7 @@ public class KonohaProcessMonitorDef extends KonohaDef implements KonohaConst {
 		KonohaParam void_Param = KonohaParam.ParseOf(ns, "void");
 		ProcessMonitorType.DefineMethod(0, MN_ThrowException, void_Param, this, MN_ThrowException);		
 	}
-	
+
 	public static KonohaProcessMonitor New() {
 		return new KonohaProcessMonitor();
 	}

@@ -313,9 +313,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		// case: Symbol is GlobalVariable
 		if(UNode.KeyToken.ParsedText.equals("global")) {
 			return new ConstNode(
-					UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
-					UNode.KeyToken,
-					UNode.NodeNameSpace.GetGlobalObject());
+				UNode.NodeNameSpace.GetGlobalObject().TypeInfo,
+				UNode.KeyToken,
+				UNode.NodeNameSpace.GetGlobalObject());
 		}
 		// case: Symbol is undefined name
 		return Gamma.NewErrorNode(UNode.KeyToken, "undefined name: " + UNode.KeyToken.ParsedText);
@@ -743,12 +743,12 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		}
 		KonohaParam Param = new KonohaParam(ParamSize + 1, ParamData, ArgNames);
 		KonohaMethod NewMethod = new KonohaMethod(
-				0,
-				BaseType,
-				MethodName,
-				Param,
-				UNode.NodeNameSpace,
-				UNode.GetTokenList(MethodDeclBlock));
+			0,
+			BaseType,
+			MethodName,
+			Param,
+			UNode.NodeNameSpace,
+			UNode.GetTokenList(MethodDeclBlock));
 		BaseType.DefineNewMethod(NewMethod);
 		return new DefineNode(TypeInfo, UNode.KeyToken, NewMethod);
 	}
@@ -863,9 +863,9 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 				CatchBlockIdx = UNode.MatchKeyword(-1, "$LBrace", TokenList, CatchExprIdx, EndIdx, AllowEmpty);
 				//CatchBlockIdx = UNode.MatchPattern(TargetExceptionsBaseIdx + i, "$expression", TokenList, CatchBlockIdx, EndIdx, ParseOption);
 				CatchBlockIdx = UNode.MatchSyntax(TargetExceptionsBaseIdx + i, "$Type", TokenList, CatchBlockIdx, EndIdx,
-						ParseOption);
+					ParseOption);
 				CatchBlockIdx = UNode.MatchSyntax(TargetVarNamesBaseIdx + i, "$Symbol", TokenList, CatchBlockIdx, EndIdx,
-						ParseOption);
+					ParseOption);
 				CatchBlockIdx = UNode.MatchKeyword(-1, "$RBrace", TokenList, CatchBlockIdx, EndIdx, AllowEmpty);
 				CatchIdx = UNode.MatchPattern(CatchBlocksBaseIdx + i, "$block", TokenList, CatchBlockIdx, EndIdx, ParseOption);
 			}
@@ -898,7 +898,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 			TypedNode TargetExceptionNode = new LetNode(VarType, VarToken, null, null);
 			//		UNode.TypeNodeAt(TargetExceptionsBaseIdx + 3 * i, Gamma, Gamma.BooleanType, TypeCheckPolicy_AllowEmpty);
 			TypedNode CatchBlockNode = UNode.TypeNodeAt(CatchBlocksBaseIdx + 3 * i, Gamma, Gamma.VoidType,
-					TypeCheckPolicy_AllowEmpty);
+				TypeCheckPolicy_AllowEmpty);
 			TypedTryNode.addCatchBlock(TargetExceptionNode, CatchBlockNode);
 		}
 
@@ -910,6 +910,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 		// Define Types
 		NameSpace.DefineSymbol("void", NameSpace.KonohaContext.VoidType); // FIXME
 		NameSpace.DefineSymbol("boolean", NameSpace.KonohaContext.BooleanType);
+		NameSpace.DefineSymbol("Object", NameSpace.KonohaContext.ObjectType);
 		NameSpace.DefineSymbol("int", NameSpace.KonohaContext.IntType);
 		NameSpace.DefineSymbol("String", NameSpace.KonohaContext.StringType);
 

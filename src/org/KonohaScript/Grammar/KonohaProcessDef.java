@@ -74,7 +74,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	public static KonohaProcess New() {
 		return new KonohaProcess();
 	}
-	
+
 	public static KonohaProcess New(String Command) {
 		return new KonohaProcess(Command);
 	}
@@ -102,7 +102,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	public static void SetInputFileName(KonohaProcess Process, String fileName) {
 		Process.readFromFile(fileName);
 	}
-	
+
 	public static void SetOutputFileName(KonohaProcess Process, String fileName) {
 		Process.writeToFile(fileName);
 	}

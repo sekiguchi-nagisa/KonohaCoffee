@@ -47,14 +47,14 @@ public class KonohaProcess {
 		monitor.setProcess(kProc);
 		monitor.throwException();
 	}
-	
+
 	public KonohaProcess() {
 		this.cmdNameBuilder = new StringBuilder();
 		this.commandList = new ArrayList<String>();
 		
 		initTrace();
 	}
-	
+
 	public KonohaProcess(String command) {
 		this.cmdNameBuilder = new StringBuilder();
 		this.commandList = new ArrayList<String>();
@@ -154,7 +154,7 @@ public class KonohaProcess {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void writeToFile(String fileName) {
 		try {
 			FileOutputStream fos = new FileOutputStream(fileName);

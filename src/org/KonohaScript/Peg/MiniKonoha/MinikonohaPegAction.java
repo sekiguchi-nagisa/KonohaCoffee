@@ -1352,16 +1352,16 @@ class selectorSyntax1 extends SyntaxAcceptor {
 		if(BaseExpr.IsError()) {
 			return BaseExpr;
 		}
-		if (!FieldExpr.Syntax.SyntaxName.equals("$Symbol")) {
+		if(!FieldExpr.Syntax.SyntaxName.equals("$Symbol")) {
 			return Gamma.NewErrorNode(FieldExpr.KeyToken, FieldExpr.KeyToken.ParsedText + " is not member of BaseExpr");
 		}
 		TypedNode TNode;
-		if (BaseSyntaxName.equals("$type")) {
+		if(BaseSyntaxName.equals("$type")) {
 			// BaseExpr is Type.
 			// e.g. System.p("aaaa");
 			String FieldText = FieldExpr.KeyToken.ParsedText;
 			KonohaMethod Method = BaseExpr.TypeInfo.LookupMethod(FieldText, -1);
-			if (Method == null) {
+			if(Method == null) {
 				return Gamma.NewErrorNode(FieldExpr.KeyToken,
 					FieldExpr.KeyToken.ParsedText + " is not method name of BaseType");
 			}
