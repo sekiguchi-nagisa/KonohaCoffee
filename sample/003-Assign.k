@@ -1,6 +1,6 @@
-int f(int a) {
-    a = a + 10;
+int f() {
+    int a = 10;
     return a;
 }
 
-System.p(f(10));
+f();
