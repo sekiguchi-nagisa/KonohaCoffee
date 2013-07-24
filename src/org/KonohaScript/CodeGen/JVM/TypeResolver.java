@@ -13,6 +13,9 @@ import org.objectweb.asm.Type;
 public class TypeResolver {
 	private final Map<String, KClassNode>	classMap			= new HashMap<String, KClassNode>();
 	private final Map<String, String>		typeDescriptorMap	= new HashMap<String, String>();
+	
+	// FIXME
+	String globalType = Type.getType(KonohaObject.class).getDescriptor();
 
 	public TypeResolver() {
 		this.typeDescriptorMap.put("global", Type.getType(KonohaObject.class).getDescriptor());
@@ -38,6 +41,7 @@ public class TypeResolver {
 		paramTypes.remove(0);
 		StringBuilder signature = new StringBuilder();
 		signature.append("(");
+		signature.append(globalType);
 		for(int i = 0; i < paramTypes.size(); i++) {
 			KonohaType ParamType = paramTypes.get(i);
 			signature.append(this.GetJavaTypeDescriptor(ParamType));
