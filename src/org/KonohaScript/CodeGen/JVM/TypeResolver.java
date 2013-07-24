@@ -54,11 +54,11 @@ public class TypeResolver {
 	public void StoreClassNode(KClassNode cn) {
 		this.classMap.put(cn.name, cn);
 	}
-	
+
 	public Type GetAsmType(Class<?> klass) {
 		return Type.getType(klass);
 	}
-	
+
 	public Type GetAsmType(KonohaType type) {
 		return Type.getType(GetJavaTypeDescriptor(type));
 	}

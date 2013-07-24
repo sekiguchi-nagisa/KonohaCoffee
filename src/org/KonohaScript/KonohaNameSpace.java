@@ -145,9 +145,9 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public void DefineTopLevelMacro(String Symbol, Object Callee, String MethodName) {
 		this.DefineSymbol(KonohaNameSpace.MacroPrefix + KonohaNameSpace.TopLevelPrefix + Symbol, new KonohaFunc(
-				Callee,
-				MethodName,
-				null));
+			Callee,
+			MethodName,
+			null));
 	}
 
 	KonohaMap	DefinedSymbolTable;
@@ -257,7 +257,7 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public int PreProcess(TokenList TokenList, int BeginIdx, int EndIdx, TokenList BufferList) {
 		return new LexicalConverter(this, /* TopLevel */true, /* SkipIndent */false)
-				.Do(TokenList, BeginIdx, EndIdx, BufferList);
+		.Do(TokenList, BeginIdx, EndIdx, BufferList);
 	}
 
 	String GetSourcePosition(long uline) {

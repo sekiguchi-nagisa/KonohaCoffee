@@ -97,14 +97,14 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	void LoadLocal(Local local) {
 		KonohaType ktype = local.TypeInfo;
-		Type type = TypeResolver.GetAsmType(ktype);
+		Type type = this.TypeResolver.GetAsmType(ktype);
 		this.typeStack.push(type);
 		this.methodVisitor.visitVarInsn(type.getOpcode(ILOAD), local.Index);
 	}
 
 	void StoreLocal(Local local) {
 		KonohaType ktype = local.TypeInfo;
-		Type type = TypeResolver.GetAsmType(ktype);
+		Type type = this.TypeResolver.GetAsmType(ktype);
 		this.typeStack.pop(); //TODO: check cast
 		this.methodVisitor.visitVarInsn(type.getOpcode(ISTORE), local.Index);
 	}
@@ -116,7 +116,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		} else if(o instanceof Boolean) {
 			type = Type.BOOLEAN_TYPE;
 		} else {
-			type = TypeResolver.GetAsmType(o.getClass());
+			type = this.TypeResolver.GetAsmType(o.getClass());
 		}
 		this.typeStack.push(type);
 		this.methodVisitor.visitLdcInsn(o);
@@ -126,12 +126,12 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		if(Method.MethodInvoker instanceof NativeMethodInvoker) {
 			NativeMethodInvoker i = (NativeMethodInvoker) Method.MethodInvoker;
 			Method m = i.GetMethodRef();
-			String owner = TypeResolver.GetAsmType(m.getDeclaringClass()).getInternalName();
+			String owner = this.TypeResolver.GetAsmType(m.getDeclaringClass()).getInternalName();
 			String methodName = m.getName();
 			String methodDescriptor = Type.getMethodDescriptor(m);
 			if(Modifier.isStatic(m.getModifiers())) opcode = INVOKESTATIC;
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
-			this.typeStack.push(TypeResolver.GetAsmType(m.getReturnType()));
+			this.typeStack.push(this.TypeResolver.GetAsmType(m.getReturnType()));
 		} else {
 			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
 			if(OwnerClass == null) {
@@ -141,7 +141,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			String methodName = Method.MethodName;
 			String methodDescriptor = this.getMethodDescriptor(Method);
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
-			this.typeStack.push(TypeResolver.GetAsmType(Method.GetReturnType(null)));
+			this.typeStack.push(this.TypeResolver.GetAsmType(Method.GetReturnType(null)));
 		}
 	}
 
@@ -160,7 +160,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	@Override
 	public boolean VisitConst(ConstNode Node) {
 		Object constValue = Node.ConstValue;
-		Type type = TypeResolver.GetAsmType(constValue.getClass());
+		Type type = this.TypeResolver.GetAsmType(constValue.getClass());
 		this.typeStack.push(type);
 		this.LoadConst(constValue);
 		return true;
@@ -178,8 +178,8 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitNull(NullNode Node) {
-		this.typeStack.push(TypeResolver.GetAsmType(Object.class));
-		methodVisitor.visitInsn(ACONST_NULL);
+		this.typeStack.push(this.TypeResolver.GetAsmType(Object.class));
+		this.methodVisitor.visitInsn(ACONST_NULL);
 		return true;
 	}
 
@@ -188,7 +188,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		String FieldName = Node.FieldName;
 		Local local;
 		if((local = this.FindLocalVariable(FieldName)) == null) {
-			throw new CodeGenException("local variable not found:" + FieldName);
+			throw new RuntimeException("local variable not found:" + FieldName);
 		}
 		this.LoadLocal(local);
 		return true;
@@ -206,18 +206,18 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		for(int i = 0; i < Node.Params.size(); i++) {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
-			Type requireType = TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
+			Type requireType = this.TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
 			Type foundType = this.typeStack.pop();
 			if(requireType.equals(Type.getType(Object.class)) && !foundType.getDescriptor().startsWith("L")) {
 				// needs boxing
-				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+				this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
 			}
 		}
 		int opcode = INVOKEVIRTUAL;
 		if(Node.Method.Is(KonohaConst.StaticMethod)) {
 			opcode = INVOKESTATIC;
 		}
-//		String methodName = Node.Method.MethodName;
+		//		String methodName = Node.Method.MethodName;
 		this.Call(opcode, Node.Method);
 		return true;
 	}
@@ -256,7 +256,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			String Name = Left.SourceToken.ParsedText;
 			Local local = this.FindLocalVariable(Name);
 			if(local == null) {
-				throw new CodeGenException("local variable " + Name + " is not found in this context");
+				throw new RuntimeException("local variable " + Name + " is not found in this context");
 			}
 			this.LoadLocal(local);
 		}
@@ -278,7 +278,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Label END = new Label();
 		MethodVisitor mv = this.methodVisitor;
 		Node.CondExpr.Evaluate(this);
-		typeStack.pop(); //TODO: check cast
+		this.typeStack.pop(); //TODO: check cast
 		mv.visitJumpInsn(IFEQ, ELSE);
 
 		// Then
@@ -324,9 +324,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 		mv.visitInsn(ICONST_1); // true
 		mv.visitJumpInsn(IF_ICMPNE, END); // condition
-//		this.stack.pop();
-//		this.stack.pop();
-//		this.stack.push();
+		//		this.stack.pop();
+		//		this.stack.pop();
+		//		this.stack.push();
 		this.VisitList(Node.LoopBody);
 		if(Node.IterationExpr != null) {
 			Node.IterationExpr.Evaluate(this);
@@ -343,9 +343,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		if(Node.Expr != null) {
 			Node.Expr.Evaluate(this);
 			Type type = this.typeStack.pop();
-			methodVisitor.visitInsn(type.getOpcode(IRETURN));
+			this.methodVisitor.visitInsn(type.getOpcode(IRETURN));
 		} else {
-			methodVisitor.visitInsn(RETURN);
+			this.methodVisitor.visitInsn(RETURN);
 		}
 		return true;
 	}
@@ -409,8 +409,8 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	@Override
 	public boolean VisitThrow(ThrowNode Node) {
 		Node.Expr.Evaluate(this);
-		typeStack.pop();
-		methodVisitor.visitInsn(ATHROW);
+		this.typeStack.pop();
+		this.methodVisitor.visitInsn(ATHROW);
 		return true;
 	}
 
@@ -423,9 +423,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	@Override
 	public boolean VisitError(ErrorNode Node) {
 		String ps = Type.getDescriptor(System.err.getClass());
-		methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "err", ps);
-		methodVisitor.visitLdcInsn(Node.ErrorMessage);
-		methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
+		this.methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "err", ps);
+		this.methodVisitor.visitLdcInsn(Node.ErrorMessage);
+		this.methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
 		return true;
 	}
 
@@ -434,20 +434,20 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	}
 
 	public void visitBoxingAndReturn() {
-		if(typeStack.empty()) {
-			methodVisitor.visitInsn(ACONST_NULL);
+		if(this.typeStack.empty()) {
+			this.methodVisitor.visitInsn(ACONST_NULL);
 		} else {
-			Type type = typeStack.pop();
+			Type type = this.typeStack.pop();
 			if(type.equals(Type.INT_TYPE)) {
-				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+				this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
 			} else if(type.equals(Type.BOOLEAN_TYPE)) {
-				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+				this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
 			} else if(type.equals(Type.VOID_TYPE)) {
-				methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
+				this.methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
 			} else {
 				System.out.println("error: " + type);
 			}
 		}
-		methodVisitor.visitInsn(ARETURN);
+		this.methodVisitor.visitInsn(ARETURN);
 	}
 }
