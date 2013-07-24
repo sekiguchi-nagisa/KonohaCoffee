@@ -1,11 +1,14 @@
 package org.KonohaScript.CodeGen.JVM;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Stack;
 
 import org.KonohaScript.KonohaClass;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.NativeMethodInvoker;
 import org.KonohaScript.CodeGen.CodeGenerator;
 import org.KonohaScript.CodeGen.Local;
 import org.KonohaScript.JUtils.KonohaConst;
@@ -120,14 +123,26 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	}
 
 	void Call(int opcode, KonohaMethod Method) {
-		String methodName = Method.MethodName;
-		Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
-		if(OwnerClass == null) {
-			OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+		if(Method.MethodInvoker instanceof NativeMethodInvoker) {
+			NativeMethodInvoker i = (NativeMethodInvoker) Method.MethodInvoker;
+			Method m = i.GetMethodRef();
+			String owner = TypeResolver.GetAsmType(m.getDeclaringClass()).getInternalName();
+			String methodName = m.getName();
+			String methodDescriptor = Type.getMethodDescriptor(m);
+			if(Modifier.isStatic(m.getModifiers())) opcode = INVOKESTATIC;
+			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
+			this.typeStack.push(TypeResolver.GetAsmType(m.getReturnType()));
+		} else {
+			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
+			if(OwnerClass == null) {
+				OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+			}
+			String owner = OwnerClass.getName().replace(".", "/");
+			String methodName = Method.MethodName;
+			String methodDescriptor = this.getMethodDescriptor(Method);
+			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
+			this.typeStack.push(TypeResolver.GetAsmType(Method.GetReturnType(null)));
 		}
-		String owner = OwnerClass.getName().replace(".", "/");
-		String methodDescriptor = this.getMethodDescriptor(Method);
-		this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 	}
 
 	@Override
@@ -191,7 +206,12 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		for(int i = 0; i < Node.Params.size(); i++) {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
-			this.typeStack.pop(); //TODO: check cast
+			Type requireType = TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
+			Type foundType = this.typeStack.pop();
+			if(requireType.equals(Type.getType(Object.class)) && !foundType.getDescriptor().startsWith("L")) {
+				// needs boxing
+				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+			}
 		}
 		int opcode = INVOKEVIRTUAL;
 		if(Node.Method.Is(KonohaConst.StaticMethod)) {
@@ -406,6 +426,8 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
 			} else if(type.equals(Type.BOOLEAN_TYPE)) {
 				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+			} else if(type.equals(Type.VOID_TYPE)) {
+				methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
 			} else {
 				System.out.println("error: " + type);
 			}
