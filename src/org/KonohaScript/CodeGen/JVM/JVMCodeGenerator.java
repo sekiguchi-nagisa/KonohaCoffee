@@ -150,7 +150,8 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 		mn.visitCode();
 
-		JVMBuilder b = new JVMBuilder(MethodInfo, mn, this.TypeResolver);
+		JVMBuilder b = new JVMBuilder(MethodInfo, mn, this.TypeResolver, NameSpace);
+
 		if(params != null) {
 			for(int i = 0; i < params.size(); i++) {
 				Local local = (Local) params.get(i);

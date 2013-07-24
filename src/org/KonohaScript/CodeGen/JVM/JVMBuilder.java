@@ -83,12 +83,13 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	KonohaNameSpace					NameSpace;
 	TypeResolver					TypeResolver;
 
-	public JVMBuilder(KonohaMethod method, MethodVisitor mv, TypeResolver TypeResolver) {
+	public JVMBuilder(KonohaMethod method, MethodVisitor mv, TypeResolver TypeResolver, KonohaNameSpace NameSpace) {
 		super(method);
 		this.methodVisitor = mv;
 		this.typeStack = new Stack<Type>();
 		this.LabelStack = new LabelStack();
 		this.TypeResolver = TypeResolver;
+		this.NameSpace = NameSpace;
 	}
 
 	String getMethodDescriptor(KonohaMethod Method) {
@@ -173,13 +174,15 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean VisitNull(NullNode Node) {
-		this.typeStack.push(this.TypeResolver.GetAsmType(Object.class));
-		this.methodVisitor.visitInsn(ACONST_NULL);
+		//this.typeStack.push(this.TypeResolver.GetAsmType(Object.class));
+		//this.methodVisitor.visitInsn(ACONST_NULL);
+		KonohaType TypeInfo = Node.TypeInfo;
+		this.LoadConst(TypeInfo.DefaultNullValue);
 		return true;
 	}
 
@@ -265,10 +268,10 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitLet(LetNode Node) {
-		// TODO Auto-generated method stub
+		Local local = this.AddLocal(Node.TypeInfo, Node.SourceToken.ParsedText);
 		Node.ValueNode.Evaluate(this);
+		this.LoadLocal(local);
 		this.VisitList(Node.BlockNode);
-
 		return true;
 	}
 
