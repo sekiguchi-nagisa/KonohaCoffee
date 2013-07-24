@@ -119,7 +119,7 @@ public class KonohaShell {
 		}
 		return newArgs;
 	}
-	
+
 	public void initContext() {
 		try {
 			Class<?> ClassInfo = Class.forName(this.GrammarName);

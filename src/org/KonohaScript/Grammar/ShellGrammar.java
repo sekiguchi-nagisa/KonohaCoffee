@@ -181,7 +181,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 
 	static final boolean enableMonitor = false;
-	
+
 	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline) {
 		// split commandline by pipe
 		ArrayList<String> Commands = ShellGrammar.SplitIntoCommands(CommandLine);
@@ -226,7 +226,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			}
 		}
 		if(enableMonitor) {
-			SourceBuilder.append(monitorName + ".ThrowException();\n");	
+			SourceBuilder.append(monitorName + ".ThrowException();\n");
 		}
 		
 		System.out.println(SourceBuilder.toString());
