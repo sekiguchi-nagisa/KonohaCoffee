@@ -11,7 +11,6 @@ import org.KonohaScript.KonohaType;
 import org.KonohaScript.NativeMethodInvoker;
 import org.KonohaScript.CodeGen.CodeGenerator;
 import org.KonohaScript.CodeGen.Local;
-import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -130,14 +129,14 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 			this.typeStack.push(this.TypeResolver.GetAsmType(m.getReturnType()));
 		} else {
-//			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
-//			if(OwnerClass == null) {
-//				OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
-//			}
-//			String owner = OwnerClass.getName().replace(".", "/");
+			//			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
+			//			if(OwnerClass == null) {
+			//				OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+			//			}
+			//			String owner = OwnerClass.getName().replace(".", "/");
 			String owner = "global";//FIXME
 			String methodName = Method.MethodName;
-			String methodDescriptor = TypeResolver.GetJavaMethodDescriptor(Method);
+			String methodDescriptor = this.TypeResolver.GetJavaMethodDescriptor(Method);
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 			this.typeStack.push(this.TypeResolver.GetAsmType(Method.GetReturnType(null)));
 		}
@@ -176,10 +175,14 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitNull(NullNode Node) {
-		//this.typeStack.push(this.TypeResolver.GetAsmType(Object.class));
-		//this.methodVisitor.visitInsn(ACONST_NULL);
 		KonohaType TypeInfo = Node.TypeInfo;
-		this.LoadConst(TypeInfo.DefaultNullValue);
+		if (TypeInfo.DefaultNullValue != null) {
+			this.typeStack.push(this.TypeResolver.GetAsmType(TypeInfo.DefaultNullValue.getClass()));
+			this.LoadConst(TypeInfo.DefaultNullValue);
+		} else {
+			this.typeStack.push(this.TypeResolver.GetAsmType(Object.class));
+			this.methodVisitor.visitInsn(ACONST_NULL);
+		}
 		return true;
 	}
 
@@ -214,10 +217,10 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			}
 		}
 		int opcode = INVOKEVIRTUAL;
-//		if(Node.Method.Is(KonohaConst.StaticMethod)) {
-			opcode = INVOKESTATIC;
-//		}
-//		String methodName = Node.Method.MethodName;
+		//		if(Node.Method.Is(KonohaConst.StaticMethod)) {
+		opcode = INVOKESTATIC;
+		//		}
+		//		String methodName = Node.Method.MethodName;
 		this.Call(opcode, Node.Method);
 		return true;
 	}
