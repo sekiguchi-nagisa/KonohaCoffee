@@ -150,13 +150,14 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	KonohaNameSpace					NameSpace;
 	TypeResolver					TypeResolver;
 
-	public JVMBuilder(KonohaMethod method, MethodVisitor mv, TypeResolver TypeResolver) {
+	public JVMBuilder(KonohaMethod method, MethodVisitor mv, TypeResolver TypeResolver, KonohaNameSpace NameSpace) {
 		super(method);
 		this.methodVisitor = mv;
 		this.initBinaryOpcodeMap();
 		this.stack = new Stack();
 		this.LabelStack = new LabelStack();
 		this.TypeResolver = TypeResolver;
+		this.NameSpace = NameSpace;
 	}
 
 	private void initBinaryOpcodeMap() {
@@ -267,13 +268,14 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean VisitNull(NullNode Node) {
-		// TODO Auto-generated method stub
-		return false;
+		KonohaType TypeInfo = Node.TypeInfo;
+		this.LoadConst(TypeInfo.DefaultNullValue);
+		return true;
 	}
 
 	@Override
@@ -333,18 +335,34 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitAssign(AssignNode Node) {
-		// TODO Auto-generated method stub
-		Node.LeftNode.Evaluate(this);
 		Node.RightNode.Evaluate(this);
+		if (Node.LeftNode instanceof GetterNode) {
+			GetterNode Left = (GetterNode) Node.LeftNode;
+			//Left.BaseNode.Evaluate(this);
+			//Object Base = this.Pop();
+			//assert (Base instanceof KonohaObject);
+			//KonohaObject Obj = (KonohaObject) Base;
+			//Obj.SetField(KonohaSymbol.GetSymbolId(Left.FieldName), Val);
+			//this.push(Val);
+		} else {
+			assert (Node.LeftNode instanceof LocalNode);
+			LocalNode Left = (LocalNode) Node.LeftNode;
+			String Name = Left.SourceToken.ParsedText;
+			Local local = this.FindLocalVariable(Name);
+			if (local == null) {
+				throw new CodeGenException("local variable " + Name + " is not found in this context");
+			}
+			this.LoadLocal(local);
+		}
 		return true;
 	}
 
 	@Override
 	public boolean VisitLet(LetNode Node) {
-		// TODO Auto-generated method stub
+		Local local = this.AddLocal(Node.TypeInfo, Node.SourceToken.ParsedText);
 		Node.ValueNode.Evaluate(this);
+		this.LoadLocal(local);
 		this.VisitList(Node.BlockNode);
-
 		return true;
 	}
 
