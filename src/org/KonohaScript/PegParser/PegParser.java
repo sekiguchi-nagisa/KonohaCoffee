@@ -76,6 +76,7 @@ public class PegParser {
 				KonohaArray List = (KonohaArray) Syntax;
 				for(int i = 0; i < List.size(); i++) {
 					SyntaxPattern Syn = (SyntaxPattern) List.get(i);
+					System.out.println(Syn.Name);
 					int Index = Syn.Match(this, TokenList);
 					if(Index >= 0) {
 						return Index;

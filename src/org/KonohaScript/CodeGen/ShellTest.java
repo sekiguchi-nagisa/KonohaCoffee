@@ -3,6 +3,7 @@ package org.KonohaScript.CodeGen;
 import java.util.ArrayList;
 
 import org.KonohaScript.Konoha;
+import org.KonohaScript.CodeGen.JVM.JVMCodeGenerator;
 import org.KonohaScript.Grammar.ShellGrammar;
 import org.KonohaScript.Tester.KTestCase;
 
@@ -12,7 +13,7 @@ public class ShellTest extends KTestCase {
 
 	@Override
 	public void Init() {
-		this.konoha = new Konoha(new ShellGrammar(), ASTInterpreter.class.getName());
+		this.konoha = new Konoha(new ShellGrammar(), JVMCodeGenerator.class.getName());
 	}
 
 	@Override
@@ -53,7 +54,10 @@ public class ShellTest extends KTestCase {
 		this.AssertEqual(ShellGrammar.FindInputFileName(ShellGrammar.SplitIntoCommandTokens("find '<test>' < list.txt")),
 				"list.txt");
 
-		this.konoha.Eval("new Process(\"ls\");", 0);
+		
+		this.konoha.Eval("$(ls)", 0);
+		
+		//this.konoha.Eval("new Process(\"ls\");", 0);
 		//this.konoha.Eval("int num = 100;", 0);
 		//this.konoha.Eval("Process p0 = new Process(\"ls\");", 0);
 		//this.konoha.Eval("Process p0 = new Process(\"ls\");p0.SetArgument(\"-la\");", 0);
