@@ -71,6 +71,9 @@ public class KonohaSyntaxPattern extends SyntaxPattern {
 		Method Method = Func.method;
 		try {
 			System.err.println("invoking.." + Method);
+			if(Method == null) {
+				System.err.println("invoking.." + Method);				
+			}
 			Integer NextId = (Integer) Method.invoke(callee, UNode, TokenList, BeginIdx, EndIdx, ParseOption);
 			int NextIdx = NextId.intValue();
 			return NextIdx;
