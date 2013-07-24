@@ -333,9 +333,25 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitAssign(AssignNode Node) {
-		// TODO Auto-generated method stub
-		Node.LeftNode.Evaluate(this);
 		Node.RightNode.Evaluate(this);
+		if(Node.LeftNode instanceof GetterNode) {
+			GetterNode Left = (GetterNode) Node.LeftNode;
+			//Left.BaseNode.Evaluate(this);
+			//Object Base = this.Pop();
+			//assert (Base instanceof KonohaObject);
+			//KonohaObject Obj = (KonohaObject) Base;
+			//Obj.SetField(KonohaSymbol.GetSymbolId(Left.FieldName), Val);
+			//this.push(Val);
+		} else {
+			assert (Node.LeftNode instanceof LocalNode);
+			LocalNode Left = (LocalNode) Node.LeftNode;
+			String Name = Left.SourceToken.ParsedText;
+			Local local = this.FindLocalVariable(Name);
+			if(local == null) {
+				throw new CodeGenException("local variable " + Name + " is not found in this context");
+			}
+			this.LoadLocal(local);
+		}
 		return true;
 	}
 
