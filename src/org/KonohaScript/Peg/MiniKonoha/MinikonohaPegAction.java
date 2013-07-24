@@ -1077,6 +1077,8 @@ class expressionSyntax0 extends SyntaxAcceptor {
 
 		UntypedNode Left = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
+		KonohaToken EQ = (KonohaToken) Parser.Get(Index, NodeSize);
+		Index = Index + 1;
 		UntypedNode Expr = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		UNode.SetAtNode(AssignmentLeftOffset, Left);

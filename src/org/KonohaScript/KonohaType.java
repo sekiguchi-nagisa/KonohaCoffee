@@ -142,6 +142,9 @@ public class KonohaType {
 
 	public KonohaMethod LookupMethod(String MethodName, int ParamSize) {
 		KonohaMethod Method = this.FindMethod(MethodName, ParamSize);
+		if(Method != null) {
+			return Method;
+		}
 		if(this.SearchSuperMethodClass != null) {
 			Method = this.SearchSuperMethodClass.LookupMethod(MethodName, ParamSize);
 			if(Method != null) {
