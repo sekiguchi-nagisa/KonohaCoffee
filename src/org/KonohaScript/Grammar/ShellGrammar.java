@@ -246,7 +246,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode ShellUNode = UntypedNode
-				.ParseNewNode(ns, null, BufferList, next, BufferList.size(), ParseOption);
+				.ParseNewNode(ns, null, BufferList, 0, BufferList.size(), ParseOption);
 		UNode.AddParsedNode(ShellUNode);
 		System.out.println("untyped tree: " + ShellUNode);
 		return BeginIdx + 1;
