@@ -12,6 +12,7 @@ import org.KonohaScript.Konoha;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.JUtils.HostLang;
 import org.KonohaScript.KLib.KonohaArray;
+import org.KonohaScript.Parser.KonohaGrammar;
 
 @HostLang
 class KConsole {
@@ -35,11 +36,13 @@ class KConsole {
 public class KonohaShell {
 
 	Konoha	ShellContext;
+	String BuilderName = "org.KonohaScript.CodeGen.JVM.JVMCodeGenerator";
+	String GrammarName = "org.KonohaScript.Grammar.MiniKonohaGrammar";
 	boolean	IsInteractiveMode;
 	Object	LastEvaled;
 
-	public KonohaShell(String DefaultBuilder) {
-		this.ShellContext = new Konoha(new MiniKonohaGrammar(), DefaultBuilder);
+	public KonohaShell() {
+		//this.ShellContext = new Konoha(new MiniKonohaGrammar(), DefaultBuilder);
 		this.IsInteractiveMode = false;
 		this.LastEvaled = null;
 	}
@@ -90,11 +93,13 @@ public class KonohaShell {
 			if(arg.equals("-i")) {
 				this.IsInteractiveMode = true;
 			} else if(arg.startsWith("-arch=")) {
-				String BuilderName = arg.substring("-arch=".length());
-				this.ShellContext.DefaultNameSpace.LoadBuilder(BuilderName);
+				this.BuilderName = arg.substring("-arch=".length());
+				//this.ShellContext.DefaultNameSpace.LoadBuilder(BuilderName);
 			} else if(arg.startsWith("-I")) {
 				String importFileName = arg.substring("-I".length());
 				ImportedArgs.add(new File(importFileName).getAbsolutePath());
+			} else if(arg.startsWith("-syntax=")) {
+				this.GrammarName = arg.substring("-syntax=".length());
 			} else {
 				this.IsInteractiveMode = false;
 				Args.add(arg);
@@ -115,11 +120,26 @@ public class KonohaShell {
 		return newArgs;
 	}
 
+	public void initContext() {
+		try {
+			Class<?> ClassInfo = Class.forName(this.GrammarName);
+			this.ShellContext = new Konoha((KonohaGrammar) ClassInfo.newInstance(), BuilderName);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	public static void main(String[] origArgs) {
 		//String DefaultBuilder = "org.KonohaScript.CodeGen.ASTInterpreter";
-		String DefaultBuilder = "org.KonohaScript.CodeGen.JVM.JVMCodeGenerator";
-		KonohaShell shell = new KonohaShell(DefaultBuilder);
+//		String DefaultBuilder = "org.KonohaScript.CodeGen.JVM.JVMCodeGenerator";
+		KonohaShell shell = new KonohaShell();
 		String[] args = shell.ProcessOptions(origArgs);
+		shell.initContext();
 		if(args == null) {
 			return;
 		}

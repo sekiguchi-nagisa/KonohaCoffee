@@ -27,7 +27,6 @@ package org.KonohaScript;
 import org.KonohaScript.Grammar.MiniKonohaGrammar;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
-import org.KonohaScript.ObjectModel.KonohaObject;
 import org.KonohaScript.Parser.KonohaGrammar;
 
 //class KKeyIdMap {

@@ -8,6 +8,7 @@ import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
+import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
@@ -179,6 +180,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return null;
 	}
 
+	static final boolean enableMonitor = false;
+
 	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline) {
 		// split commandline by pipe
 		ArrayList<String> Commands = ShellGrammar.SplitIntoCommands(CommandLine);
@@ -187,7 +190,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		int n = Commands.size();
 		String monitorName = "monitor";
-		SourceBuilder.append(MonitorClassName + " " + monitorName + " = new " + MonitorClassName + "();\n");
+		if(enableMonitor) {
+			SourceBuilder.append(MonitorClassName + " " + monitorName + " = new " + MonitorClassName + "();\n");
+		}
 		for(int i = 0; i < n; i++) {
 			ArrayList<String> Tokens = ShellGrammar.SplitIntoCommandTokens(Commands.get(i));
 			ArrayList<String> Args = ShellGrammar.makeArguments(Tokens);
@@ -195,7 +200,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			//SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "(\"" + Tokens.get(0) + "\");\n");
 			SourceBuilder.append(ProcessClassName + " " + procName + " = new " + ProcessClassName + "();\n");
 			SourceBuilder.append(procName + ".SetArgument(\"" + Tokens.get(0) + "\");\n");
-			SourceBuilder.append(monitorName + ".SetProcess(" + procName + ");\n");
+			if(enableMonitor) {
+				SourceBuilder.append(monitorName + ".SetProcess(" + procName + ");\n");
+			}
 			for(String arg : Args) {
 				SourceBuilder.append(procName + ".SetArgument(\"" + arg + "\");\n");
 			}
@@ -218,15 +225,20 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				}
 			}
 		}
-		SourceBuilder.append(monitorName + ".ThrowException();\n");
+		if(enableMonitor) {
+			SourceBuilder.append(monitorName + ".ThrowException();\n");
+		}
 		
 		System.out.println(SourceBuilder.toString());
 		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
 	}
 
 	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+		if(!TokenList.get(0).ParsedText.startsWith("$(")) {
+			return -1;
+		}
 		KonohaToken ShellToken = TokenList.get(BeginIdx);
-		String CommandLine = ShellToken.ParsedText.substring(2, ShellToken.ParsedText.length() - 2);
+		String CommandLine = ShellToken.ParsedText.substring(2, ShellToken.ParsedText.length() - 1);
 
 		KonohaDebug.P("Shell: [" + CommandLine + "]");
 		KonohaNameSpace ns = UNode.NodeNameSpace;
@@ -234,7 +246,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode ShellUNode = UntypedNode
-				.ParseNewNode(ns, null, BufferList, next, BufferList.size(), KonohaConst.AllowEmpty);
+				.ParseNewNode(ns, null, BufferList, 0, BufferList.size(), ParseOption);
 		UNode.AddParsedNode(ShellUNode);
 		System.out.println("untyped tree: " + ShellUNode);
 		return BeginIdx + 1;
@@ -242,7 +254,15 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	public TypedNode TypeShell(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		//KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
-		return null;
+		UntypedNode subNode = (UntypedNode)UNode.NodeList.get(0);
+		UntypedNode nextNode = UNode.NextNode;
+		UNode.NextNode = subNode.NextNode;
+		UNode = subNode;
+		while(subNode.NextNode != null){
+			subNode = subNode.NextNode;
+		}
+		subNode.NextNode = nextNode;
+		return TypeEnv.TypeCheck(Gamma, UNode, TypeInfo, 0);
 	}
 
 	@Override
@@ -251,8 +271,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
 		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
-		NameSpace.DefineSyntax("$Symbol", Term, this, "New");
-
+		NameSpace.DefineSyntax("$Symbol", Term, this, "Shell");
+		
 		new KonohaProcessDef().MakeDefinition(NameSpace);
+		new KonohaProcessMonitorDef().MakeDefinition(NameSpace);
 	}
 }

@@ -46,11 +46,11 @@ class KClassNode implements Opcodes {
 
 class KonohaClassLoader extends ClassLoader {
 	JVMCodeGenerator Gen;
-	
+
 	public KonohaClassLoader(JVMCodeGenerator Gen) {
 		this.Gen = Gen;
 	}
-	
+
 	@Override
 	protected Class<?> findClass(String name) {
 		byte[] b = Gen.generateBytecode(name);
