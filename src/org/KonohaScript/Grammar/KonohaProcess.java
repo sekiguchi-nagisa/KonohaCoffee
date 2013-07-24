@@ -158,8 +158,9 @@ public class KonohaProcess {
 	public void writeToFile(String fileName) {
 		try {
 			FileOutputStream fos = new FileOutputStream(fileName);
-			new StreamSetter(this.stdout, fos);
-		} catch (FileNotFoundException e) {
+			new StreamSetter(this.stdout, fos).start();
+		} 
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
