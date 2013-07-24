@@ -44,7 +44,14 @@ class KClassNode implements Opcodes {
 }
 
 class KonohaClassLoader extends ClassLoader {
-	public Class<?> findClass(JVMCodeGenerator Gen, String name) {
+	JVMCodeGenerator Gen;
+	
+	public KonohaClassLoader(JVMCodeGenerator Gen) {
+		this.Gen = Gen;
+	}
+	
+	@Override
+	protected Class<?> findClass(String name) {
 		byte[] b = Gen.generateBytecode(name);
 		return this.defineClass(name, b, 0, b.length);
 	}
@@ -52,7 +59,6 @@ class KonohaClassLoader extends ClassLoader {
 
 public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 	private final TypeResolver	TypeResolver;
-	private int					evalCount	= 0;
 
 	public JVMCodeGenerator() {
 		this.TypeResolver = new TypeResolver();
@@ -107,8 +113,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		} else {
 			KonohaType GlobalType = NameSpace.GetGlobalObject().TypeInfo;
 			className = "global";
-			methodName = "__eval" + this.evalCount;
-			this.evalCount += 1;
+			methodName = "__eval";
 			methodDescriptor = "(" + this.getTypeDescriptor(GlobalType) + ")Ljava/lang/Object;";
 			is_eval = true;
 			KonohaType[] ParamData = new KonohaType[2];
@@ -136,9 +141,9 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 		if(mn == null) {
 			int MethodAttr = ACC_PUBLIC;
-			if(methodName.startsWith("__eval")) {
+//			if(methodName.equals("__eval")) {
 				MethodAttr = MethodAttr | ACC_STATIC;
-			}
+//			}
 			mn = new MethodNode(MethodAttr, methodName, methodDescriptor, null, null);
 		} else {
 			mn.instructions.clear();
@@ -154,13 +159,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		}
 		b.VisitList(Block.GetHeadNode());
 		if(is_eval) {
-			//FIXME
-			if(b.stack.getStackTop() == 0) {
-				mn.visitInsn(ACONST_NULL);
-			} else {
-				mn.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
-			}
-			mn.visitInsn(ARETURN);
+			b.visitBoxingAndReturn();
 		}
 
 		mn.visitEnd();
@@ -172,7 +171,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			e.printStackTrace();
 		}
 
-		Class<?> c = new KonohaClassLoader().findClass(this, className);
+		Class<?> c = new KonohaClassLoader(this).findClass(className);
 		Method[] MethodList = c.getMethods();
 		for(int i = 0; i < MethodList.length; i++) {
 			Method m = MethodList[i];

@@ -147,7 +147,7 @@ public final class Konoha {
 
 		this.VoidType = this.RootNameSpace.LookupHostLangType(Void.class);
 		this.NativeObjectType = this.RootNameSpace.LookupHostLangType(Object.class);
-		this.ObjectType = this.RootNameSpace.LookupHostLangType(KonohaObject.class);
+		this.ObjectType = this.RootNameSpace.LookupHostLangType(Object.class);
 		this.BooleanType = this.RootNameSpace.LookupHostLangType(Boolean.class);
 		this.IntType = this.RootNameSpace.LookupHostLangType(Integer.class);
 		this.StringType = this.RootNameSpace.LookupHostLangType(String.class);

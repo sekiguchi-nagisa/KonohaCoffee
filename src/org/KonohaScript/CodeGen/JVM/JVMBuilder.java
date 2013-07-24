@@ -1,11 +1,14 @@
 package org.KonohaScript.CodeGen.JVM;
 
-import java.util.HashMap;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Stack;
 
 import org.KonohaScript.KonohaClass;
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
+import org.KonohaScript.NativeMethodInvoker;
 import org.KonohaScript.CodeGen.CodeGenerator;
 import org.KonohaScript.CodeGen.Local;
 import org.KonohaScript.JUtils.KonohaConst;
@@ -35,6 +38,7 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 class LabelStack {
 	KonohaArray	LabelNames;
@@ -71,121 +75,20 @@ class LabelStack {
 	}
 }
 
-class Stack {
-	private int	stackTop		= 0;
-	private int	maxStackSize	= 0;
-
-	public int getStackTop() {
-		return this.stackTop;
-	}
-
-	public void setStackTop(int stackTop) {
-		this.stackTop = stackTop;
-	}
-
-	public int getMaxStackSize() {
-		return this.maxStackSize;
-	}
-
-	public void setMaxStackSize(int maxStackSize) {
-		this.maxStackSize = maxStackSize;
-	}
-
-	public void push() {
-		int st = this.getStackTop() + 1;
-		this.setStackTop(st);
-		if(st > this.getMaxStackSize()) {
-			this.setMaxStackSize(st);
-		}
-	}
-
-	public void pop() {
-		this.setStackTop(this.getStackTop() - 1);
-	}
-}
-
-class BinaryOperator {
-	int	OpCode;
-
-	public BinaryOperator(int OpCode) {
-		this.OpCode = OpCode;
-	}
-
-	void CodeGen(Stack stack, MethodVisitor visitor) {
-		stack.pop();
-		stack.pop();
-		stack.push();
-		visitor.visitInsn(this.OpCode);
-	}
-}
-
-class RelationalBinaryOperator extends BinaryOperator implements Opcodes {
-
-	public RelationalBinaryOperator(int OpCode) {
-		super(OpCode);
-	}
-
-	@Override
-	void CodeGen(Stack stack, MethodVisitor visitor) {
-		stack.pop();
-		stack.pop();
-		stack.push();
-		Label FALSE = new Label();
-		Label END = new Label();
-		visitor.visitJumpInsn(this.OpCode, FALSE); // condition
-		visitor.visitInsn(ICONST_1); // true
-		visitor.visitJumpInsn(GOTO, END);
-		visitor.visitLabel(FALSE);
-		visitor.visitInsn(ICONST_0); // false
-		visitor.visitLabel(END);
-	}
-}
-
 class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	MethodVisitor					methodVisitor;
-	Stack							stack;
+	Stack<Type>						typeStack;
 	LabelStack						LabelStack;
-	HashMap<String, BinaryOperator>	binaryOperatorMap;
 	KonohaNameSpace					NameSpace;
 	TypeResolver					TypeResolver;
 
 	public JVMBuilder(KonohaMethod method, MethodVisitor mv, TypeResolver TypeResolver) {
 		super(method);
 		this.methodVisitor = mv;
-		this.initBinaryOpcodeMap();
-		this.stack = new Stack();
+		this.typeStack = new Stack<Type>();
 		this.LabelStack = new LabelStack();
 		this.TypeResolver = TypeResolver;
-	}
-
-	private void initBinaryOpcodeMap() {
-		BinaryOperator opADD = new BinaryOperator(IADD);
-		BinaryOperator opSUB = new BinaryOperator(ISUB);
-		BinaryOperator opMUL = new BinaryOperator(IMUL);
-		BinaryOperator opDIV = new BinaryOperator(IDIV);
-		BinaryOperator opREM = new BinaryOperator(IREM);
-
-		BinaryOperator opLT = new RelationalBinaryOperator(IF_ICMPGE);
-		BinaryOperator opLE = new RelationalBinaryOperator(IF_ICMPGT);
-		BinaryOperator opGT = new RelationalBinaryOperator(IF_ICMPLE);
-		BinaryOperator opGE = new RelationalBinaryOperator(IF_ICMPLT);
-		BinaryOperator opEQ = new RelationalBinaryOperator(IF_ICMPNE);
-		BinaryOperator opNE = new RelationalBinaryOperator(IF_ICMPEQ);
-
-		this.binaryOperatorMap = new HashMap<String, BinaryOperator>();
-		this.binaryOperatorMap.put("+", opADD);
-		this.binaryOperatorMap.put("-", opSUB);
-		this.binaryOperatorMap.put("*", opMUL);
-		this.binaryOperatorMap.put("/", opDIV);
-		this.binaryOperatorMap.put("%", opREM);
-		this.binaryOperatorMap.put("<", opLT);
-		this.binaryOperatorMap.put("<=", opLE);
-		this.binaryOperatorMap.put(">", opGT);
-		this.binaryOperatorMap.put(">=", opGE);
-		this.binaryOperatorMap.put("==", opEQ);
-		this.binaryOperatorMap.put("!=", opNE);
-		// FIXME add other binary operator
 	}
 
 	String getMethodDescriptor(KonohaMethod Method) {
@@ -193,52 +96,53 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	}
 
 	void LoadLocal(Local local) {
-		KonohaType type = local.TypeInfo;
-		//TODO check KonohaType -> Type
-
-		this.stack.push();
-		this.methodVisitor.visitVarInsn(ILOAD, local.Index);
-		// this.asmctx.getMethodVisitor().visitVarInsn(type.getOpcode(ILOAD), local.Index);
+		KonohaType ktype = local.TypeInfo;
+		Type type = TypeResolver.GetAsmType(ktype);
+		this.typeStack.push(type);
+		this.methodVisitor.visitVarInsn(type.getOpcode(ILOAD), local.Index);
 	}
 
 	void StoreLocal(Local local) {
-		KonohaType type = local.TypeInfo;
-		//TODO check KonohaType -> Type
-
-		this.stack.pop();
-		this.methodVisitor.visitVarInsn(ISTORE, local.Index);
-		// this.asmctx.getMethodVisitor().visitVarInsn(type.getOpcode(ISTORE), local.Index);
+		KonohaType ktype = local.TypeInfo;
+		Type type = TypeResolver.GetAsmType(ktype);
+		this.typeStack.pop(); //TODO: check cast
+		this.methodVisitor.visitVarInsn(type.getOpcode(ISTORE), local.Index);
 	}
 
 	void LoadConst(Object o) {
-		this.stack.push();
+		Type type;
+		if(o instanceof Integer) {
+			type = Type.INT_TYPE;
+		} else if(o instanceof Boolean) {
+			type = Type.BOOLEAN_TYPE;
+		} else {
+			type = TypeResolver.GetAsmType(o.getClass());
+		}
+		this.typeStack.push(type);
 		this.methodVisitor.visitLdcInsn(o);
 	}
 
-	private boolean isMethodBinaryOperator(ApplyNode Node) {
-		String methodName = Node.Method.MethodName;
-		for(String op : this.binaryOperatorMap.keySet()) {
-			if(op.equals(methodName)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void BinaryOp(String opName) {
-		this.binaryOperatorMap.get(opName).CodeGen(this.stack, this.methodVisitor);
-	}
-
 	void Call(int opcode, KonohaMethod Method) {
-		//String className = Method.ClassInfo.ShortClassName;
-		String methodName = Method.MethodName;
-		Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
-		if(OwnerClass == null) {
-			OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+		if(Method.MethodInvoker instanceof NativeMethodInvoker) {
+			NativeMethodInvoker i = (NativeMethodInvoker) Method.MethodInvoker;
+			Method m = i.GetMethodRef();
+			String owner = TypeResolver.GetAsmType(m.getDeclaringClass()).getInternalName();
+			String methodName = m.getName();
+			String methodDescriptor = Type.getMethodDescriptor(m);
+			if(Modifier.isStatic(m.getModifiers())) opcode = INVOKESTATIC;
+			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
+			this.typeStack.push(TypeResolver.GetAsmType(m.getReturnType()));
+		} else {
+			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
+			if(OwnerClass == null) {
+				OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+			}
+			String owner = OwnerClass.getName().replace(".", "/");
+			String methodName = Method.MethodName;
+			String methodDescriptor = this.getMethodDescriptor(Method);
+			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
+			this.typeStack.push(TypeResolver.GetAsmType(Method.GetReturnType(null)));
 		}
-		String owner = OwnerClass.getSimpleName();
-		String methodDescriptor = this.getMethodDescriptor(Method);
-		this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 	}
 
 	@Override
@@ -256,6 +160,8 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	@Override
 	public boolean VisitConst(ConstNode Node) {
 		Object constValue = Node.ConstValue;
+		Type type = TypeResolver.GetAsmType(constValue.getClass());
+		this.typeStack.push(type);
 		this.LoadConst(constValue);
 		return true;
 	}
@@ -272,8 +178,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitNull(NullNode Node) {
-		// TODO Auto-generated method stub
-		return false;
+		this.typeStack.push(TypeResolver.GetAsmType(Object.class));
+		methodVisitor.visitInsn(ACONST_NULL);
+		return true;
 	}
 
 	@Override
@@ -299,18 +206,19 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		for(int i = 0; i < Node.Params.size(); i++) {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
-		}
-		if(this.isMethodBinaryOperator(Node)) {
-			String opName = Node.Method.MethodName;
-			this.BinaryOp(opName);
-		} else {
-			int opcode = INVOKEVIRTUAL;
-			if(Node.Method.Is(KonohaConst.StaticMethod)) {
-				opcode = INVOKESTATIC;
+			Type requireType = TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
+			Type foundType = this.typeStack.pop();
+			if(requireType.equals(Type.getType(Object.class)) && !foundType.getDescriptor().startsWith("L")) {
+				// needs boxing
+				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
 			}
-			String methodName = Node.Method.MethodName;
-			this.Call(opcode, Node.Method);
 		}
+		int opcode = INVOKEVIRTUAL;
+		if(Node.Method.Is(KonohaConst.StaticMethod)) {
+			opcode = INVOKESTATIC;
+		}
+//		String methodName = Node.Method.MethodName;
+		this.Call(opcode, Node.Method);
 		return true;
 	}
 
@@ -354,6 +262,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Label END = new Label();
 		MethodVisitor mv = this.methodVisitor;
 		Node.CondExpr.Evaluate(this);
+		typeStack.pop(); //TODO: check cast
 		mv.visitJumpInsn(IFEQ, ELSE);
 
 		// Then
@@ -399,9 +308,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 		mv.visitInsn(ICONST_1); // true
 		mv.visitJumpInsn(IF_ICMPNE, END); // condition
-		this.stack.pop();
-		this.stack.pop();
-		this.stack.push();
+//		this.stack.pop();
+//		this.stack.pop();
+//		this.stack.push();
 		this.VisitList(Node.LoopBody);
 		if(Node.IterationExpr != null) {
 			Node.IterationExpr.Evaluate(this);
@@ -417,18 +326,10 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	public boolean VisitReturn(ReturnNode Node) {
 		if(Node.Expr != null) {
 			Node.Expr.Evaluate(this);
-		}
-
-		assert (Node.TypeInfo != null);
-
-		//FIXME (ide) check return type
-		MethodVisitor mv = this.methodVisitor;
-		if(Node.TypeInfo.ShortClassName.equals("Void")) {
-			mv.visitInsn(RETURN);
-		} else if(Node.TypeInfo.ShortClassName.equals("Integer")) {
-			mv.visitInsn(IRETURN);
+			Type type = this.typeStack.pop();
+			methodVisitor.visitInsn(type.getOpcode(IRETURN));
 		} else {
-			mv.visitInsn(ARETURN);
+			methodVisitor.visitInsn(RETURN);
 		}
 		return true;
 	}
@@ -491,9 +392,10 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitThrow(ThrowNode Node) {
-		// TODO Auto-generated method stub
 		Node.Expr.Evaluate(this);
-		return false;
+		typeStack.pop();
+		methodVisitor.visitInsn(ATHROW);
+		return true;
 	}
 
 	@Override
@@ -504,15 +406,32 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitError(ErrorNode Node) {
-		// TODO Auto-generated method stub
-		return false;
+		String ps = Type.getDescriptor(System.err.getClass());
+		methodVisitor.visitFieldInsn(GETSTATIC, "java/lang/System", "err", ps);
+		methodVisitor.visitLdcInsn(Node.ErrorMessage);
+		methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V");
+		return true;
 	}
 
 	public void VisitEnd() {
-		int maxStack = this.stack.getMaxStackSize();
-		int maxLocal = this.LocalVals.size();
-		this.methodVisitor.visitMaxs(maxStack, maxLocal);
 		this.methodVisitor.visitEnd();
 	}
 
+	public void visitBoxingAndReturn() {
+		if(typeStack.empty()) {
+			methodVisitor.visitInsn(ACONST_NULL);
+		} else {
+			Type type = typeStack.pop();
+			if(type.equals(Type.INT_TYPE)) {
+				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+			} else if(type.equals(Type.BOOLEAN_TYPE)) {
+				methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+			} else if(type.equals(Type.VOID_TYPE)) {
+				methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
+			} else {
+				System.out.println("error: " + type);
+			}
+		}
+		methodVisitor.visitInsn(ARETURN);
+	}
 }
