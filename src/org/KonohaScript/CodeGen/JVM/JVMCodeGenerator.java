@@ -21,6 +21,7 @@ import org.KonohaScript.SyntaxTree.TypedNode;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
 class KClassNode implements Opcodes {
@@ -64,14 +65,6 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		this.TypeResolver = new TypeResolver();
 	}
 
-	private String getTypeDescriptor(KonohaType type) {
-		return this.TypeResolver.GetJavaTypeDescriptor(type);
-	}
-
-	String getMethodDescriptor(KonohaMethod Method) {
-		return this.TypeResolver.GetJavaMethodDescriptor(Method);
-	}
-
 	public void OutputClassFile(String className, String dir) throws IOException {
 		byte[] ba = this.generateBytecode(className);
 		File file = new File(dir, className + ".class");
@@ -99,6 +92,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 	}
 
 	public KonohaMethodInvoker Compile(KonohaNameSpace NameSpace, TypedNode Block, KonohaMethod MethodInfo, KonohaArray params) {
+		int MethodAttr;
 		String className;
 		String methodName;
 		String methodDescriptor;
@@ -108,13 +102,15 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			className = MethodInfo.ClassInfo.ShortClassName;
 			//className = "Script";
 			methodName = MethodInfo.MethodName;
-			methodDescriptor = this.getMethodDescriptor(MethodInfo);
+			methodDescriptor = TypeResolver.GetJavaMethodDescriptor(MethodInfo);
+			MethodAttr = ACC_PUBLIC | ACC_STATIC;
 			param = MethodInfo.Param;
 		} else {
 			KonohaType GlobalType = NameSpace.GetGlobalObject().TypeInfo;
 			className = "global";
 			methodName = "__eval";
-			methodDescriptor = "(" + this.getTypeDescriptor(GlobalType) + ")Ljava/lang/Object;";
+			methodDescriptor = Type.getMethodDescriptor(Type.getType(Object.class), TypeResolver.GetAsmType(GlobalType));
+			MethodAttr = ACC_PUBLIC | ACC_STATIC;
 			is_eval = true;
 			KonohaType[] ParamData = new KonohaType[2];
 			String[] ArgNames = new String[1];
@@ -132,22 +128,13 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			this.TypeResolver.StoreClassNode(cn);
 		}
 
-		MethodNode mn = null;
 		for(MethodNode m : cn.methods.values()) {
 			if(m.name.equals(methodName) && m.desc.equals(methodDescriptor)) {
-				mn = m;
+				cn.methods.remove(m);
 				break;
 			}
 		}
-		if(mn == null) {
-			int MethodAttr = ACC_PUBLIC;
-//			if(methodName.equals("__eval")) {
-				MethodAttr = MethodAttr | ACC_STATIC;
-//			}
-			mn = new MethodNode(MethodAttr, methodName, methodDescriptor, null, null);
-		} else {
-			mn.instructions.clear();
-		}
+		MethodNode mn = new MethodNode(MethodAttr, methodName, methodDescriptor, null, null);
 		mn.visitCode();
 
 		JVMBuilder b = new JVMBuilder(MethodInfo, mn, this.TypeResolver, NameSpace);
@@ -166,11 +153,11 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		mn.visitEnd();
 		cn.methods.put(methodName, mn);
 
-		try {
-			this.OutputClassFile("global", ".");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			this.OutputClassFile("global", ".");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 		Class<?> c = new KonohaClassLoader(this).findClass(className);
 		Method[] MethodList = c.getMethods();

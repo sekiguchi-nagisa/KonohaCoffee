@@ -92,10 +92,6 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		this.NameSpace = NameSpace;
 	}
 
-	String getMethodDescriptor(KonohaMethod Method) {
-		return this.TypeResolver.GetJavaMethodDescriptor(Method);
-	}
-
 	void LoadLocal(Local local) {
 		KonohaType ktype = local.TypeInfo;
 		Type type = this.TypeResolver.GetAsmType(ktype);
@@ -134,13 +130,14 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 			this.typeStack.push(this.TypeResolver.GetAsmType(m.getReturnType()));
 		} else {
-			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
-			if(OwnerClass == null) {
-				OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
-			}
-			String owner = OwnerClass.getName().replace(".", "/");
+//			Class<?> OwnerClass = Method.ClassInfo.HostedClassInfo;
+//			if(OwnerClass == null) {
+//				OwnerClass = Method.ClassInfo.DefaultNullValue.getClass();
+//			}
+//			String owner = OwnerClass.getName().replace(".", "/");
+			String owner = "global";//FIXME
 			String methodName = Method.MethodName;
-			String methodDescriptor = this.getMethodDescriptor(Method);
+			String methodDescriptor = TypeResolver.GetJavaMethodDescriptor(Method);
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 			this.typeStack.push(this.TypeResolver.GetAsmType(Method.GetReturnType(null)));
 		}
@@ -217,10 +214,10 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			}
 		}
 		int opcode = INVOKEVIRTUAL;
-		if(Node.Method.Is(KonohaConst.StaticMethod)) {
+//		if(Node.Method.Is(KonohaConst.StaticMethod)) {
 			opcode = INVOKESTATIC;
-		}
-		//		String methodName = Node.Method.MethodName;
+//		}
+//		String methodName = Node.Method.MethodName;
 		this.Call(opcode, Node.Method);
 		return true;
 	}
