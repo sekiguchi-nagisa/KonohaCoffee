@@ -6,19 +6,20 @@ import org.KonohaScript.PegParser.SyntaxAcceptor;
 import org.KonohaScript.PegParser.SyntaxPattern;
 
 /*
- [$ClassDefinition:
- [
- <Symbol:"class">
- <Symbol:$#Symbol>
- <Symbol:$#block>
- ]
- [
- <Symbol:"class">
- <Symbol:$#Symbol>
- <Symbol:"extends">
- <Symbol:$#type>
- ]
- ]
+[$ClassDefinition:
+	[
+		<Symbol:"class">
+		<Symbol:$#Symbol>
+		<Symbol:$#block>
+	]
+	[
+		<Symbol:"class">
+		<Symbol:$#Symbol>
+		<Symbol:"extends">
+		<Symbol:$#type>
+		<Symbol:$#block>
+	]
+]
  */
 class ClassDefinitionSyntax extends SyntaxPattern {
 	ClassDefinitionSyntax() {
@@ -48,23 +49,26 @@ class ClassDefinitionSyntax extends SyntaxPattern {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $ClassDefinition");
-		if(Parser.MatchToken("class", TokenList, Parser.Cursor) >= 0) {
-			if(Parser.Match("$Symbol", TokenList) >= 0) {
+		if (Parser.MatchToken("class", TokenList, Parser.Cursor) >= 0) {
+			if (Parser.Match("$Symbol", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if(Parser.Match("$block", TokenList) >= 0) {
+				if (Parser.Match("$block", TokenList) >= 0) {
 					NodeSize = NodeSize + 1;
 					return this.action0("$ClassDefinition", Parser, pos0, NodeSize);
 				}
 			}
 		}
 		NodeSize = this.BackTrack(Parser, pos0, thunkpos0, NodeSize0, "BackTrack $ClassDefinition 0");
-		if(Parser.MatchToken("class", TokenList, Parser.Cursor) >= 0) {
-			if(Parser.Match("$Symbol", TokenList) >= 0) {
+		if (Parser.MatchToken("class", TokenList, Parser.Cursor) >= 0) {
+			if (Parser.Match("$Symbol", TokenList) >= 0) {
 				NodeSize = NodeSize + 1;
-				if(Parser.MatchToken("extends", TokenList, Parser.Cursor) >= 0) {
-					if(Parser.Match("$type", TokenList) >= 0) {
+				if (Parser.MatchToken("extends", TokenList, Parser.Cursor) >= 0) {
+					if (Parser.Match("$type", TokenList) >= 0) {
 						NodeSize = NodeSize + 1;
-						return this.action1("$ClassDefinition", Parser, pos0, NodeSize);
+						if (Parser.Match("$block", TokenList) >= 0) {
+							NodeSize = NodeSize + 1;
+							return this.action1("$ClassDefinition", Parser, pos0, NodeSize);
+						}
 					}
 				}
 			}
@@ -75,7 +79,11 @@ class ClassDefinitionSyntax extends SyntaxPattern {
 }
 
 /*
- * [$TopLevelDefinition: [ <Symbol:$ClassDefinition> ] ]
+[$TopLevelDefinition:
+	[
+		<Symbol:$ClassDefinition>
+	]
+]
  */
 class TopLevelDefinitionSyntax extends SyntaxPattern {
 	TopLevelDefinitionSyntax() {
@@ -97,7 +105,7 @@ class TopLevelDefinitionSyntax extends SyntaxPattern {
 		int thunkpos0 = Parser.ThunkPos;
 		int NodeSize0 = NodeSize;
 		this.Report("Enter $TopLevelDefinition");
-		if(Parser.Match("$ClassDefinition", TokenList) >= 0) {
+		if (Parser.Match("$ClassDefinition", TokenList) >= 0) {
 			NodeSize = NodeSize + 1;
 			return this.action0("$TopLevelDefinition", Parser, pos0, NodeSize);
 		}
