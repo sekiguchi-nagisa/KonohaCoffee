@@ -737,12 +737,12 @@ class variableDeclarationSyntax0 extends SyntaxAcceptor {
 		this.Report("variableDeclarationSyntax0", NodeSize);
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$variableDeclaration");
 		int Index = 0;
-		KonohaToken VarType = (KonohaToken) Parser.Get(Index, NodeSize);
+		UntypedNode VarType = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		KonohaToken VarName = (KonohaToken) Parser.Get(Index, NodeSize);
+		UntypedNode VarName = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		UNode.SetAtToken(Index, VarType);
-		UNode.SetAtToken(Index, VarName);
+		UNode.SetAtToken(Index, VarType.KeyToken);
+		UNode.SetAtToken(Index, VarName.KeyToken);
 		UNode.SetAtToken(Index, null);
 		Parser.ReAssign(NodeSize, UNode);
 		return EndIdx;
