@@ -224,7 +224,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			typeStack.push(Type.getType(Void.class));
 		} else {
 			typeStack.push(type);
-		}	
+		}
 	}
 
 	@Override
