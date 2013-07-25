@@ -8,5 +8,5 @@ void f(int a) {
     System.p(i);
 }
 
-f(10);
+f(1);
 f(10);

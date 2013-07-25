@@ -1,13 +1,11 @@
 void f(int a) {
     int i = 0;
-    while(a < 10) {
-        System.p(i);
-        if(a == 5) {
+    while(i < a) {
+        i = i + 1;
+        if(i == 5) {
             continue;
         }
-        i = i + 1;
     }
-    System.p(i);
 }
 
 f(10);

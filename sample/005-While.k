@@ -1,9 +1,9 @@
-void f(int a) {
+void f() {
     int i = 0;
-    while(a < 10) {
+    while(i < 10) {
         System.p(i);
         i = i + 1;
     }
 }
 
-f(10);
+f();

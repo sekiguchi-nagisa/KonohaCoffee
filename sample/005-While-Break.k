@@ -1,8 +1,8 @@
 void f(int a) {
     int i = 0;
-    while(a < 10) {
+    while(i < a) {
         System.p(i);
-        if(a == 5) {
+        if(i == 5) {
             break;
         }
         i = i + 1;
