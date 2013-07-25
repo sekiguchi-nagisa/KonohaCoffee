@@ -730,6 +730,7 @@ class EQSyntax0 extends SyntaxAcceptor {
 class variableDeclarationSyntax0 extends SyntaxAcceptor {
 	static int	VarDeclTypeOffset	= SyntaxAcceptor.ListOffset;
 	static int	VarDeclNameOffset	= VarDeclTypeOffset + 1;
+	static int	VarDeclExprOffset	= VarDeclNameOffset + 1;
 
 	@Override
 	public int Parse(PegParser Parser, TokenList TokenList, int BeginIdx, int EndIdx, int NodeSize) {
@@ -747,16 +748,26 @@ class variableDeclarationSyntax0 extends SyntaxAcceptor {
 		return EndIdx;
 	}
 
-	@Override
-	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	static TypedNode TypeVariableDecl(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
 		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
 		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
-		if(VarType.equals(Gamma.VarType)) {
+		UntypedNode VarExpr = UNode.GetAtNode(VarDeclExprOffset);
+		TypedNode TExpr = null;
+		if (VarExpr != null) {
+			TExpr = UNode.TypeNodeAt(VarDeclExprOffset, Gamma, TypeInfo, 0);
+		}
+		if (VarType.equals(Gamma.VarType)) {
 			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
 		}
+		Gamma.AppendLocalType(VarType, VarName);
 		assert (VarName != null);
-		return new LetNode(VarType, VarToken, null, null);
+		return new LetNode(VarType, VarToken, TExpr, null);
+	}
+
+	@Override
+	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+		return TypeVariableDecl(Gamma, UNode, TypeInfo);
 	}
 }
 
@@ -789,17 +800,7 @@ class variableDeclarationSyntax1 extends SyntaxAcceptor {
 
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		// FIXME (ide)
-		KonohaType VarType = UNode.GetTokenType(VarDeclTypeOffset, null);
-		KonohaToken VarToken = UNode.GetAtToken(VarDeclNameOffset);
-		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
-
-		TypedNode Expr = UNode.TypeNodeAt(VarDeclExprOffset, Gamma, TypeInfo, 0);
-		if(VarType.equals(Gamma.VarType)) {
-			VarType = Expr.TypeInfo;
-		}
-		assert (VarName != null);
-		return new LetNode(VarType, VarToken, Expr, null);
+		return variableDeclarationSyntax0.TypeVariableDecl(Gamma, UNode, TypeInfo);
 	}
 }
 

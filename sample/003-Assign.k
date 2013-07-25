@@ -3,4 +3,4 @@ int f() {
     return a;
 }
 
-f();
+System.p(f());

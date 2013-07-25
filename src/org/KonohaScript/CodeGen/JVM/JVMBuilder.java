@@ -261,7 +261,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			if(local == null) {
 				throw new RuntimeException("local variable " + Name + " is not found in this context");
 			}
-			this.LoadLocal(local);
+			this.StoreLocal(local);
 		}
 		return true;
 	}
@@ -270,7 +270,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	public boolean VisitLet(LetNode Node) {
 		Local local = this.AddLocal(Node.TypeInfo, Node.SourceToken.ParsedText);
 		Node.ValueNode.Evaluate(this);
-		this.LoadLocal(local);
+		this.StoreLocal(local);
 		this.VisitList(Node.BlockNode);
 		return true;
 	}

@@ -1,6 +1,6 @@
 int f(int a) {
-    int b = a + 10;
-    return b;
+    a = a + 20;
+    return a;
 }
 
 System.p(f(10));
