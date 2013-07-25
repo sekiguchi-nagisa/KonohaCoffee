@@ -145,12 +145,13 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 				b.AddLocal(local.TypeInfo, local.Name);
 			}
 		}
-		b.VisitList(Block.GetHeadNode());
+		if(Block != null) {
+			b.VisitList(Block.GetHeadNode());
+		}
 		if(is_eval) {
 			b.visitBoxingAndReturn();
 		}
-
-		mn.visitEnd();
+		b.VisitEnd();
 		cn.methods.put(methodName, mn);
 
 		try {

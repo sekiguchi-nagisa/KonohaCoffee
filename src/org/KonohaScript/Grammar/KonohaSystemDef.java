@@ -17,7 +17,7 @@ public class KonohaSystemDef extends KonohaDef implements KonohaConst {
 		BaseClass.DefineMethod(StaticMethod, "p", param1, this, "p");
 	}
 
-	public static void p(Object x) {
+	public static void p(Object ctx, Object x) {
 		System.out.println(x);
 	}
 

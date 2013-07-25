@@ -146,7 +146,7 @@ public class KonohaMethod extends KonohaDef implements KonohaConst {
 		KonohaNameSpace NS = this.LazyNameSpace;
 		if(UNode == null) {
 			TokenList BufferList = new TokenList();
-			NS.PreProcess(this.SourceList, 0, this.SourceList.size(), BufferList);
+			NS.PreProcess(this.SourceList, 0, this.SourceList != null ? this.SourceList.size() : 0, BufferList);
 			UNode = UntypedNode.ParseNewNode(NS, null, BufferList, 0, BufferList.size(), AllowEmpty);
 			System.out.println("untyped tree: " + UNode);
 		}

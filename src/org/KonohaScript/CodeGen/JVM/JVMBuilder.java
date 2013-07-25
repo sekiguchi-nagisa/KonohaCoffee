@@ -349,12 +349,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		mv.visitLabel(HEAD);
 
 		Node.CondExpr.Evaluate(this);
-
+		typeStack.pop();
 		mv.visitInsn(ICONST_1); // true
 		mv.visitJumpInsn(IF_ICMPNE, END); // condition
-		//		this.stack.pop();
-		//		this.stack.pop();
-		//		this.stack.push();
 		this.VisitList(Node.LoopBody);
 		if(Node.IterationExpr != null) {
 			Node.IterationExpr.Evaluate(this);
@@ -458,6 +455,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	}
 
 	public void VisitEnd() {
+		this.methodVisitor.visitInsn(RETURN);//FIXME
 		this.methodVisitor.visitEnd();
 	}
 
