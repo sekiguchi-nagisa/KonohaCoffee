@@ -56,8 +56,8 @@
 	<!-- ================================== -->
 	<!--               TEST                 -->
 	<!-- ================================== -->
+	<target name="test" depends="build,jar">
 <!--
-	<target name="test" depends="build,jar,test-build">
 		<jar jarfile="konoha-test.jar">
 			<fileset dir="bin/test" includes="**/*.class" />
 			<zipfileset src="konoha.jar" />
@@ -67,6 +67,6 @@
 		</jar>
 		<java jar="konoha-test.jar" fork="true">
 		</java>
-	</target>
 -->
+	</target>
 </project>
