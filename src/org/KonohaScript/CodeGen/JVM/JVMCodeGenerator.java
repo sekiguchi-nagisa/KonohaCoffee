@@ -53,7 +53,7 @@ class KonohaClassLoader extends ClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) {
-		byte[] b = this.Gen.generateBytecode(name);
+		byte[] b = Gen.generateBytecode(name);
 		return this.defineClass(name, b, 0, b.length);
 	}
 }
@@ -102,14 +102,14 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			className = MethodInfo.ClassInfo.ShortClassName;
 			//className = "Script";
 			methodName = MethodInfo.MethodName;
-			methodDescriptor = this.TypeResolver.GetJavaMethodDescriptor(MethodInfo);
+			methodDescriptor = TypeResolver.GetJavaMethodDescriptor(MethodInfo);
 			MethodAttr = ACC_PUBLIC | ACC_STATIC;
 			param = MethodInfo.Param;
 		} else {
 			KonohaType GlobalType = NameSpace.GetGlobalObject().TypeInfo;
 			className = "global";
 			methodName = "__eval";
-			methodDescriptor = Type.getMethodDescriptor(Type.getType(Object.class), this.TypeResolver.GetAsmType(GlobalType));
+			methodDescriptor = Type.getMethodDescriptor(Type.getType(Object.class), TypeResolver.GetAsmType(GlobalType));
 			MethodAttr = ACC_PUBLIC | ACC_STATIC;
 			is_eval = true;
 			KonohaType[] ParamData = new KonohaType[2];
@@ -155,8 +155,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 
 		try {
 			this.OutputClassFile("global", ".");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

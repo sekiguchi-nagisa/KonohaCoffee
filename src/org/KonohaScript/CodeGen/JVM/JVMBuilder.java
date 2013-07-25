@@ -203,6 +203,29 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Node.BaseNode.Evaluate(this);
 		return true;
 	}
+	
+	boolean isPrimitiveType(Type type) {
+		return !type.getDescriptor().startsWith("L");
+	}
+	
+	void box() {
+		Type type = this.typeStack.pop();
+		if(type.equals(Type.INT_TYPE)) {
+			this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+			typeStack.push(Type.getType(Integer.class));
+		} else if(type.equals(Type.DOUBLE_TYPE)) {
+			this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
+			typeStack.push(Type.getType(Double.class));
+		} else if(type.equals(Type.BOOLEAN_TYPE)) {
+			this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+			typeStack.push(Type.getType(Boolean.class));
+		} else if(type.equals(Type.VOID_TYPE)) {
+			this.methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
+			typeStack.push(Type.getType(Void.class));
+		} else {
+			typeStack.push(type);
+		}	
+	}
 
 	@Override
 	public boolean VisitApply(ApplyNode Node) {
@@ -210,10 +233,12 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
 			Type requireType = this.TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
-			Type foundType = this.typeStack.pop();
-			if(requireType.equals(Type.getType(Object.class)) && !foundType.getDescriptor().startsWith("L")) {
-				// needs boxing
-				this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+			Type foundType = this.typeStack.peek();
+			if(requireType.equals(Type.getType(Object.class)) && isPrimitiveType(foundType)) {
+				// boxing
+				box();
+			} else {
+				this.typeStack.pop();
 			}
 		}
 		int opcode = INVOKEVIRTUAL;
@@ -440,16 +465,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		if(this.typeStack.empty()) {
 			this.methodVisitor.visitInsn(ACONST_NULL);
 		} else {
-			Type type = this.typeStack.pop();
-			if(type.equals(Type.INT_TYPE)) {
-				this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
-			} else if(type.equals(Type.BOOLEAN_TYPE)) {
-				this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
-			} else if(type.equals(Type.VOID_TYPE)) {
-				this.methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
-			} else {
-				System.out.println("error: " + type);
-			}
+			box();
 		}
 		this.methodVisitor.visitInsn(ARETURN);
 	}
