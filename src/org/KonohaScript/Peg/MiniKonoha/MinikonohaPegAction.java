@@ -754,10 +754,10 @@ class variableDeclarationSyntax0 extends SyntaxAcceptor {
 		String VarName = UNode.GetTokenString(VarDeclNameOffset, null);
 		UntypedNode VarExpr = UNode.GetAtNode(VarDeclExprOffset);
 		TypedNode TExpr = null;
-		if (VarExpr != null) {
+		if(VarExpr != null) {
 			TExpr = UNode.TypeNodeAt(VarDeclExprOffset, Gamma, TypeInfo, 0);
 		}
-		if (VarType.equals(Gamma.VarType)) {
+		if(VarType.equals(Gamma.VarType)) {
 			return new ErrorNode(TypeInfo, VarToken, "cannot infer variable type");
 		}
 		Gamma.AppendLocalType(VarType, VarName);

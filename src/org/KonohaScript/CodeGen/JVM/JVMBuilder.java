@@ -176,10 +176,11 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	@Override
 	public boolean VisitNull(NullNode Node) {
 		KonohaType TypeInfo = Node.TypeInfo;
-		if (TypeInfo.DefaultNullValue != null) {
+		if(TypeInfo.DefaultNullValue != null) {
 			this.typeStack.push(this.TypeResolver.GetAsmType(TypeInfo.DefaultNullValue.getClass()));
 			this.LoadConst(TypeInfo.DefaultNullValue);
 		} else {
+			// FIXME support primitive type (e.g. int)
 			this.typeStack.push(this.TypeResolver.GetAsmType(Object.class));
 			this.methodVisitor.visitInsn(ACONST_NULL);
 		}
@@ -203,27 +204,27 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		Node.BaseNode.Evaluate(this);
 		return true;
 	}
-	
+
 	boolean isPrimitiveType(Type type) {
 		return !type.getDescriptor().startsWith("L");
 	}
-	
+
 	void box() {
 		Type type = this.typeStack.pop();
 		if(type.equals(Type.INT_TYPE)) {
 			this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
-			typeStack.push(Type.getType(Integer.class));
+			this.typeStack.push(Type.getType(Integer.class));
 		} else if(type.equals(Type.DOUBLE_TYPE)) {
 			this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
-			typeStack.push(Type.getType(Double.class));
+			this.typeStack.push(Type.getType(Double.class));
 		} else if(type.equals(Type.BOOLEAN_TYPE)) {
 			this.methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
-			typeStack.push(Type.getType(Boolean.class));
+			this.typeStack.push(Type.getType(Boolean.class));
 		} else if(type.equals(Type.VOID_TYPE)) {
 			this.methodVisitor.visitInsn(ACONST_NULL);//FIXME: return void
-			typeStack.push(Type.getType(Void.class));
+			this.typeStack.push(Type.getType(Void.class));
 		} else {
-			typeStack.push(type);
+			this.typeStack.push(type);
 		}
 	}
 
@@ -234,9 +235,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			Param.Evaluate(this);
 			Type requireType = this.TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
 			Type foundType = this.typeStack.peek();
-			if(requireType.equals(Type.getType(Object.class)) && isPrimitiveType(foundType)) {
+			if(requireType.equals(Type.getType(Object.class)) && this.isPrimitiveType(foundType)) {
 				// boxing
-				box();
+				this.box();
 			} else {
 				this.typeStack.pop();
 			}
@@ -350,7 +351,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		mv.visitLabel(HEAD);
 
 		Node.CondExpr.Evaluate(this);
-		typeStack.pop();
+		this.typeStack.pop();
 		mv.visitInsn(ICONST_1); // true
 		mv.visitJumpInsn(IF_ICMPNE, END); // condition
 		this.VisitList(Node.LoopBody);
@@ -456,7 +457,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	}
 
 	public void VisitEnd() {
-		this.methodVisitor.visitInsn(RETURN);//FIXME
+		//this.methodVisitor.visitInsn(RETURN);//FIXME
 		this.methodVisitor.visitEnd();
 	}
 
@@ -464,7 +465,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		if(this.typeStack.empty()) {
 			this.methodVisitor.visitInsn(ACONST_NULL);
 		} else {
-			box();
+			this.box();
 		}
 		this.methodVisitor.visitInsn(ARETURN);
 	}

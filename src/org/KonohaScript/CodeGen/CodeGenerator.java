@@ -2,6 +2,7 @@ package org.KonohaScript.CodeGen;
 
 import org.KonohaScript.KonohaMethod;
 import org.KonohaScript.KonohaMethodInvoker;
+import org.KonohaScript.KonohaNameSpace;
 import org.KonohaScript.KonohaType;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.SyntaxTree.NodeVisitor;
@@ -63,6 +64,14 @@ public abstract class CodeGenerator extends NodeVisitor {
 			Local local = (Local) params.get(i);
 			this.AddLocal(local.TypeInfo, local.Name);
 		}
+	}
+
+	public TypedNode VerifyBlock(KonohaNameSpace NameSpace, boolean IsEval, KonohaType ReturnType, TypedNode Block) {
+		if(IsEval) {
+			return Block;
+		}
+		Block = new CheckReturnNodePath().Run(NameSpace, ReturnType, Block);
+		return Block;
 	}
 
 }

@@ -13,7 +13,7 @@ import org.objectweb.asm.Type;
 public class TypeResolver {
 	private final Map<String, KClassNode>	classMap			= new HashMap<String, KClassNode>();
 	private final Map<String, String>		typeDescriptorMap	= new HashMap<String, String>();
-	
+
 	// FIXME
 	String globalType = Type.getType(KonohaObject.class).getDescriptor();
 

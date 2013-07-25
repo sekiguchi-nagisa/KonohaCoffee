@@ -97,6 +97,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		String methodName;
 		String methodDescriptor;
 		KonohaParam param;
+		KonohaType ReturnType;
 		boolean is_eval = false;
 		if(MethodInfo != null && MethodInfo.MethodName.length() > 0) {
 			className = MethodInfo.ClassInfo.ShortClassName;
@@ -105,6 +106,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			methodDescriptor = this.TypeResolver.GetJavaMethodDescriptor(MethodInfo);
 			MethodAttr = ACC_PUBLIC | ACC_STATIC;
 			param = MethodInfo.Param;
+			ReturnType = MethodInfo.GetReturnType(null);
 		} else {
 			KonohaType GlobalType = NameSpace.GetGlobalObject().TypeInfo;
 			className = "global";
@@ -120,6 +122,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 			param = new KonohaParam(1, ParamData, ArgNames);
 			params = new KonohaArray();
 			params.add(new Local(0, GlobalType, "this"));
+			ReturnType = ParamData[0];
 		}
 
 		KClassNode cn = this.TypeResolver.FindClassNode(className);
@@ -138,6 +141,7 @@ public class JVMCodeGenerator implements KonohaBuilder, Opcodes {
 		mn.visitCode();
 
 		JVMBuilder b = new JVMBuilder(MethodInfo, mn, this.TypeResolver, NameSpace);
+		Block = b.VerifyBlock(NameSpace, is_eval, ReturnType, Block);
 
 		if(params != null) {
 			for(int i = 0; i < params.size(); i++) {

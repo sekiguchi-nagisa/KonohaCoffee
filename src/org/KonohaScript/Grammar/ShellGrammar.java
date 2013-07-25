@@ -228,7 +228,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				if(Output != null) {
 					SourceBuilder.append(procName + ".SetOutputFileName(\"" + Output + "\");\n");
 				} else {
-					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");	
+					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");
 				}
 			}
 		}
