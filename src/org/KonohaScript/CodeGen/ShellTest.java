@@ -55,7 +55,7 @@ public class ShellTest extends KTestCase {
 				"list.txt");
 
 		
-		this.konoha.Eval("System.p(\"before shell!!\"); $(ls); System.p(\"after shell!!\");", 0);
+		this.konoha.Eval("System.p(\"before shell!!\"); $(ls -la | grep fr); System.p(\"after shell!!\");", 0);
 		
 		//this.konoha.Eval("new Process(\"ls\");", 0);
 		//this.konoha.Eval("int num = 100;", 0);

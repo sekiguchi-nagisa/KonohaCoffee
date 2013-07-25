@@ -8,19 +8,27 @@ import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
+import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
 import org.KonohaScript.SyntaxTree.TypedNode;
 
+
 public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	MiniKonohaGrammar			MiniKonoha			= new MiniKonohaGrammar();
 
-	public static final String	ProcessClassName	= Process.class.getSimpleName();
+	public static final String	ProcessClassName	= "Process";
 	public static final String  MonitorClassName    = "ProcessMonitor";
 
-	// $(ls -la | grep .txt)
+	/*
+	 * $(ls -la | grep .txt) 	--> It is Shell Statement. Return shell command's standard output as String Object.
+	 * 
+	 * Currently, Shell Statement is desugared at ShellToken. 
+	 * In the future, it will be desugared at ParseShell.
+	 * 
+	 */
 	public int ShellToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos;
 		int level = 0;
@@ -46,7 +54,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 //		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
 //		Token.ResolvedSyntax = ns.GetSyntax("$Shell");
-		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start + 2, pos - 1), 0);
+//		ParsedTokenList.add(Token);	
+		
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start + 2, pos - 1), 0, true);
 		int size = BufferList.size();
 		for(int i = 0; i < size; i++) {
 			KonohaToken Token = BufferList.get(i);
@@ -57,18 +67,47 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return pos;
 	}
 	
-	// ls -la | grep .txt
-	public int UnixCommandToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
+	/*
+	 * ls -la | grep .txt	--> It is Shell Expression.
+	 * 
+	 * Currently, Shell Expression is desugared at UnixCommandToken. 
+	 * In the future, Shell Expression will be desugared at ParseShell.
+	 * ParseShell will be called by $Symbol.
+	 * 
+	 */
+	
+	// future may be removed
+	public int UnixCommandToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {	
+		char ch = SourceText.charAt(pos);
+		if(ch == '/') {	// forbidden character
+			return -1;
+		}
+		
+		if(ParsedTokenList.size() != 0) {	//FIXME
+			int size = ParsedTokenList.size();
+			KonohaToken preToken = ParsedTokenList.get(size - 1);
+			System.out.println("show preToken " + preToken);
+			if(!preToken.ParsedText.equals(";")) {
+				if(preToken.ResolvedSyntax != null) {
+					if(!preToken.ResolvedSyntax.equals(KonohaSyntax.IndentSyntax)) {
+						return -1;
+					} 			
+				}
+
+			} 
+		}
+		
 		int sourceLength = SourceText.length();
 		boolean isFistToken = true;
+		boolean isUnixCommand = false;
 		StringBuilder cmdBuffer = new StringBuilder();
 		
 		for(; pos < sourceLength; pos++) {
-			char ch = SourceText.charAt(pos);
+			ch = SourceText.charAt(pos);
 			if(ch == ' ') {
 				if(isFistToken) {
 					isFistToken = false;
-					if(!isUnixCommand(cmdBuffer.toString())) {
+					if(searchUnixCommand(cmdBuffer.toString()) == false) {
 						return -1;
 					}
 				}
@@ -78,7 +117,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				pos++;
 				break;
 			} 
-			else if(ch == '\\') {
+			else if(ch == '\\') { //FIXME
 				// do nothing
 			}
 			else {
@@ -86,7 +125,11 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			}
 		}
 		
-		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, cmdBuffer.toString(), 0);
+		if(!isUnixCommand) {
+			return -1;
+		}
+		
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, cmdBuffer.toString(), 0, false);
 		int size = BufferList.size();
 		for(int i = 0; i < size; i++) {
 			KonohaToken Token = BufferList.get(i);
@@ -96,9 +139,11 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return pos;
 	}
 	
-	public static Boolean isUnixCommand(String cmd) {
+	public boolean searchUnixCommand(String cmd) {
+		System.out.println(cmd + " at searchUnixCommand");
 		return false;
 	}
+	
 
 	/*
 	 * Command: command name & arguments & redirect CommandLine: piped commands
@@ -230,12 +275,17 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 
 	static final boolean enableMonitor = true;
+	static int shellMehtodCounter = 0;
 
-	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline) {
+	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isShellStatement) {
+		String msg = isShellStatement ? "Statement" : "Expression";
+		System.out.println("Create Shell " + msg +" at ParseShellCommandLine");
+		
 		// split commandline by pipe
 		ArrayList<String> Commands = ShellGrammar.SplitIntoCommands(CommandLine);
 
 		StringBuilder SourceBuilder = new StringBuilder();
+		String retValue = "";
 
 		int n = Commands.size();
 		String monitorName = "monitor";
@@ -269,28 +319,47 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				String Output = ShellGrammar.FindOutputFileName(Tokens);
 				if(Output != null) {
 					SourceBuilder.append(procName + ".SetOutputFileName(\"" + Output + "\");\n");
+				}
+				if(isShellStatement) {
+					retValue = procName + ".GetOut();\n";
 				} else {
+<<<<<<< HEAD
 					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");
+=======
+					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");		
+>>>>>>> add basic support Shell Statement return value
 				}
 			}
 		}
 		if(enableMonitor) {
 			SourceBuilder.append(monitorName + ".ThrowException();\n");
 		}
-		
+		if(isShellStatement) {	//FIXME
+			String shellMethodName = "ShellMethod" + shellMehtodCounter;
+			SourceBuilder.append("return " + retValue);
+			String body = SourceBuilder.toString();
+			SourceBuilder = new StringBuilder();
+			SourceBuilder.append("String " + shellMethodName + "(){\n\n" + body+ "\n}\n");
+//			NameSpace.Eval(SourceBuilder.toString(), 0);	// Eval ShellMethod. future must enable
+//			SourceBuilder = new StringBuilder();
+			SourceBuilder.append(shellMethodName + "();\n");
+			shellMehtodCounter++;
+		}
+
 		StringBuilder SourceBuilder2 = new StringBuilder();
 		SourceBuilder2.append("System.p(\"hello shell!\"); System.p(\"hello shell!!\"); System.p(\"hello shell!!!\");");
 		
-//		System.out.println(SourceBuilder.toString());
+//		System.out.println(SourceBuilder.toString());	// future must enable
 //		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
 		
+		// temporary enable
 		System.out.println("<<---- actual syntax ---->>\n" + SourceBuilder.toString() + "----------------------");
 		System.out.println(SourceBuilder2.toString());
 		return NameSpace.Tokenize(SourceBuilder2.toString(), uline);
 	}
 
 	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {	// currently unused
-		if(!TokenList.get(0).ParsedText.startsWith("$(")) {
+		if(!TokenList.get(BeginIdx).ParsedText.startsWith("$(")) {
 			return -1;
 		}
 		KonohaToken ShellToken = TokenList.get(BeginIdx);
@@ -298,7 +367,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		KonohaDebug.P("Shell: [" + CommandLine + "]");
 		KonohaNameSpace ns = UNode.NodeNameSpace;
-		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, CommandLine, ShellToken.uline);
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, CommandLine, ShellToken.uline, false);
 		int next = BufferList.size();
 		ns.PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode ShellUNode = UntypedNode
@@ -325,15 +394,17 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
 		this.MiniKonoha.LoadDefaultSyntax(NameSpace);
 
+		// load Process definition
+		new KonohaProcessDef().MakeDefinition(NameSpace);
+		new KonohaProcessMonitorDef().MakeDefinition(NameSpace);
+
+		// load Shell syntax 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
-//		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "UnixCommandToken");	//SingleSymbol
-//		NameSpace.AddTokenFunc("Aa", this, "UnixCommandToken");						//Symbol
-//		NameSpace.AddTokenFunc("1", this, "UnixCommandToken");						//NumberLiteral
+		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "UnixCommandToken");	//SingleSymbol
+		NameSpace.AddTokenFunc("Aa", this, "UnixCommandToken");						//Symbol
+		NameSpace.AddTokenFunc("1", this, "UnixCommandToken");						//NumberLiteral
 		
 //		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 //		NameSpace.DefineSyntax("$Symbol", Term, this, "Shell"); // currently unused
-		
-		new KonohaProcessDef().MakeDefinition(NameSpace);
-		new KonohaProcessMonitorDef().MakeDefinition(NameSpace);
 	}
 }
