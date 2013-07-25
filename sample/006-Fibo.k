@@ -5,4 +5,4 @@ int fibo(int n) {
     return fibo(n-1) + fibo(n-2);
 }
 
-System.p(fibo(6));
+System.p(fibo(10));

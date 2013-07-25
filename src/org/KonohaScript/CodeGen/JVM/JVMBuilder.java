@@ -294,6 +294,7 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 		mv.visitLabel(ELSE);
 		if(Node.ElseNode != null) {
 			Node.ElseNode.Evaluate(this);
+			mv.visitJumpInsn(GOTO, END);
 		}
 
 		// End
