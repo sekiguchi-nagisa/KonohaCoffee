@@ -41,7 +41,7 @@ class ClassDefinitionSyntax0 extends SyntaxAcceptor {
 	}
 }
 
-// action: <Symbol:"class">, <Symbol:$#Symbol>, <Symbol:"extends">, <Symbol:$#type>
+//action: <Symbol:"class">, <Symbol:$#Symbol>, <Symbol:"extends">, <Symbol:$#type>, <Symbol:$#block>
 class ClassDefinitionSyntax1 extends SyntaxAcceptor {
 	static final int	ClassNameOffset			= ListOffset;
 	static final int	ClassParentNameOffset	= ClassNameOffset + 1;
