@@ -24,7 +24,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	// $(ls -la | grep .txt)
 	public int ShellToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int start = pos;
-		int level = 1;
+		int level = 0;
 		pos++;
 		if(SourceText.charAt(pos) != '(') {
 			return -1;
@@ -39,15 +39,22 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				level++;
 			} else if(ch == ')') {
 				level--;
-				if(level < 0) {
+				if(level == 0) {
 					pos++;
 					break;
 				}
 			}
 		}
-		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
-		Token.ResolvedSyntax = ns.GetSyntax("$Shell");
-		ParsedTokenList.add(Token);
+//		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
+//		Token.ResolvedSyntax = ns.GetSyntax("$Shell");
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start + 2, pos - 1), 0);
+		int size = BufferList.size();
+		for(int i = 0; i < size; i++) {
+			KonohaToken Token = BufferList.get(i);
+			ParsedTokenList.add(Token);			
+		}
+		
+		pos++;
 		return pos;
 	}
 
@@ -180,7 +187,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return null;
 	}
 
-	static final boolean enableMonitor = false;
+	static final boolean enableMonitor = true;
 
 	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline) {
 		// split commandline by pipe
@@ -220,8 +227,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				String Output = ShellGrammar.FindOutputFileName(Tokens);
 				if(Output != null) {
 					SourceBuilder.append(procName + ".SetOutputFileName(\"" + Output + "\");\n");
-//				} else {
-//					SourceBuilder.append("System.p(" + procName + ".GetOut())\n");	//FIXME: System.p()
+				} else {
+					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");	
 				}
 			}
 		}
@@ -229,11 +236,18 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			SourceBuilder.append(monitorName + ".ThrowException();\n");
 		}
 		
-		System.out.println(SourceBuilder.toString());
-		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
+		StringBuilder SourceBuilder2 = new StringBuilder();
+		SourceBuilder2.append("System.p(\"hello shell!\"); System.p(\"hello shell!!\"); System.p(\"hello shell!!!\");");
+		
+//		System.out.println(SourceBuilder.toString());
+//		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
+		
+		System.out.println("<<---- actual syntax ---->>\n" + SourceBuilder.toString() + "----------------------");
+		System.out.println(SourceBuilder2.toString());
+		return NameSpace.Tokenize(SourceBuilder2.toString(), uline);
 	}
 
-	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {
+	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {	// currently unused
 		if(!TokenList.get(0).ParsedText.startsWith("$(")) {
 			return -1;
 		}
@@ -252,7 +266,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return BeginIdx + 1;
 	}
 
-	public TypedNode TypeShell(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
+	public TypedNode TypeShell(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {	// currently unused
 		//KonohaDebug.P("** Syntax " + UNode.Syntax + " is undefined **");
 		UntypedNode subNode = (UntypedNode)UNode.NodeList.get(0);
 		UntypedNode nextNode = UNode.NextNode;
@@ -270,8 +284,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		this.MiniKonoha.LoadDefaultSyntax(NameSpace);
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
-		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
-		NameSpace.DefineSyntax("$Symbol", Term, this, "Shell");
+//		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
+//		NameSpace.DefineSyntax("$Symbol", Term, this, "Shell"); // currently unused
 		
 		new KonohaProcessDef().MakeDefinition(NameSpace);
 		new KonohaProcessMonitorDef().MakeDefinition(NameSpace);
