@@ -323,11 +323,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				if(isShellStatement) {
 					retValue = procName + ".GetOut();\n";
 				} else {
-<<<<<<< HEAD
-					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");
-=======
 					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");		
->>>>>>> add basic support Shell Statement return value
 				}
 			}
 		}
