@@ -8,7 +8,6 @@ import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
-import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
@@ -56,6 +55,49 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		
 		pos++;
 		return pos;
+	}
+	
+	// ls -la | grep .txt
+	public int UnixCommandToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
+		int sourceLength = SourceText.length();
+		boolean isFistToken = true;
+		StringBuilder cmdBuffer = new StringBuilder();
+		
+		for(; pos < sourceLength; pos++) {
+			char ch = SourceText.charAt(pos);
+			if(ch == ' ') {
+				if(isFistToken) {
+					isFistToken = false;
+					if(!isUnixCommand(cmdBuffer.toString())) {
+						return -1;
+					}
+				}
+				cmdBuffer.append(ch);
+			} 
+			else if(ch == '\n') {
+				pos++;
+				break;
+			} 
+			else if(ch == '\\') {
+				// do nothing
+			}
+			else {
+				cmdBuffer.append(ch);
+			}
+		}
+		
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, cmdBuffer.toString(), 0);
+		int size = BufferList.size();
+		for(int i = 0; i < size; i++) {
+			KonohaToken Token = BufferList.get(i);
+			ParsedTokenList.add(Token);			
+		}
+		
+		return pos;
+	}
+	
+	public static Boolean isUnixCommand(String cmd) {
+		return false;
 	}
 
 	/*
@@ -284,6 +326,10 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		this.MiniKonoha.LoadDefaultSyntax(NameSpace);
 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
+//		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "UnixCommandToken");	//SingleSymbol
+//		NameSpace.AddTokenFunc("Aa", this, "UnixCommandToken");						//Symbol
+//		NameSpace.AddTokenFunc("1", this, "UnixCommandToken");						//NumberLiteral
+		
 //		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 //		NameSpace.DefineSyntax("$Symbol", Term, this, "Shell"); // currently unused
 		
