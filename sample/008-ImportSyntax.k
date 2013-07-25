@@ -1,0 +1,1 @@
+System.ImportSyntax("KonohaClass");

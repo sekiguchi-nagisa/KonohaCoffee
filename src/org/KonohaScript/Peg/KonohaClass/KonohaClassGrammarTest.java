@@ -6,7 +6,7 @@ public class KonohaClassGrammarTest extends KParserTester {
 
 	@Override
 	public void Init() {
-		Init(new KonohaClassGrammar());
+		Init(new KonohaClassPegGrammar());
 	}
 
 	void testClassDef() {

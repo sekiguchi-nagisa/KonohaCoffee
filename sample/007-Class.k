@@ -2,4 +2,4 @@ class A {
     int a;
 }
 
-new A();
+System.p(new A());

@@ -38,7 +38,7 @@ import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.LexicalConverter;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
-import org.KonohaScript.Peg.KonohaClass.KonohaClassGrammar;
+import org.KonohaScript.Peg.KonohaClass.KonohaClassPegGrammar;
 import org.KonohaScript.Peg.MiniKonoha.MiniKonohaPegGrammar;
 import org.KonohaScript.SyntaxTree.AndNode;
 import org.KonohaScript.SyntaxTree.ApplyNode;
@@ -988,7 +988,7 @@ public final class MiniKonohaGrammar extends KonohaGrammar implements KonohaCons
 
 		// Load Class Syntax
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
-		new KonohaClassGrammar().LoadDefaultSyntax(NameSpace);
+		new KonohaClassPegGrammar().LoadDefaultSyntax(NameSpace);
 
 		// Load Library
 		new KonohaInt().MakeDefinition(NameSpace);

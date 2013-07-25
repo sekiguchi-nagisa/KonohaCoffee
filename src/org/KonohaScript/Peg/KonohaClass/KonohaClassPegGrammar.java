@@ -20,7 +20,7 @@ final class ClassDefinitionGrammar extends KonohaGrammar {
 	}
 }
 
-public class KonohaClassGrammar extends KonohaGrammar {
+public final class KonohaClassPegGrammar extends KonohaGrammar {
 	@Override
 	public void LoadDefaultSyntax(KonohaNameSpace NameSpace) {
 		new MiniKonohaPegGrammar().LoadDefaultSyntax(NameSpace);
