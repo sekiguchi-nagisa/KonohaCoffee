@@ -31,6 +31,8 @@ public class KonohaProcess {
 	public boolean isKilled = false;
 	private final String logdirPath = "/tmp/strace-log";
 	public String logFilePath = null;
+	
+	private boolean stdoutIsRedireted = false;
 
 
 	public static void main(String[] args) throws Exception {		
@@ -39,6 +41,7 @@ public class KonohaProcess {
 			kProc.setArgument(args[i]);
 		}
 		kProc.start();
+		kProc.writeToFile("/tmp/kProclog.txt");
 
 		System.out.print(kProc.getStdout());
 		System.err.print(kProc.getStderr());
@@ -157,6 +160,7 @@ public class KonohaProcess {
 
 	public void writeToFile(String fileName) {
 		try {
+			this.stdoutIsRedireted = true;
 			FileOutputStream fos = new FileOutputStream(fileName);
 			new StreamSetter(this.stdout, fos).start();
 		} 
@@ -178,7 +182,7 @@ public class KonohaProcess {
 	}
 
 	public String getStdout() {
-		return this.getResult(this.stdout);
+		return this.stdoutIsRedireted ? "" : this.getResult(this.stdout);
 	}
 
 	public String getStderr() {
