@@ -157,8 +157,6 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 	@Override
 	public boolean VisitConst(ConstNode Node) {
 		Object constValue = Node.ConstValue;
-		Type type = this.TypeResolver.GetAsmType(constValue.getClass());
-		this.typeStack.push(type);
 		this.LoadConst(constValue);
 		return true;
 	}
