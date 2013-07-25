@@ -40,31 +40,27 @@
 	<!-- ================================== -->
 	<!--              TEST-BUILD            -->
 	<!-- ================================== -->
+<!--
 	<target name="test-build" depends="build">
 		<mkdir dir="bin/test" />
 		<javac srcdir="." destdir="bin/test" debug="on"
 			target="1.6" source="1.6" includeantruntime="false">
-			<classpath path="bin/konoha" />
-			<classpath path="bin/test" />
-			<classpath path="bin/KonohaLLVMCodeGen" />
-			<classpath path="bin/MiniKonoha.Peg" />
-			<classpath path="bin/Konoha.CGrammar" />
+			<classpath path="bin" />
 			<include name="**/*Test.java" />
 			<include name="**/*TestBase.java" />
 			<include name="**/Tester/*.java" />
 			<include name="Test/**/*.java" />
 		</javac>
 	</target>
+-->
 	<!-- ================================== -->
 	<!--               TEST                 -->
 	<!-- ================================== -->
+<!--
 	<target name="test" depends="build,jar,test-build">
 		<jar jarfile="konoha-test.jar">
 			<fileset dir="bin/test" includes="**/*.class" />
 			<zipfileset src="konoha.jar" />
-			<zipfileset src="KonohaLLVMCodeGen.jar" />
-			<zipfileset src="MiniKonoha.Peg.jar" />
-			<zipfileset src="Konoha.CGrammar.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.KonohaScript.Tester.KTestRunner" />
 			</manifest>
@@ -72,4 +68,5 @@
 		<java jar="konoha-test.jar" fork="true">
 		</java>
 	</target>
+-->
 </project>
