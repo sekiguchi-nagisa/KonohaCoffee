@@ -1405,11 +1405,11 @@ class newExpressionSyntax0 extends SyntaxAcceptor {
 		this.Report("newExpressionSyntax0", NodeSize);
 		int Index = 0;
 		UntypedNode UNode = this.CreateNodeWithSyntax(Parser, TokenList.get(BeginIdx), "$newExpression");
-		KonohaToken TypeToken = (KonohaToken) Parser.Get(Index, NodeSize);
+		UntypedNode TypeNode = (UntypedNode) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
 		KonohaArray ParamList = (KonohaArray) Parser.Get(Index, NodeSize);
 		Index = Index + 1;
-		UNode.SetAtToken(NewTypeOffset, TypeToken);
+		UNode.SetAtToken(NewTypeOffset, TypeNode.KeyToken);
 		for(int i = 0; i < ParamList.size(); i++) {
 			UntypedNode Param = (UntypedNode) ParamList.get(i);
 			UNode.SetAtNode(NewParamOffset + i, Param);

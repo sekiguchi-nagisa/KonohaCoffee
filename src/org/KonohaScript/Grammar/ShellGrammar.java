@@ -154,8 +154,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 	public static ArrayList<String> SplitIntoCommands(String CommandLine) {
 		ArrayList<String> Commands = new ArrayList<String>();
-		boolean inQuate = false;
-		boolean inDoubleQuate = false;
+		boolean inQuote = false;
+		boolean inDoubleQuote = false;
 		int start = 0;
 		for(int pos = 0; pos < CommandLine.length(); pos++) {
 			char ch = CommandLine.charAt(pos);
@@ -163,11 +163,11 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				pos++;
 				continue;
 			}
-			if(inQuate || inDoubleQuate) {
-				if(inDoubleQuate && ch == '"') {
-					inDoubleQuate = false;
-				} else if(inQuate && ch == '\'') {
-					inQuate = false;
+			if(inQuote || inDoubleQuote) {
+				if(inDoubleQuote && ch == '"') {
+					inDoubleQuote = false;
+				} else if(inQuote && ch == '\'') {
+					inQuote = false;
 				}
 			} else {
 				if(ch == '|') {
@@ -176,9 +176,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				} else if(ch == ' ' && start == pos) {
 					start++;
 				} else if(ch == '"') {
-					inDoubleQuate = true;
+					inDoubleQuote = true;
 				} else if(ch == '\'') {
-					inQuate = true;
+					inQuote = true;
 				}
 			}
 		}
@@ -192,8 +192,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		ArrayList<String> Tokens = new ArrayList<String>();
 		int start = 0;
 		int pos = 0;
-		boolean inQuate = false;
-		boolean inDoubleQuate = false;
+		boolean inQuote = false;
+		boolean inDoubleQuote = false;
+		boolean inDollar = false;
 		StringBuilder TokenBuilder = new StringBuilder();
 		while(Command.charAt(pos) == ' ') {
 			pos++;
@@ -205,12 +206,12 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				TokenBuilder.append(Command.charAt(pos));
 				continue;
 			}
-			if(inQuate || inDoubleQuate) {
-				if(inDoubleQuate && ch == '"') {
-					inDoubleQuate = false;
-				} else if(inQuate && ch == '\'') {
-					inQuate = false;
-				} else if(inQuate && ch == '"') {
+			if(inQuote || inDoubleQuote) {
+				if(inDoubleQuote && ch == '"') {
+					inDoubleQuote = false;
+				} else if(inQuote && ch == '\'') {
+					inQuote = false;
+				} else if(inQuote && ch == '"') {
 					TokenBuilder.append("\\\"");
 				} else {
 					TokenBuilder.append(ch);
@@ -226,9 +227,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 						start = pos + 1;
 					}
 				} else if(ch == '"') {
-					inDoubleQuate = true;
+					inDoubleQuote = true;
 				} else if(ch == '\'') {
-					inQuate = true;
+					inQuote = true;
 				} else {
 					TokenBuilder.append(ch);
 				}
@@ -278,7 +279,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 
 	static final boolean enableMonitor = true;
-	static int shellMehtodCounter = 0;
+	static int shellMehtodCounter = 0; 
 
 	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isExpression) {
 		String msg = isExpression ? "Expression" : "Statement";
