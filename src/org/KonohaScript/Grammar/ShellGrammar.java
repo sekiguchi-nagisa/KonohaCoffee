@@ -1,5 +1,6 @@
 package org.KonohaScript.Grammar;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.KonohaScript.KonohaNameSpace;
@@ -8,7 +9,6 @@ import org.KonohaScript.JUtils.KonohaConst;
 import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.TokenList;
 import org.KonohaScript.Parser.KonohaGrammar;
-import org.KonohaScript.Parser.KonohaSyntax;
 import org.KonohaScript.Parser.KonohaToken;
 import org.KonohaScript.Parser.TypeEnv;
 import org.KonohaScript.Parser.UntypedNode;
@@ -77,24 +77,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	 */
 	
 	// future may be removed
-	public int UnixCommandToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {	
-		char ch = SourceText.charAt(pos);
-		if(ch == '/') {	// forbidden character
+	public int UnixCommandToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {		
+		if(ParsedTokenList.size() != 0 && !matchHeadOfStatement(SourceText, pos)) {
 			return -1;
-		}
-		
-		if(ParsedTokenList.size() != 0) {	//FIXME
-			int size = ParsedTokenList.size();
-			KonohaToken preToken = ParsedTokenList.get(size - 1);
-			System.out.println("show preToken " + preToken);
-			if(!preToken.ParsedText.equals(";")) {
-				if(preToken.ResolvedSyntax != null) {
-					if(!preToken.ResolvedSyntax.equals(KonohaSyntax.IndentSyntax)) {
-						return -1;
-					} 			
-				}
-
-			} 
 		}
 		
 		int sourceLength = SourceText.length();
@@ -103,11 +88,12 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		StringBuilder cmdBuffer = new StringBuilder();
 		
 		for(; pos < sourceLength; pos++) {
-			ch = SourceText.charAt(pos);
+			char ch = SourceText.charAt(pos);
 			if(ch == ' ') {
 				if(isFistToken) {
 					isFistToken = false;
-					if(searchUnixCommand(cmdBuffer.toString()) == false) {
+					isUnixCommand = searchUnixCommand(cmdBuffer.toString());
+					if(!isUnixCommand) {
 						return -1;
 					}
 				}
@@ -139,8 +125,25 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		return pos;
 	}
 	
-	public boolean searchUnixCommand(String cmd) {
-		System.out.println(cmd + " at searchUnixCommand");
+	private boolean searchUnixCommand(String cmd) {
+		String[] path = System.getenv("PATH").split(":");
+		for(int i = 0; i < path.length; i++) {
+			if(new File(path[i] + "/" + cmd).exists()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean matchHeadOfStatement(String SourceText, int pos) {
+		for(int i = pos - 1; i > -1; i--) {
+			char ch = SourceText.charAt(i);
+			if(ch == ';' || ch == '\n') {
+				return true;
+			} else if(ch != ' ' && ch != '\t') {
+				return false;
+			}
+		}
 		return false;
 	}
 	
@@ -396,7 +399,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		// load Shell syntax 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
-		NameSpace.AddTokenFunc("(){}[]<>,;+-*/%=&|!", this, "UnixCommandToken");	//SingleSymbol
+		NameSpace.AddTokenFunc("(){}[]<>,;+-*%=&|!", this, "UnixCommandToken");	//SingleSymbol
 		NameSpace.AddTokenFunc("Aa", this, "UnixCommandToken");						//Symbol
 		NameSpace.AddTokenFunc("1", this, "UnixCommandToken");						//NumberLiteral
 		
