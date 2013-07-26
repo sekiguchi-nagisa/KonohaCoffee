@@ -1,6 +1,9 @@
 package org.KonohaScript.Grammar;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -33,6 +35,10 @@ public class KonohaProcess {
 	public String logFilePath = null;
 	
 	private boolean stdoutIsRedireted = false;
+	private boolean stderrIsRedireted = false;
+	
+	private ByteArrayOutputStream outBuf;
+	private ByteArrayOutputStream errBuf;
 
 
 	public static void main(String[] args) throws Exception {		
@@ -42,6 +48,7 @@ public class KonohaProcess {
 		}
 		kProc.start();
 		kProc.writeToFile("/tmp/kProclog.txt");
+		kProc.waitResult();
 
 		System.out.print(kProc.getStdout());
 		System.err.print(kProc.getStderr());
@@ -145,13 +152,13 @@ public class KonohaProcess {
 	}
 
 	public void pipe(KonohaProcess destProc) {
-		new StreamSetter(this.stdout, destProc.stdin).start();
+		new PipeStreamHandler(this.stdout, destProc.stdin).start();
 	}
 
 	public void readFromFile(String fileName) {
 		try {
-			FileInputStream fis = new FileInputStream(fileName);
-			new StreamSetter(fis, this.stdin).start();
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(fileName));
+			new PipeStreamHandler(bis, this.stdin).start();
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -161,20 +168,36 @@ public class KonohaProcess {
 	public void writeToFile(String fileName) {
 		try {
 			this.stdoutIsRedireted = true;
-			FileOutputStream fos = new FileOutputStream(fileName);
-			new StreamSetter(this.stdout, fos).start();
+			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
+			new PipeStreamHandler(this.stdout, bos).start();
 		} 
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String getResult(InputStream ins) {
-		StreamGetter streamGetter = new StreamGetter(ins);
-		streamGetter.start();
+	public void waitResult() {
+		PipeStreamHandler stdoutHandler = null;
+		PipeStreamHandler stderrHandler = null;
+		if(!stdoutIsRedireted) {
+			this.outBuf = new ByteArrayOutputStream();
+			stdoutHandler = new PipeStreamHandler(stdout, outBuf);	
+			stdoutHandler.start();
+		}
+		
+		if(!stderrIsRedireted) {
+			this.errBuf = new ByteArrayOutputStream();
+			stderrHandler = new PipeStreamHandler(stderr, errBuf);
+			stderrHandler.start();
+		}
+
 		try {
-			streamGetter.join();
-			return streamGetter.getResult();
+			if(stdoutHandler != null) {
+				stdoutHandler.join();
+			}
+			if(stderrHandler != null) {
+				stderrHandler.join();
+			}
 		}
 		catch (InterruptedException e) {
 			throw new RuntimeException(e);
@@ -182,11 +205,11 @@ public class KonohaProcess {
 	}
 
 	public String getStdout() {
-		return this.stdoutIsRedireted ? "" : this.getResult(this.stdout);
+		return this.stdoutIsRedireted ? "" : this.outBuf.toString();
 	}
 
 	public String getStderr() {
-		return this.getResult(this.stderr);
+		return this.stderrIsRedireted ? "" : this.errBuf.toString();
 	}
 
 	public void waitFor() {
@@ -261,40 +284,12 @@ public class KonohaProcess {
 	}
 }
 
-class StreamGetter extends Thread {
-	private BufferedReader	br;
-	private StringBuilder	sBuilder;
-
-	public StreamGetter(InputStream is) {
-		this.br = new BufferedReader(new InputStreamReader(is));
-		this.sBuilder = new StringBuilder();
-	}
-
-	@Override
-	public void run() {
-		String line = null;
-		try {
-			while((line = this.br.readLine()) != null) {
-				this.sBuilder.append(line + "\n");
-			}
-			this.br.close();
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public String getResult() {
-		return this.sBuilder.toString();
-	}
-}
-
 // copied from http://blog.art-of-coding.eu/piping-between-processes/
-class StreamSetter extends Thread {
-	private InputStream	input;
+class PipeStreamHandler extends Thread {
+	private InputStream		input;
 	private OutputStream	output;
 
-	public StreamSetter(InputStream input, OutputStream output) {
+	public PipeStreamHandler(InputStream input, OutputStream output) {
 		this.input = input;
 		this.output = output;
 	}

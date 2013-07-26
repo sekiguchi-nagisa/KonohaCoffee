@@ -285,7 +285,6 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		ArrayList<String> Commands = ShellGrammar.SplitIntoCommands(CommandLine);
 
 		StringBuilder SourceBuilder = new StringBuilder();
-		String retValue = "";
 
 		int n = Commands.size();
 		String monitorName = "monitor";
@@ -320,8 +319,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				if(Output != null) {
 					SourceBuilder.append(procName + ".SetOutputFileName(\"" + Output + "\");\n");
 				}
+				SourceBuilder.append(procName + ".WaitResult();\n");
 				if(isExpression) {
-					retValue = procName + ".GetOut();\n";
+					SourceBuilder.append("String out = " + procName + ".GetOut();\n");
 				} else {
 					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");		
 				}
@@ -332,7 +332,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		if(isExpression) {	//FIXME
 			String shellMethodName = "ShellMethod" + shellMehtodCounter;
-			SourceBuilder.append("return " + retValue);
+			SourceBuilder.append("return out;\n");
 			String body = SourceBuilder.toString();
 			SourceBuilder = new StringBuilder();
 			SourceBuilder.append("String " + shellMethodName + "(){\n\n" + body+ "\n}\n");

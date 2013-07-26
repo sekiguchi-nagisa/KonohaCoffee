@@ -69,6 +69,10 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		String MN_GetRetValue = "GetRetValue";
 		KonohaParam int_Param = KonohaParam.ParseOf(ns, "int");
 		ProcessType.DefineMethod(0, MN_GetRetValue, int_Param, this, MN_GetRetValue);
+		
+		// define WaitResult()
+		String MN_WaitResult = "WaitResult";
+		ProcessType.DefineMethod(0, MN_WaitResult, void_Param, this, MN_WaitResult);
 	}
 
 	public static KonohaProcess New() {
@@ -121,5 +125,9 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	public static int GetRetValue(KonohaProcess Process) {
 		return Process.getRet();
+	}
+	
+	public static void WaitResult(KonohaProcess Process) {
+		Process.waitResult();
 	}
 }
