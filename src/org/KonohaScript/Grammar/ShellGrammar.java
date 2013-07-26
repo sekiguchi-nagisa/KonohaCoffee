@@ -23,9 +23,9 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	public static final String  MonitorClassName    = "ProcessMonitor";
 
 	/*
-	 * $(ls -la | grep .txt) 	--> It is Shell Statement. Return shell command's standard output as String Object.
+	 * $(ls -la | grep .txt) 	--> It is a Shell Expression. Return shell command's standard output as String Object.
 	 * 
-	 * Currently, Shell Statement is desugared at ShellToken. 
+	 * Currently, Shell Expression is desugared at ShellToken. 
 	 * In the future, it will be desugared at ParseShell.
 	 * 
 	 */
@@ -68,10 +68,10 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 	
 	/*
-	 * ls -la | grep .txt	--> It is Shell Expression.
+	 * ls -la | grep .txt	--> It is a Shell Statement.
 	 * 
-	 * Currently, Shell Expression is desugared at UnixCommandToken. 
-	 * In the future, Shell Expression will be desugared at ParseShell.
+	 * Currently, Shell Statement is desugared at UnixCommandToken. 
+	 * In the future, Shell Statement will be desugared at ParseShell.
 	 * ParseShell will be called by $Symbol.
 	 * 
 	 */
@@ -277,8 +277,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	static final boolean enableMonitor = true;
 	static int shellMehtodCounter = 0;
 
-	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isShellStatement) {
-		String msg = isShellStatement ? "Statement" : "Expression";
+	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isExpression) {
+		String msg = isExpression ? "Expression" : "Statement";
 		System.out.println("Create Shell " + msg +" at ParseShellCommandLine");
 		
 		// split commandline by pipe
@@ -320,7 +320,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				if(Output != null) {
 					SourceBuilder.append(procName + ".SetOutputFileName(\"" + Output + "\");\n");
 				}
-				if(isShellStatement) {
+				if(isExpression) {
 					retValue = procName + ".GetOut();\n";
 				} else {
 					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");		
@@ -330,7 +330,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		if(enableMonitor) {
 			SourceBuilder.append(monitorName + ".ThrowException();\n");
 		}
-		if(isShellStatement) {	//FIXME
+		if(isExpression) {	//FIXME
 			String shellMethodName = "ShellMethod" + shellMehtodCounter;
 			SourceBuilder.append("return " + retValue);
 			String body = SourceBuilder.toString();
