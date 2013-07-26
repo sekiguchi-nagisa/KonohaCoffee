@@ -194,6 +194,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		int pos = 0;
 		boolean inQuote = false;
 		boolean inDoubleQuote = false;
+		boolean inDollar = false;
 		StringBuilder TokenBuilder = new StringBuilder();
 		while(Command.charAt(pos) == ' ') {
 			pos++;
