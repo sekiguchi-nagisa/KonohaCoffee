@@ -994,7 +994,7 @@ class continueStatementSyntax0 extends SyntaxAcceptor {
 	@Override
 	public TypedNode TypeCheck(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
 		// FIXME (ide) find "continue" label from parent node to check this expression is valid or not
-		return new JumpNode(TypeInfo, "break");
+		return new JumpNode(TypeInfo, "continue");
 
 	}
 }
