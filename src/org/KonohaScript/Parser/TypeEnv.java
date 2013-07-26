@@ -28,6 +28,7 @@ public class TypeEnv implements KonohaConst {
 	public final KonohaType	BooleanType;
 	public final KonohaType	IntType;
 	public final KonohaType	StringType;
+	public final KonohaType	NameSpaceType;
 	public final KonohaType	VarType;
 
 	public TypeEnv(KonohaNameSpace GammaNameSpace, KonohaMethod Method) {
@@ -36,6 +37,7 @@ public class TypeEnv implements KonohaConst {
 		this.BooleanType = GammaNameSpace.KonohaContext.BooleanType;
 		this.IntType = GammaNameSpace.KonohaContext.IntType;
 		this.StringType = GammaNameSpace.KonohaContext.StringType;
+		this.NameSpaceType = GammaNameSpace.KonohaContext.NameSpaceType;
 		this.VarType = GammaNameSpace.KonohaContext.VarType;
 		this.Method = Method;
 		if(Method != null) {

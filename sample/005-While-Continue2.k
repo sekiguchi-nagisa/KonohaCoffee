@@ -3,7 +3,9 @@ void f(int a) {
     while(i < a) {
         i = i + 1;
         System.p(i);
-        continue;
+        if(i == 5) {
+            continue;
+        }
         System.p(i);
     }
 }

@@ -1,1 +1,1 @@
-System.ImportSyntax("KonohaClass");
+NameSpace.ImportSyntax("KonohaClass");

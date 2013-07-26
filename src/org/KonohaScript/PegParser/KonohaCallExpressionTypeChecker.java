@@ -64,6 +64,10 @@ public class KonohaCallExpressionTypeChecker {
 			// SomeInstance.FieldName(2) => MemberExpr=(ApplyNode:Method SomeInstance Param[0])
 			ApplyNode ANode = (ApplyNode) MemberExpr;
 			Reciver = (TypedNode) ANode.Params.get(0);
+			// NameSpace.f(); => (CurrentNameSpace).f();
+			if (Reciver.TypeInfo.equals(Gamma.NameSpaceType)) {
+				Reciver = new LocalNode(Reciver.TypeInfo, Reciver.SourceToken, "namespace");
+			}
 			KonohaMethod Method = ANode.Method;
 			MethodName = Method.MethodName;
 		}

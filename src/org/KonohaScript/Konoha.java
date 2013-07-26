@@ -134,6 +134,7 @@ public final class Konoha {
 	public final KonohaType		BooleanType;
 	public final KonohaType		IntType;
 	public final KonohaType		StringType;
+	public final KonohaType		NameSpaceType;
 	public final KonohaType		VarType;
 
 	public final KonohaArray	EmptyList;
@@ -150,6 +151,7 @@ public final class Konoha {
 		this.BooleanType = this.RootNameSpace.LookupHostLangType(Boolean.class);
 		this.IntType = this.RootNameSpace.LookupHostLangType(Integer.class);
 		this.StringType = this.RootNameSpace.LookupHostLangType(String.class);
+		this.NameSpaceType = this.RootNameSpace.LookupHostLangType(KonohaNameSpace.class);
 		this.VarType = this.RootNameSpace.LookupHostLangType(Object.class);
 
 		Grammar.LoadDefaultSyntax(this.RootNameSpace);

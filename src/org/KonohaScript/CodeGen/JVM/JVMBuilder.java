@@ -125,7 +125,9 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			String owner = this.TypeResolver.GetAsmType(m.getDeclaringClass()).getInternalName();
 			String methodName = m.getName();
 			String methodDescriptor = Type.getMethodDescriptor(m);
-			if(Modifier.isStatic(m.getModifiers())) opcode = INVOKESTATIC;
+			if (Modifier.isStatic(m.getModifiers())) {
+				opcode = INVOKESTATIC;
+			}
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);
 			this.typeStack.push(this.TypeResolver.GetAsmType(m.getReturnType()));
 		} else {
@@ -228,10 +230,11 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitApply(ApplyNode Node) {
+		KonohaMethod Method = Node.Method;
 		for(int i = 0; i < Node.Params.size(); i++) {
 			TypedNode Param = (TypedNode) Node.Params.get(i);
 			Param.Evaluate(this);
-			Type requireType = this.TypeResolver.GetAsmType(Node.Method.Param.Types[i]);
+			Type requireType = this.TypeResolver.GetAsmType(Method.Param.Types[i]);
 			Type foundType = this.typeStack.peek();
 			if(requireType.equals(Type.getType(Object.class)) && this.isPrimitiveType(foundType)) {
 				// boxing
@@ -241,11 +244,10 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 			}
 		}
 		int opcode = INVOKEVIRTUAL;
-		//		if(Node.Method.Is(KonohaConst.StaticMethod)) {
+		//if(Node.Method.Is(KonohaConst.StaticMethod)) {
 		opcode = INVOKESTATIC;
-		//		}
-		//		String methodName = Node.Method.MethodName;
-		this.Call(opcode, Node.Method);
+		//}
+		this.Call(opcode, Method);
 		return true;
 	}
 
