@@ -2,6 +2,8 @@ package org.KonohaScript.CodeGen.JVM;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import org.KonohaScript.KonohaClass;
@@ -74,7 +76,7 @@ class LabelStack {
 	}
 }
 
-class JVMBuilder extends CodeGenerator implements Opcodes {
+public class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	MethodVisitor					methodVisitor;
 	Stack<Type>						typeStack;
@@ -107,15 +109,44 @@ class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	void LoadConst(Object o) {
 		Type type;
+		boolean unsupportType = false;
 		if(o instanceof Integer) {
 			type = Type.INT_TYPE;
 		} else if(o instanceof Boolean) {
 			type = Type.BOOLEAN_TYPE;
+		} else if(o instanceof String) {
+			type = this.TypeResolver.GetAsmType(o.getClass());
 		} else {
+			unsupportType = true;
 			type = this.TypeResolver.GetAsmType(o.getClass());
 		}
 		this.typeStack.push(type);
-		this.methodVisitor.visitLdcInsn(o);
+		if(unsupportType) {
+			int id = addConstValue(o);
+			String owner = Type.getInternalName(this.getClass());
+			String methodName = "getConstValue";
+			String methodDesc = "(I)Ljava/lang/Object;";
+			this.methodVisitor.visitLdcInsn(id);
+			this.methodVisitor.visitMethodInsn(INVOKESTATIC, owner, methodName, methodDesc);
+			this.methodVisitor.visitTypeInsn(CHECKCAST, Type.getInternalName(o.getClass()));
+		} else {
+			this.methodVisitor.visitLdcInsn(o);
+		}
+	}
+
+	static List<Object> constValues = new ArrayList<Object>();
+	static int addConstValue(Object o) {
+		int id = constValues.indexOf(o);
+		if(id != -1) {
+			return id;
+		} else {
+			constValues.add(o);
+			return constValues.size() - 1;
+		}
+	}
+
+	public static Object getConstValue(int id) {
+		return constValues.get(id);
 	}
 
 	void Call(int opcode, KonohaMethod Method) {
