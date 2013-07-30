@@ -344,22 +344,22 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		String body = SourceBuilder.toString();
 		SourceBuilder = new StringBuilder();
 		SourceBuilder.append(retType + " " + shellMethodName + "(){\n\n" + body+ "\n}\n");
-//		NameSpace.Eval(SourceBuilder.toString(), 0);	// Eval ShellMethod. future must enable
-//		SourceBuilder = new StringBuilder();
+		NameSpace.Eval(SourceBuilder.toString(), 0);	// Eval ShellMethod. future must enable
+		SourceBuilder = new StringBuilder();
 		SourceBuilder.append(shellMethodName + "();\n");
 		shellMehtodCounter++;
 		
 
-		StringBuilder SourceBuilder2 = new StringBuilder();
-		SourceBuilder2.append("System.p(\"hello shell!\"); System.p(\"hello shell!!\"); System.p(\"hello shell!!!\");");
+//		StringBuilder SourceBuilder2 = new StringBuilder();
+//		SourceBuilder2.append("System.p(\"hello shell!\"); System.p(\"hello shell!!\"); System.p(\"hello shell!!!\");");
 		
 //		System.out.println(SourceBuilder.toString());	// future must enable
-//		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
+		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
 		
 		// temporary enable
-		System.out.println("<<---- actual syntax ---->>\n" + SourceBuilder.toString() + "----------------------");
-		System.out.println(SourceBuilder2.toString());
-		return NameSpace.Tokenize(SourceBuilder2.toString(), uline);
+//		System.out.println("<<---- actual syntax ---->>\n" + SourceBuilder.toString() + "----------------------");
+//		System.out.println(SourceBuilder2.toString());
+//		return NameSpace.Tokenize(SourceBuilder2.toString(), uline);
 	}
 
 	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {	// currently unused
