@@ -1,4 +1,8 @@
+
+NameSpace.ImportLibrary("KonohaProcess");
+
 void f() {
+    System.p("HI");
     Process p0 = Process.New();
     p0.SetArgument("ls");
     p0.SetArgument("-la");
