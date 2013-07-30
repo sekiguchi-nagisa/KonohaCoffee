@@ -2,22 +2,17 @@ package org.KonohaScript.Grammar;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class KonohaProcess {
@@ -48,13 +43,12 @@ public class KonohaProcess {
 			kProc.setArgument(args[i]);
 		}
 		kProc.start();
-//		kProc.writeToFile("/tmp/kProclog.txt");
-//		kProc.waitResult();
-//
-//		System.out.print(kProc.getStdout());
-//		System.err.print(kProc.getStderr());
-//		
-		kProc.console();
+		kProc.writeToFile("/tmp/kProclog.txt");
+		kProc.waitResult();
+
+		System.out.print(kProc.getStdout());
+		System.err.print(kProc.getStderr());
+		
 		KonohaProcessMonitor monitor = new KonohaProcessMonitor();
 		monitor.setProcess(kProc);
 		monitor.throwException();
