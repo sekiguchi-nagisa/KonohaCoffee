@@ -1,0 +1,148 @@
+$SourceCode <- $TopLevelDefinition*
+
+$TopLevelDefinition <-  $TopLevelStatement
+/ $functionDefinition
+
+$TopLevelStatement <- $variableDeclaration
+/ $EmptyStatement
+
+$functionSignature <- $type $identifier $ParamDeclList
+
+$functionBody <- $block
+
+$functionDefinition <- $functionSignature $functionBody
+/ $functionSignature ";"
+
+$ParamDeclList <- "(" ")"
+/ "(" $ParamDecls ")"
+
+$ParamDecls <- $ParamDecl ("," $ParamDecl)*
+
+$ParamDecl <- $type $identifier
+
+$ParameterList <- "(" ")"
+/ "(" $Parameters ")"
+
+$Parameters <- $Parameter ("," $Parameter)*
+
+$Parameter <- $expression
+
+$literal <- "NULL"
+/ "true"
+/ "false"
+/ $intLiteral
+/ $stringLiteral
+
+$type <- $functionType
+/ $arrayType
+/ $Type
+
+$functionType <- $type "(" "*" ")" "(" $TypeParamater ")"
+
+$arrayType <- $type ("[" $intLiteral "]")*
+/ $Type ( "[" "]" )*
+
+$TypeParamater <- "(" ")"
+/ "(" $TypeParamDecls ")"
+
+$TypeParamDecls <- $TypeParamDecl ("," $TypeParamDecl)*
+
+$TypeParamDecl <- $type
+
+$statement <- $block
+/ $variableDeclaration
+/ $ifStatement
+/ $whileStatement
+/ $breakStatement
+/ $continueStatement
+/ $returnStatement
+/ $EmptyStatement
+/ $expressionStatement
+
+$variable <- $identifier
+
+$EQ <- "="
+
+$variableDeclaration <- $type $identifier ";"
+/ $type $variable $EQ $expression ";"
+/ $type $variable "[" "]" $EQ $expression ";"
+
+$statements <- $statement*
+
+$block <- "{" $statements "}"
+
+$ifStatement <- "if" "(" $expression ")" $block "else" $block
+/ "if" "(" $expression ")" $block
+
+$whileStatement <- "while" "(" $expression  ")" $block
+
+$breakStatement <- "break" ";"
+
+$continueStatement <- "continue" ";"
+
+$returnStatement <- "return" ";"
+/ "return" $expression ";"
+
+$EmptyStatement <- ";"
+
+$expressionStatement <- $expression ";"
+
+$expression <- $leftHandSideExpression $EQ $expression
+/ $logicalOrExpression
+
+$leftHandSideExpression <- $callExpression
+/ $newExpression
+
+$callExpression <-  $memberExpression $ParameterList
+
+$memberExpression <- $primary $selector*
+
+$primary <- "this"
+/ $literal
+/ $identifier
+/ $type
+/ "(" $expression ")"
+
+$selector <- "[" $expression "]"
+/ "." $identifier
+
+$newExpression <- "new" $type $ParameterList
+/ $memberExpression
+
+$logicalOrExpression <- $logicalAndExpression ("||" $logicalAndExpression)*
+
+$logicalAndExpression <- $relationExpression ("&&" $relationExpression)*
+
+$relationExpression <- $additiveExpression $relationOperator $additiveExpression
+/ $additiveExpression
+
+$relationOperator <- "=" "="
+/ "!" "="
+/ ">" "="
+/ ">"
+/ "<" "="
+/ "<"
+
+$shiftOperator <- "<"  "<"
+/ ">"  ">"
+
+$additiveOperator <- "+"
+/ "-"
+
+$multiplicativeOperator <- "*"
+/ "/"
+/ "%"
+
+$additiveExpression <- $multiplicativeExpression ($additiveOperator $multiplicativeExpression)*
+
+$multiplicativeExpression <- $unaryExpression ($multiplicativeOperator $unaryExpression)*
+
+$incOperator <- "+" "+"
+/ "-" "-"
+
+$unaryExpression <- $incOperator $leftHandSideExpression
+/ "(" $type ")" $leftHandSideExpression
+/ $leftHandSideExpression $incOperator
+/ $leftHandSideExpression
+
+$identifier <- $Symbol
