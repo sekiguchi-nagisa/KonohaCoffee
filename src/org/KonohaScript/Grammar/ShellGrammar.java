@@ -47,7 +47,6 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			} else if(ch == ')') {
 				level--;
 				if(level == 0) {
-					pos++;
 					break;
 				}
 			}
@@ -56,15 +55,14 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 //		Token.ResolvedSyntax = ns.GetSyntax("$Shell");
 //		ParsedTokenList.add(Token);	
 		
-		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start + 2, pos - 1), 0, true);
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start + 2, pos), 0, true);
 		int size = BufferList.size();
 		for(int i = 0; i < size; i++) {
 			KonohaToken Token = BufferList.get(i);
 			ParsedTokenList.add(Token);			
 		}
 		
-		pos++;
-		return pos;
+		return SourceText.charAt(++pos) == ';' ? ++pos : pos;
 	}
 	
 	/*
@@ -83,46 +81,46 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		
 		int sourceLength = SourceText.length();
-		boolean isFistToken = true;
-		boolean isUnixCommand = false;
+		int start = pos;
 		StringBuilder cmdBuffer = new StringBuilder();
 		
 		for(; pos < sourceLength; pos++) {
 			char ch = SourceText.charAt(pos);
-			if(ch == ' ') {
-				if(isFistToken) {
-					isFistToken = false;
-					isUnixCommand = searchUnixCommand(cmdBuffer.toString());
-					if(!isUnixCommand) {
-						return -1;
-					}
-				}
-				cmdBuffer.append(ch);
-			} 
-			else if(ch == '\n') {
-				pos++;
+			if(ch == ' ' || ch == '\n') {
 				break;
-			} 
-			else if(ch == '\\') { //FIXME
-				// do nothing
-			}
-			else {
+			} else {
 				cmdBuffer.append(ch);
 			}
 		}
 		
-		if(!isUnixCommand) {
+		if(!searchUnixCommand(cmdBuffer.toString())) {
 			return -1;
 		}
 		
-		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, cmdBuffer.toString(), 0, false);
+		for(; pos < sourceLength; pos++) {
+			if(SourceText.charAt(pos) == '\n') {
+				break;
+			}
+		}
+		
+		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start, pos), 0, false);
 		int size = BufferList.size();
 		for(int i = 0; i < size; i++) {
 			KonohaToken Token = BufferList.get(i);
 			ParsedTokenList.add(Token);			
 		}
 		
-		return pos;
+		return ++pos;
+	}
+	
+	public int CommentToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
+		int sourceLength = SourceText.length();
+		for(; pos < sourceLength; pos++) {
+			if(SourceText.charAt(pos) == '\n') {
+				break;
+			}
+		}
+		return ++pos;
 	}
 	
 	private boolean searchUnixCommand(String cmd) {
@@ -326,7 +324,8 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				SourceBuilder.append(procName + ".WaitResult();\n");
 				if(isExpression) {
 					SourceBuilder.append("String out = " + procName + ".GetOut();\n");
-				} else {
+				} 
+				else {
 					SourceBuilder.append("System.p(" + procName + ".GetOut());\n");		
 				}
 			}
@@ -334,17 +333,21 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		if(enableMonitor) {
 			SourceBuilder.append(monitorName + ".ThrowException();\n");
 		}
-		if(isExpression) {	//FIXME
-			String shellMethodName = "ShellMethod" + shellMehtodCounter;
+
+		String retType = "void";
+		String shellMethodName = "ShellMethod" + shellMehtodCounter;
+		if(isExpression) {	
+			retType = "String";
 			SourceBuilder.append("return out;\n");
-			String body = SourceBuilder.toString();
-			SourceBuilder = new StringBuilder();
-			SourceBuilder.append("String " + shellMethodName + "(){\n\n" + body+ "\n}\n");
-//			NameSpace.Eval(SourceBuilder.toString(), 0);	// Eval ShellMethod. future must enable
-//			SourceBuilder = new StringBuilder();
-			SourceBuilder.append(shellMethodName + "();\n");
-			shellMehtodCounter++;
 		}
+		String body = SourceBuilder.toString();
+		SourceBuilder = new StringBuilder();
+		SourceBuilder.append(retType + " " + shellMethodName + "(){\n\n" + body+ "\n}\n");
+//		NameSpace.Eval(SourceBuilder.toString(), 0);	// Eval ShellMethod. future must enable
+//		SourceBuilder = new StringBuilder();
+		SourceBuilder.append(shellMethodName + "();\n");
+		shellMehtodCounter++;
+		
 
 		StringBuilder SourceBuilder2 = new StringBuilder();
 		SourceBuilder2.append("System.p(\"hello shell!\"); System.p(\"hello shell!!\"); System.p(\"hello shell!!!\");");
@@ -400,9 +403,10 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 
 		// load Shell syntax 
 		NameSpace.AddTokenFunc("$", this, "ShellToken");
-		NameSpace.AddTokenFunc("(){}[]<>,;+-*%=&|!", this, "UnixCommandToken");	//SingleSymbol
+//		NameSpace.AddTokenFunc("(){}[]<>,;+-*%=&|!", this, "UnixCommandToken");	//SingleSymbol
 		NameSpace.AddTokenFunc("Aa", this, "UnixCommandToken");						//Symbol
 		NameSpace.AddTokenFunc("1", this, "UnixCommandToken");						//NumberLiteral
+		NameSpace.AddTokenFunc("#", this, "CommentToken");
 		
 //		NameSpace.DefineSyntax("$Shell", Term, this, "Shell");
 //		NameSpace.DefineSyntax("$Symbol", Term, this, "Shell"); // currently unused
