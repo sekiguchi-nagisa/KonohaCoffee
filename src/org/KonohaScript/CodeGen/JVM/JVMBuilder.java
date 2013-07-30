@@ -196,11 +196,11 @@ public class JVMBuilder extends CodeGenerator implements Opcodes {
 
 	@Override
 	public boolean VisitNew(NewNode Node) {
-		// TODO Auto-generated method stub
-		for(int i = 0; i < Node.Params.size(); i++) {
-			TypedNode Param = (TypedNode) Node.Params.get(i);
-			Param.Evaluate(this);
-		}
+		Type type = TypeResolver.GetAsmType(Node.TypeInfo);
+		String owner = type.getInternalName();
+		this.methodVisitor.visitTypeInsn(NEW, owner);
+		this.methodVisitor.visitInsn(DUP);
+		typeStack.push(type);
 		return true;
 	}
 
@@ -274,11 +274,20 @@ public class JVMBuilder extends CodeGenerator implements Opcodes {
 				this.typeStack.pop();
 			}
 		}
-		int opcode = INVOKEVIRTUAL;
-		//if(Node.Method.Is(KonohaConst.StaticMethod)) {
-		opcode = INVOKESTATIC;
-		//}
-		this.Call(opcode, Method);
+		if(Method.MethodName.equals("New")) {
+			Type type = this.TypeResolver.GetAsmType(Method.Param.Types[0]);
+			String owner = type.getInternalName();
+			String methodName = "<init>";
+			String methodDesc = TypeResolver.GetJavaMethodDescriptor(Method);//"()V";//Node.Params;
+			this.methodVisitor.visitMethodInsn(INVOKESPECIAL, owner, methodName, methodDesc);
+			this.typeStack.push(type);
+		} else {
+			int opcode = INVOKEVIRTUAL;
+			//if(Node.Method.Is(KonohaConst.StaticMethod)) {
+			opcode = INVOKESTATIC;
+			//}
+			this.Call(opcode, Method);
+		}
 		return true;
 	}
 
