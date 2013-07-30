@@ -50,11 +50,11 @@ public class KonohaNameSpaceDef extends KonohaDef implements KonohaConst {
 		String DefaultPath2 = "org.KonohaScript.Grammar.";
 		String ClassName = DefaultPath1 + LibName;
 		Object Obj = LoadClass(ClassName);
-		if (Obj == null) {
+		if(Obj == null) {
 			ClassName = DefaultPath2 + LibName + "." + LibName + "Def";
 			Obj = LoadClass(ClassName);
 		}
-		if (Obj == null) {
+		if(Obj == null) {
 			throw new RuntimeException("Syntax Package " + LibName + "is not found.");
 		}
 		KonohaDef Def = (KonohaDef) Obj;
@@ -67,11 +67,11 @@ public class KonohaNameSpaceDef extends KonohaDef implements KonohaConst {
 		String DefaultPath2 = "org.KonohaScript.Peg.";
 		String ClassName = DefaultPath1 + LibName;
 		Object Obj = LoadClass(ClassName);
-		if (Obj == null) {
+		if(Obj == null) {
 			ClassName = DefaultPath2 + LibName + "." + LibName + "PegGrammar";
 			Obj = LoadClass(ClassName);
 		}
-		if (Obj == null) {
+		if(Obj == null) {
 			throw new RuntimeException("Syntax Package " + LibName + "is not found.");
 		}
 		KonohaGrammar Grammar = (KonohaGrammar) Obj;

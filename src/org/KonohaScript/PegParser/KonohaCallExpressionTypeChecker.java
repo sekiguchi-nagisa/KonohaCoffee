@@ -65,7 +65,7 @@ public class KonohaCallExpressionTypeChecker {
 			ApplyNode ANode = (ApplyNode) MemberExpr;
 			Reciver = (TypedNode) ANode.Params.get(0);
 			// NameSpace.f(); => (CurrentNameSpace).f();
-			if (Reciver.TypeInfo.equals(Gamma.NameSpaceType)) {
+			if(Reciver.TypeInfo.equals(Gamma.NameSpaceType)) {
 				Reciver = new ConstNode(Reciver.TypeInfo, Reciver.SourceToken, Gamma.GammaNameSpace);
 			}
 			KonohaMethod Method = ANode.Method;

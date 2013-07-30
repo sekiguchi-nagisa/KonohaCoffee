@@ -11,7 +11,7 @@ public final class KonohaDebug {
 	}
 
 	public static void DebugPrint(String msg) {
-		if (DebugPrint) {
+		if(DebugPrint) {
 			System.out.println("DEBUG: " + msg);
 		}
 	}
