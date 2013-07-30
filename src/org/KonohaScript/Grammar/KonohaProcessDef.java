@@ -27,8 +27,8 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 		// define SetArgument()
 		String MN_SetArgument = "SetArgument";
-		KonohaParam void_Strings_Param = KonohaParam.ParseOf(ns, "void String[] x");
-		ProcessType.DefineMethod(0, MN_SetArgument, void_Strings_Param, this, MN_SetArgument);
+//		KonohaParam void_Strings_Param = KonohaParam.ParseOf(ns, "void String[] x");
+//		ProcessType.DefineMethod(0, MN_SetArgument, void_Strings_Param, this, MN_SetArgument);
 
 		KonohaParam void_String_Param = KonohaParam.ParseOf(ns, "void String x");
 		ProcessType.DefineMethod(0, MN_SetArgument, void_String_Param, this, MN_SetArgument);
@@ -91,9 +91,9 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		return new KonohaProcess(Command, enableSyscallTrace);
 	}
 
-	public static void SetArgument(KonohaProcess Process, String[] Args) {
-		Process.setArgument(Args);
-	}
+//	public static void SetArgument(KonohaProcess Process, String[] Args) {
+//		Process.setArgument(Args);
+//	}
 
 	public static void SetArgument(KonohaProcess Process, String Arg) {
 		Process.setArgument(Arg);
