@@ -73,6 +73,10 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 		// define WaitResult()
 		String MN_WaitResult = "WaitResult";
 		ProcessType.DefineMethod(0, MN_WaitResult, void_Param, this, MN_WaitResult);
+		
+		// define Console()
+		String MN_Console = "Console";
+		ProcessType.DefineMethod(0, MN_Console, void_Param, this, MN_Console);
 	}
 
 	public static KonohaProcess New() {
@@ -129,5 +133,9 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 	public static void WaitResult(KonohaProcess Process) {
 		Process.waitResult();
+	}
+	
+	public static void Console(KonohaProcess Process) {
+		Process.console();
 	}
 }
