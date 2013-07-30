@@ -62,7 +62,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 			ParsedTokenList.add(Token);			
 		}
 		
-		return SourceText.charAt(++pos) == ';' ? ++pos : pos;
+		return ++pos;
 	}
 
 	/*
@@ -279,10 +279,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	static final boolean enableMonitor = true;
 	static int shellMehtodCounter = 0;
 
-	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isExpression) {
-		String msg = isExpression ? "Expression" : "Statement";
-		System.out.println("Create Shell " + msg +" at ParseShellCommandLine");
-		
+	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isExpression) {		
 		// split commandline by pipe
 		ArrayList<String> Commands = ShellGrammar.SplitIntoCommands(CommandLine);
 
@@ -344,22 +341,15 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		String body = SourceBuilder.toString();
 		SourceBuilder = new StringBuilder();
 		SourceBuilder.append(retType + " " + shellMethodName + "(){\n\n" + body+ "\n}\n");
-		NameSpace.Eval(SourceBuilder.toString(), 0);	// Eval ShellMethod. future must enable
+		NameSpace.Eval(SourceBuilder.toString(), 0);
 		SourceBuilder = new StringBuilder();
-		SourceBuilder.append(shellMethodName + "();\n");
+		SourceBuilder.append(shellMethodName + "()");
+		if(!isExpression) {
+			SourceBuilder.append(";");
+		}
 		shellMehtodCounter++;
-		
 
-//		StringBuilder SourceBuilder2 = new StringBuilder();
-//		SourceBuilder2.append("System.p(\"hello shell!\"); System.p(\"hello shell!!\"); System.p(\"hello shell!!!\");");
-		
-//		System.out.println(SourceBuilder.toString());	// future must enable
 		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
-		
-		// temporary enable
-//		System.out.println("<<---- actual syntax ---->>\n" + SourceBuilder.toString() + "----------------------");
-//		System.out.println(SourceBuilder2.toString());
-//		return NameSpace.Tokenize(SourceBuilder2.toString(), uline);
 	}
 
 	public int ParseShell(UntypedNode UNode, TokenList TokenList, int BeginIdx, int EndIdx, int ParseOption) {	// currently unused
