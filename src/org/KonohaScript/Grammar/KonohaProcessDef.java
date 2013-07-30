@@ -126,7 +126,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 	public static int GetRetValue(KonohaProcess Process) {
 		return Process.getRet();
 	}
-	
+
 	public static void WaitResult(KonohaProcess Process) {
 		Process.waitResult();
 	}

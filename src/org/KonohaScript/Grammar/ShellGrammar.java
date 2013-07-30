@@ -53,7 +53,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 //		KonohaToken Token = new KonohaToken(SourceText.substring(start, pos));
 //		Token.ResolvedSyntax = ns.GetSyntax("$Shell");
-//		ParsedTokenList.add(Token);	
+//		ParsedTokenList.add(Token);
 		
 		TokenList BufferList = ShellGrammar.ParseShellCommandLine(ns, SourceText.substring(start + 2, pos), 0, true);
 		int size = BufferList.size();
@@ -64,7 +64,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		
 		return SourceText.charAt(++pos) == ';' ? ++pos : pos;
 	}
-	
+
 	/*
 	 * ls -la | grep .txt	--> It is a Shell Statement.
 	 * 
@@ -73,7 +73,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	 * ParseShell will be called by $Symbol.
 	 * 
 	 */
-	
+
 	// future may be removed
 	public int UnixCommandToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {		
 		if(ParsedTokenList.size() != 0 && !matchHeadOfStatement(SourceText, pos)) {
@@ -112,7 +112,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		
 		return ++pos;
 	}
-	
+
 	public int CommentToken(KonohaNameSpace ns, String SourceText, int pos, TokenList ParsedTokenList) {
 		int sourceLength = SourceText.length();
 		for(; pos < sourceLength; pos++) {
@@ -122,7 +122,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		return ++pos;
 	}
-	
+
 	private boolean searchUnixCommand(String cmd) {
 		String[] path = System.getenv("PATH").split(":");
 		for(int i = 0; i < path.length; i++) {
@@ -132,7 +132,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		return false;
 	}
-	
+
 	private boolean matchHeadOfStatement(String SourceText, int pos) {
 		for(int i = pos - 1; i > -1; i--) {
 			char ch = SourceText.charAt(i);
@@ -144,7 +144,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 		return false;
 	}
-	
+
 
 	/*
 	 * Command: command name & arguments & redirect CommandLine: piped commands
@@ -277,7 +277,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 
 	static final boolean enableMonitor = true;
-	static int shellMehtodCounter = 0; 
+	static int shellMehtodCounter = 0;
 
 	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isExpression) {
 		String msg = isExpression ? "Expression" : "Statement";

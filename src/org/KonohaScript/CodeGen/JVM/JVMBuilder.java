@@ -156,7 +156,7 @@ public class JVMBuilder extends CodeGenerator implements Opcodes {
 			String owner = this.TypeResolver.GetAsmType(m.getDeclaringClass()).getInternalName();
 			String methodName = m.getName();
 			String methodDescriptor = Type.getMethodDescriptor(m);
-			if (Modifier.isStatic(m.getModifiers())) {
+			if(Modifier.isStatic(m.getModifiers())) {
 				opcode = INVOKESTATIC;
 			}
 			this.methodVisitor.visitMethodInsn(opcode, owner, methodName, methodDescriptor);

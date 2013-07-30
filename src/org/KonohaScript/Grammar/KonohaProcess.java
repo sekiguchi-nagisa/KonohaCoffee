@@ -33,10 +33,10 @@ public class KonohaProcess {
 	public boolean isKilled = false;
 	private final String logdirPath = "/tmp/strace-log";
 	public String logFilePath = null;
-	
+
 	private boolean stdoutIsRedireted = false;
 	private boolean stderrIsRedireted = false;
-	
+
 	private ByteArrayOutputStream outBuf;
 	private ByteArrayOutputStream errBuf;
 
@@ -181,7 +181,7 @@ public class KonohaProcess {
 		PipeStreamHandler stderrHandler = null;
 		if(!stdoutIsRedireted) {
 			this.outBuf = new ByteArrayOutputStream();
-			stdoutHandler = new PipeStreamHandler(stdout, outBuf);	
+			stdoutHandler = new PipeStreamHandler(stdout, outBuf);
 			stdoutHandler.start();
 		}
 		
