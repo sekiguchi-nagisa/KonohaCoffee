@@ -26,18 +26,16 @@ public class TypeResolver {
 		// TODO: other class
 	}
 
-	public String GetJavaTypeDescriptor(KonohaType Type) {
-		String TypeName;
-		if(Type.HostedClassInfo != null) {
-			TypeName = Type.HostedClassInfo.getName().replace(".", "/");
-		} else {
-			TypeName = Type.ShortClassName.replace(".", "/");
-		}
-		String descriptor;
-		if((descriptor = this.typeDescriptorMap.get(TypeName)) != null) {
+	public String GetJavaTypeDescriptor(KonohaType type) {
+		String descriptor = this.typeDescriptorMap.get(type.ShortClassName);
+		if(descriptor != null) {
 			return descriptor;
 		}
-		return "L" + TypeName + ";"; // FIXME
+		if(type.HostedClassInfo != null) {
+			return Type.getDescriptor(type.HostedClassInfo);
+		} else {
+			return "L" + type.ShortClassName + ";";//FIXME
+		}
 	}
 
 	public String GetJavaMethodDescriptor(KonohaMethod method) {
