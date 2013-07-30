@@ -27,7 +27,12 @@ public class TypeResolver {
 	}
 
 	public String GetJavaTypeDescriptor(KonohaType Type) {
-		String TypeName = Type.ShortClassName.replace(".", "/");
+		String TypeName;
+		if(Type.HostedClassInfo != null) {
+			TypeName = Type.HostedClassInfo.getName().replace(".", "/");
+		} else {
+			TypeName = Type.ShortClassName.replace(".", "/");
+		}
 		String descriptor;
 		if((descriptor = this.typeDescriptorMap.get(TypeName)) != null) {
 			return descriptor;
@@ -41,13 +46,19 @@ public class TypeResolver {
 		paramTypes.remove(0);
 		StringBuilder signature = new StringBuilder();
 		signature.append("(");
-		signature.append(globalType);
+		if(method.ClassInfo.ShortClassName.equals("global")) {
+			signature.append(globalType);
+		}
 		for(int i = 0; i < paramTypes.size(); i++) {
 			KonohaType ParamType = paramTypes.get(i);
 			signature.append(this.GetJavaTypeDescriptor(ParamType));
 		}
 		signature.append(")");
-		signature.append(this.GetJavaTypeDescriptor(returnType));
+		if(method.MethodName.equals("New")) {
+			signature.append(Type.VOID_TYPE.getDescriptor());
+		} else {
+			signature.append(this.GetJavaTypeDescriptor(returnType));
+		}
 		return signature.toString();
 	}
 
