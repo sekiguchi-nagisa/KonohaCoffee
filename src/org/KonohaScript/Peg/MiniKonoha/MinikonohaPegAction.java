@@ -1425,16 +1425,10 @@ class newExpressionSyntax0 extends SyntaxAcceptor {
 		int ParamSize = UNode.NodeList.size() - NewParamOffset;
 		KonohaMethod Method = BaseType.LookupMethod("New", ParamSize);
 		ApplyNode CallNode = new ApplyNode(TypeInfo, UNode.KeyToken, Method);
-		KonohaArray ParamList = new KonohaArray();
-		ParamList.add(null/*dummy*/);
-		ParamList.add(null/*dummy*/);
-		ParamList.add(NewNode);
-		for(int ParamIdx = 0; ParamIdx < ParamSize; ParamIdx++) {
-			UntypedNode UntypedParamNode = (UntypedNode) UNode.NodeList.get(NewParamOffset + ParamIdx);
-			ParamList.add(UntypedParamNode);
-		}
-		ParamSize = ParamSize + 1;
-		TypedNode TNode = KonohaCallExpressionTypeChecker.TypeMethodEachParam(Gamma, BaseType, CallNode, ParamList, ParamSize);
+		CallNode.Append(NewNode);
+
+		TypedNode TNode = KonohaCallExpressionTypeChecker
+				.TypeMethodEachParam(Gamma, BaseType, CallNode, UNode.NodeList, ParamSize);
 		if(!TNode.IsError() && TNode instanceof ApplyNode) {
 			ApplyNode ANode = (ApplyNode) TNode;
 			for(int i = 0; i < ANode.Params.size(); i++) {
