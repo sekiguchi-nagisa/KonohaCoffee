@@ -1,5 +1,5 @@
 void f() {
-    Process p0 = new Process();
+    Process p0 = Process.New();
     p0.SetArgument("ls");
     p0.SetArgument("-la");
     p0.Start();
