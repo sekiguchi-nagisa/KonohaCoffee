@@ -20,6 +20,9 @@ public class KonohaNameSpaceDef extends KonohaDef implements KonohaConst {
 
 		KonohaParam param2 = KonohaParam.ParseOf(NameSpace, "void String x");
 		BaseClass.DefineMethod(StaticMethod, "ImportSyntax", param2, this, "ImportSyntax");
+
+		KonohaParam param3 = KonohaParam.ParseOf(NameSpace, "void String x");
+		BaseClass.DefineMethod(StaticMethod, "ImportLibrary", param3, this, "ImportLibrary");
 	}
 
 	public static void Load(KonohaNameSpace NameSpace, String FileName) {
@@ -40,6 +43,23 @@ public class KonohaNameSpaceDef extends KonohaDef implements KonohaConst {
 		catch (IllegalAccessException e) {
 		}
 		return null;
+	}
+
+	public static void ImportLibrary(KonohaNameSpace NameSpace, String LibName) {
+		String DefaultPath1 = "org.KonohaScript.KLib.";
+		String DefaultPath2 = "org.KonohaScript.Grammar.";
+		String ClassName = DefaultPath1 + LibName;
+		Object Obj = LoadClass(ClassName);
+		if (Obj == null) {
+			ClassName = DefaultPath2 + LibName + "." + LibName + "Def";
+			Obj = LoadClass(ClassName);
+		}
+		if (Obj == null) {
+			throw new RuntimeException("Syntax Package " + LibName + "is not found.");
+		}
+		KonohaDef Def = (KonohaDef) Obj;
+		Def.MakeDefinition(NameSpace);
+		KonohaDebug.P("LoadLibrary:" + LibName);
 	}
 
 	public static void ImportSyntax(KonohaNameSpace NameSpace, String LibName) {

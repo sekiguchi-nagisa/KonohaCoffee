@@ -1,7 +1,7 @@
 package org.KonohaScript.JUtils;
 
 public final class KonohaDebug {
-	static final public boolean	UseBuiltInTest	= true;
+	static final public boolean	UseBuiltInTest	= false;
 	static final public boolean	DebugPrint		= false;
 
 	public static void P(String msg) {
@@ -10,6 +10,11 @@ public final class KonohaDebug {
 		//		e.printStackTrace();
 	}
 
+	public static void DebugPrint(String msg) {
+		if (DebugPrint) {
+			System.out.println("DEBUG: " + msg);
+		}
+	}
 	public static void TODO(String msg) {
 		System.out.println("TODO: " + msg);
 	}

@@ -45,8 +45,8 @@ public abstract class SyntaxPattern extends KonohaGrammar {
 	}
 
 	public TypedNode TypePegParser(TypeEnv Gamma, UntypedNode UNode, KonohaType TypeInfo) {
-		System.out.println("PEG Syntax : " + this.Name);
-		System.out.println("PEG Node : " + UNode);
+		KonohaDebug.DebugPrint("PEG Syntax : " + this.Name);
+		KonohaDebug.DebugPrint("PEG Node : " + UNode);
 		if(UNode.NodeList == null || UNode.NodeList.size() < 1) {
 			return null;
 		}
