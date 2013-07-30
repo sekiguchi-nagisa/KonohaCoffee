@@ -21,7 +21,7 @@ public class KonohaProcessMonitorDef extends KonohaDef implements KonohaConst {
 
 		// define SetProcess
 		String MN_SetProcess = "SetProcess";
-		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
+		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void Process x");
 		ProcessMonitorType.DefineMethod(0, MN_SetProcess, void_Process_Param, this, MN_SetProcess);
 
 		// define ThrowException

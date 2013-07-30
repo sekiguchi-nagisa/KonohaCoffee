@@ -40,7 +40,7 @@ public class KonohaProcessDef extends KonohaDef implements KonohaConst {
 
 		// define Pipe()
 		String MN_Pipe = "Pipe";
-		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void KonohaProcess x");
+		KonohaParam void_Process_Param = KonohaParam.ParseOf(ns, "void Process x");
 		ProcessType.DefineMethod(0, MN_Pipe, void_Process_Param, this, MN_Pipe);
 
 		// define SetInputFileName()

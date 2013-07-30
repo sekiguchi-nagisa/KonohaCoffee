@@ -1,5 +1,5 @@
 void f() {
-    ProssMonitor monitor = new ProcessMonitor();
+    ProcessMonitor monitor = new ProcessMonitor();
     Process p0 = new Process();
     p0.SetArgument("ls");
     monitor.SetProcess(p0);
