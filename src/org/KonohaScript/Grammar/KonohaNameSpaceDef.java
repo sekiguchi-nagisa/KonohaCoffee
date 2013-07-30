@@ -51,7 +51,7 @@ public class KonohaNameSpaceDef extends KonohaDef implements KonohaConst {
 		String ClassName = DefaultPath1 + LibName;
 		Object Obj = LoadClass(ClassName);
 		if(Obj == null) {
-			ClassName = DefaultPath2 + LibName + "." + LibName + "Def";
+			ClassName = DefaultPath2 + LibName + "Def";
 			Obj = LoadClass(ClassName);
 		}
 		if(Obj == null) {
