@@ -25,6 +25,7 @@
 package org.KonohaScript;
 
 import org.KonohaScript.JUtils.KonohaConst;
+import org.KonohaScript.JUtils.KonohaDebug;
 import org.KonohaScript.KLib.KonohaArray;
 import org.KonohaScript.KLib.KonohaMap;
 import org.KonohaScript.KLib.TokenList;
@@ -282,12 +283,14 @@ public final class KonohaNameSpace implements KonohaConst {
 
 	public Object Eval(String text, long uline) {
 		Object ResultValue = null;
-		System.out.println("Eval: " + text);
+		KonohaDebug.P("------------------");
+		KonohaDebug.P("Eval: " + text);
+		KonohaDebug.P("------------------");
 		TokenList BufferList = this.Tokenize(text, uline);
 		int next = BufferList.size();
 		this.PreProcess(BufferList, 0, next, BufferList);
 		UntypedNode UNode = UntypedNode.ParseNewNode(this, null, BufferList, next, BufferList.size(), AllowEmpty | MetaPattern);
-		System.out.println("untyped tree: " + UNode);
+		KonohaDebug.P("untyped tree: " + UNode);
 		while(UNode != null) {
 			TypeEnv Gamma = new TypeEnv(this, null);
 			TypedNode TNode = TypeEnv.TypeCheckEachNode(Gamma, UNode, Gamma.VoidType, KonohaConst.DefaultTypeCheckPolicy);
