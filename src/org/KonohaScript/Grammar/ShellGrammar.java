@@ -180,7 +180,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				}
 			}
 		}
-		if(start < CommandLine.length() - 1) {
+		if(start < CommandLine.length()) {
 			Commands.add(CommandLine.substring(start));
 		}
 		return Commands;
@@ -233,7 +233,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 				}
 			}
 		}
-		if(start < Command.length() - 1) {
+		if(start < Command.length()) {
 			Tokens.add(TokenBuilder.toString());
 			TokenBuilder.delete(0, TokenBuilder.length());
 		}
@@ -277,7 +277,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 	}
 
 	static final boolean enableMonitor = true;
-	static int shellMehtodCounter = 0;
+	static int shellMethodCounter = 0;
 
 	public static TokenList ParseShellCommandLine(KonohaNameSpace NameSpace, String CommandLine, long uline, boolean isExpression) {		
 		// split commandline by pipe
@@ -333,7 +333,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		}
 
 		String retType = "void";
-		String shellMethodName = "ShellMethod" + shellMehtodCounter;
+		String shellMethodName = "ShellMethod" + shellMethodCounter;
 		if(isExpression) {	
 			retType = "String";
 			SourceBuilder.append("return out;\n");
@@ -347,7 +347,7 @@ public final class ShellGrammar extends KonohaGrammar implements KonohaConst {
 		if(!isExpression) {
 			SourceBuilder.append(";");
 		}
-		shellMehtodCounter++;
+		shellMethodCounter++;
 
 		return NameSpace.Tokenize(SourceBuilder.toString(), uline);
 	}
